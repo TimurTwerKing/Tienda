@@ -4,6 +4,10 @@
 package app;
 
 import leer.Leer;
+import menu.Menu;
+import productos.Cine;
+import productos.Musica;
+import productos.Videojuego;
 
 /**
  * @author Timur Bogach
@@ -15,38 +19,25 @@ import leer.Leer;
 
 public class Aplicacion {
 
-	public static void Mensaje_Inicial() {
-
-		System.out.println(
-				"Bienvenido a la tienda virtual\n\n" + "El programa simula una tienda que vende juegos, música y cine\n"
-						+ "Solamente se pueden vender productos si aparecen disponibles en la tienda\n");
-	}
-
-	public static void Opciones_Menu() {
-
-		System.out.println("\nSeleccione que desea realizar:\n\n" + "\t1. Mostrar productos. (Listar productos)\n"
-				+ "\t2. Comprar productos\n" + "\t3. Mostrar caja. (Importe total de la compra actual)\n"
-				+ "\tSALIR --> Pulse cualquier otro número\n");
-	}
-
-	public static void Mensaje_Fin() {
-
-		System.out.println("---- Gracias por usar este software. ----");
-	}
-
 	public static void main(String[] args) {
+		Cine productoCine1 = new Cine("Rambo", 4.95f, 5, true);
+		Musica productoMusica1 = new Musica("Slayer", 6.66f, 6, true);
+		Videojuego ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true);
 
-		Mensaje_Inicial();
+		Menu.Mensaje_Inicial();
 
 		boolean continuar = true;
 
 		do {
 
-			Opciones_Menu();
+			Menu.Opciones_Menu();
 
 			switch (Leer.datoInt()) {
 			case 1:
-
+				productoCine1.mostrarDatos();
+				productoMusica1.mostrarDatos();
+				ProductoVideojuego1.mostrarDatos();
+				continuar = false;
 				break;
 			case 2:
 
@@ -61,7 +52,7 @@ public class Aplicacion {
 
 		} while (continuar);
 
-		Mensaje_Fin();
+		Menu.Mensaje_Fin();
 
 	}
 
