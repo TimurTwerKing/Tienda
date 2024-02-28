@@ -3,11 +3,15 @@
  */
 package app;
 
+import java.util.ArrayList;
+
+import data.GestionProducto;
 import leer.Leer;
+import logic.Cine;
+import logic.Musica;
+import logic.Producto;
+import logic.Videojuego;
 import menu.Menu;
-import productos.Cine;
-import productos.Musica;
-import productos.Videojuego;
 
 /**
  * @author Timur Bogach
@@ -20,9 +24,18 @@ import productos.Videojuego;
 public class Aplicacion {
 
 	public static void main(String[] args) {
-		Cine productoCine1 = new Cine("Rambo", 4.95f, 5, true);
-		Musica productoMusica1 = new Musica("Slayer", 6.66f, 6, true);
-		Videojuego ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true);
+
+		Producto productoCine1 = new Cine("Rambo", 4.95f, 5, true, "Accion", "Sylvester Stallone");
+		Producto productoMusica1 = new Musica("Slayer", 6.66f, 6, true, "Thrash Metal", "Kerry Fuckin King");
+		Producto ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true, "Shooter", "2K");
+
+		ArrayList<Producto> catalogo = new ArrayList<Producto>();
+
+		catalogo.add(productoCine1);
+		catalogo.add(productoMusica1);
+		catalogo.add(ProductoVideojuego1);
+
+		GestionProducto gestion = new GestionProducto();
 
 		Menu.Mensaje_Inicial();
 
@@ -34,9 +47,7 @@ public class Aplicacion {
 
 			switch (Leer.datoInt()) {
 			case 1:
-				productoCine1.mostrarDatos();
-				productoMusica1.mostrarDatos();
-				ProductoVideojuego1.mostrarDatos();
+				gestion.mostrarProductos(catalogo);
 				continuar = false;
 				break;
 			case 2:
