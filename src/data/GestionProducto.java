@@ -26,8 +26,7 @@ public class GestionProducto {
 
 
 	public void agregarProductos(ArrayList<Producto> productos){
-		productos.add(new Producto());
-		
+		productos.add(new Producto());		
 	}
 //	/**
 //	 * @return the caja

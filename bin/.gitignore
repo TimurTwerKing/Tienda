@@ -1,4 +1,7 @@
-/data/
+/.classpath
+/.project
+/leer/
+/menu/
 /app/
-/productos/
+/data/
 /logic/
