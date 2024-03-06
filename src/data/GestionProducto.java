@@ -1,54 +1,85 @@
 package data;
 
-import java.util.ArrayList;
-
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 import logic.Producto;
 
 public class GestionProducto {
 
-	private ArrayList<Producto> productosList = null;
-//	public double caja;
+	private TreeMap<String, Producto> productosList = null;
+	private String randomNum;
 
 	public GestionProducto() {
-
 	}
 
-	public GestionProducto(ArrayList<Producto> productos) {
+	public GestionProducto(TreeMap<String, Producto> productos) {
 		this.productosList = productos;
 	}
-	
+
 	/**
 	 * @return the productos
 	 */
-	public ArrayList<Producto> getProductos() {
+	public TreeMap<String, Producto> getProductos() {
 		return productosList;
 	}
 
+	public void agregarProducto(TreeMap<String, Producto> productos) {
+		productos.put(calcularTiket(), new Producto());
 
-	public void agregarProductos(ArrayList<Producto> productos){
-		productos.add(new Producto());		
 	}
-//	/**
-//	 * @return the caja
-//	 */
-//	public double getCaja() {
-//		return caja;
-//	}
-//
-//	/**
-//	 * @param caja the caja to set
-//	 */
-//	public void setCaja(double caja) {
-//		this.caja = caja;
-//	}
 
-	public void mostrarProductos(ArrayList<Producto> productos) {
+	public void borrarProducto(TreeMap<String, Producto> productos, String codigo) {
+		
+	}
+	
+	public String calcularTiket() {
+		Random random = new Random();
+		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
+		// Si el número es negativo, lo convertimos a positivo
+		if (randomNumber < 0) {
+			randomNumber = -randomNumber;
+		}
+		return Long.toString(randomNumber);
+	}
 
-		for (int i = 0; i < productos.size(); i++) {
-//"\n" + productos.get(i)+ 
-			System.out.print("\n" + "Nombre: " + productos.get(i).getNombre() + "\n" + "Disponible: "
-					+ productos.get(i).getCantidad() + "\n" + "Precio Unitario: " + productos.get(i).getPrecioUnidad()
-					+ " euros." + "\n");
+	public void mostrarTiket(TreeMap<String, Producto> productos) {
+		for (Map.Entry<String, Producto> entry : productos.entrySet()) {
+			Producto producto = entry.getValue();
+			System.out.println("tiket: " + producto.getNombre());
 		}
 	}
+
+	public void mostrarProductos(TreeMap<String, Producto> productos) {
+		for (Map.Entry<String, Producto> entry : productos.entrySet()) {
+			Producto producto = entry.getValue();
+			System.out.println("Nombre: " + producto.getNombre());
+			System.out.println("Disponible: " + producto.getCantidad());
+			System.out.println("Precio Unitario: " + producto.getPrecioUnidad() + " euros.\n");
+		}
+	}
+
+	/**
+	 * @return the productosList
+	 */
+	public TreeMap<String, Producto> getProductosList() {
+		return productosList;
+	}
+
+	/**
+	 * @param productosList the productosList to set
+	 */
+	public void setProductosList(TreeMap<String, Producto> productosList) {
+		this.productosList = productosList;
+	}
+
+	/**
+	 * @return the randomNum
+	 */
+	public String getRandomNum() {
+		return randomNum;
+	}
+
+	
+
 }

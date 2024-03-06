@@ -3,6 +3,8 @@
  */
 package logic;
 
+import java.util.Random;
+
 /**
  * @author Timur Bogach
  * @date 11 feb 2024
@@ -16,6 +18,7 @@ public class Producto {
 	private Integer cantidad;
 	private Boolean stock;
 	private String genero;
+	private String id;
 //	public static int dimesionArray;
 
 	public void mostrarDatos() {
@@ -44,7 +47,18 @@ public class Producto {
 		this.cantidad = cantidad;
 		this.stock = stock;
 		this.genero = genero;
+		this.id = generarId();
 //		dimesionArray++;
+	}
+
+	public String generarId() {
+		Random random = new Random();
+		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
+		// Si el número es negativo, lo convertimos a positivo
+		if (randomNumber < 0) {
+			randomNumber = -randomNumber;
+		}
+		return Long.toString(randomNumber);
 	}
 
 	/**
@@ -108,6 +122,20 @@ public class Producto {
 	 */
 	public Boolean getStock() {
 		return stock;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Integer id) {
+		this.id = generarId();
 	}
 
 	/**
