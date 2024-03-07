@@ -7,10 +7,7 @@ import java.util.TreeMap;
 
 import data.GestionProducto;
 import leer.Leer;
-import logic.Cine;
-import logic.Musica;
 import logic.Producto;
-import logic.Videojuego;
 import menu.Menu;
 
 /**
@@ -25,19 +22,10 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		Producto productoCine1 = new Cine("Rambo", 4.95f, 5, true, "Accion", "Sylvester Stallone");
-		Producto productoMusica1 = new Musica("Slayer", 6.66f, 6, true, "Thrash Metal", "Kerry Fuckin King");
-		Producto ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true, "Shooter", "2K");
-
 		TreeMap<String, Producto> catalogoTreeMap = new TreeMap<>();
 		GestionProducto gestionProductos = new GestionProducto();
 
-		catalogoTreeMap.put(gestionProductos.calcularTiket(), productoCine1);
-		catalogoTreeMap.put(gestionProductos.calcularTiket(), productoMusica1);
-		catalogoTreeMap.put(gestionProductos.calcularTiket(), ProductoVideojuego1);
-
-//		gestionProductos.agregarProducto(catalogoTreeMap.put(gestionProductos.calcularTiket(),new Producto("Rafghmbo", 4.95f, 5, true, "Accion", "Sylvester Stallone"));
-
+		gestionProductos.cargarProductos(catalogoTreeMap);
 		Menu.Mensaje_Inicial();
 
 		boolean continuar = true;
@@ -53,13 +41,7 @@ public class Aplicacion {
 				break;
 			case 2:
 				System.out.println("Seleccione producto para su compra: \n");
-				gestionProductos.mostrarTiket(catalogoTreeMap);
-				
-				
-				
-				
-//				System.out.println(catalogoTreeMap.remove(catalogoTreeMap, gestionProductos));
-								
+
 				continuar = false;
 				break;
 			case 3:

@@ -3,37 +3,40 @@ package data;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+
+import logic.Cine;
+import logic.Musica;
 import logic.Producto;
+import logic.Videojuego;
 
 public class GestionProducto {
 
-	private TreeMap<String, Producto> productosList = null;
+	TreeMap<String, Producto> catalogoTreeMap = new TreeMap<>();
 	private String randomNum;
 
 	public GestionProducto() {
 	}
 
 	public GestionProducto(TreeMap<String, Producto> productos) {
-		this.productosList = productos;
+		this.catalogoTreeMap = productos;
 	}
 
 	/**
 	 * @return the productos
 	 */
 	public TreeMap<String, Producto> getProductos() {
-		return productosList;
+		return catalogoTreeMap;
 	}
 
 	public void agregarProducto(TreeMap<String, Producto> productos) {
-		productos.put(calcularTiket(), new Producto());
-
+		productos.put(hacerTiket(), new Producto());
 	}
 
 	public void borrarProducto(TreeMap<String, Producto> productos, String codigo) {
-		
+		// @TODO
 	}
-	
-	public String calcularTiket() {
+
+	public String hacerTiket() {
 		Random random = new Random();
 		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
 		// Si el número es negativo, lo convertimos a positivo
@@ -59,18 +62,28 @@ public class GestionProducto {
 		}
 	}
 
+	public void cargarProductos(TreeMap<String, Producto> productos) {
+		Producto productoCine1 = new Cine("Rambo", 4.95f, 5, true, "Accion", "Sylvester Stallone");
+		Producto productoMusica1 = new Musica("Slayer", 6.66f, 6, true, "Thrash Metal", "Kerry Fuckin King");
+		Producto ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true, "Shooter", "2K");
+
+		productos.put(productoCine1.getId(), productoCine1);
+		productos.put(productoMusica1.getId(), productoMusica1);
+		productos.put(ProductoVideojuego1.getId(), ProductoVideojuego1);
+	}
+
 	/**
 	 * @return the productosList
 	 */
 	public TreeMap<String, Producto> getProductosList() {
-		return productosList;
+		return catalogoTreeMap;
 	}
 
 	/**
 	 * @param productosList the productosList to set
 	 */
 	public void setProductosList(TreeMap<String, Producto> productosList) {
-		this.productosList = productosList;
+		this.catalogoTreeMap = productosList;
 	}
 
 	/**
@@ -79,7 +92,5 @@ public class GestionProducto {
 	public String getRandomNum() {
 		return randomNum;
 	}
-
-	
 
 }

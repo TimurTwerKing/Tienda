@@ -19,20 +19,18 @@ public class Producto {
 	private Boolean stock;
 	private String genero;
 	private String id;
-//	public static int dimesionArray;
 
 	public void mostrarDatos() {
 		System.out.println("\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock="
-				+ stock + ", genero=" + genero + "]");
+				+ stock + ", genero=" + genero + "]" + ", id=" + id + "]");
 	}
 
 	public String toString() {
 		return "\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock=" + stock
-				+ ", genero=" + genero + "]";
+				+ ", genero=" + genero + "]" + ", id=" + id + "]";
 	}
 
 	public Producto() {
-//		dimesionArray++;
 	}
 
 	/**
@@ -48,7 +46,6 @@ public class Producto {
 		this.stock = stock;
 		this.genero = genero;
 		this.id = generarId();
-//		dimesionArray++;
 	}
 
 	public String generarId() {
