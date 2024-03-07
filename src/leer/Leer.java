@@ -38,14 +38,16 @@ public class Leer {
 	/**
 	 * Lee un entero desde la consola.
 	 *
-	 * @return El entero ingresado por el usuario y de no ser asi lo devuelve como tal.
+	 * @return El entero ingresado por el usuario y de no ser asi lo devuelve como
+	 *         tal.
 	 */
 	public static int datoInt() {
 		return Integer.parseInt(dato());
 	}
 
 	/**
-	 * Lee un número de punto flotante desde la consola y de no ser asi lo devuelve como tal.
+	 * Lee un número de punto flotante desde la consola y de no ser asi lo devuelve
+	 * como tal.
 	 *
 	 * @return El número de punto flotante ingresado por el usuario.
 	 */
@@ -73,7 +75,8 @@ public class Leer {
 	/**
 	 * Lee un número largo desde la consola.
 	 *
-	 * @return El número largo ingresado por el usuario y de no ser asi lo devuelve como tal.
+	 * @return El número largo ingresado por el usuario y de no ser asi lo devuelve
+	 *         como tal.
 	 */
 	public static long datoLong() {
 		return Long.parseLong(dato());

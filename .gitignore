@@ -1,1 +1,5 @@
+# ignora las configuraciones
 .settings/*
+# ignora carpetas
+/OutFichero
+/RutasFuchero

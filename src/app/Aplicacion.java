@@ -3,14 +3,11 @@
  */
 package app;
 
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 import data.GestionProducto;
 import leer.Leer;
-import logic.Cine;
-import logic.Musica;
 import logic.Producto;
-import logic.Videojuego;
 import menu.Menu;
 
 /**
@@ -25,18 +22,10 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		Producto productoCine1 = new Cine("Rambo", 4.95f, 5, true, "Accion", "Sylvester Stallone");
-		Producto productoMusica1 = new Musica("Slayer", 6.66f, 6, true, "Thrash Metal", "Kerry Fuckin King");
-		Producto ProductoVideojuego1 = new Videojuego("Mafia", 9.95f, 2, true, "Shooter", "2K");
+		TreeMap<String, Producto> catalogoTreeMap = new TreeMap<>();
+		GestionProducto gestionProductos = new GestionProducto();
 
-		ArrayList<Producto> catalogo = new ArrayList<Producto>();
-
-		catalogo.add(productoCine1);
-		catalogo.add(productoMusica1);
-		catalogo.add(ProductoVideojuego1);
-
-		GestionProducto gestion = new GestionProducto();
-
+		gestionProductos.cargarProductos(catalogoTreeMap);
 		Menu.Mensaje_Inicial();
 
 		boolean continuar = true;
@@ -47,11 +36,13 @@ public class Aplicacion {
 
 			switch (Leer.datoInt()) {
 			case 1:
-				gestion.mostrarProductos(catalogo);
+				gestionProductos.mostrarProductos(catalogoTreeMap);
 				continuar = false;
 				break;
 			case 2:
+				System.out.println("Seleccione producto para su compra: \n");
 
+				continuar = false;
 				break;
 			case 3:
 

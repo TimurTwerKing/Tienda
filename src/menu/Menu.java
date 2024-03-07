@@ -37,7 +37,7 @@ public class Menu {
 	 * @todo Implementar funccion para mostrar productos disponibles al usuario
 	 */
 	public static void opcionMostrarProductosDisponibles() {
-
+		System.out.println("\nSeleccione producto para su compra:\n\n");
 	}
 
 	/**
