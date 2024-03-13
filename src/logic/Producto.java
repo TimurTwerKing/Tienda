@@ -20,6 +20,20 @@ public class Producto {
 	private String genero;
 	private String id;
 
+//CONSTRUCTORES
+	public Producto() {
+	}
+
+	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero) {
+		this.nombre = nombre;
+		this.precioUnidad = precioUn;
+		this.cantidad = cantidad;
+		this.stock = stock;
+		this.genero = genero;
+		this.id = generarId();
+	}
+//METODOS
+
 	public void mostrarDatos() {
 		System.out.println("\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock="
 				+ stock + ", genero=" + genero + "]" + ", id=" + id + "]");
@@ -30,25 +44,7 @@ public class Producto {
 				+ ", genero=" + genero + "]" + ", id=" + id + "]";
 	}
 
-	public Producto() {
-	}
-
-	/**
-	 * @param nombre
-	 * @param precioUn
-	 * @param cantidad
-	 * @param stock
-	 */
-	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero) {
-		this.nombre = nombre;
-		this.precioUnidad = precioUn;
-		this.cantidad = cantidad;
-		this.stock = stock;
-		this.genero = genero;
-		this.id = generarId();
-	}
-
-	public String generarId() {
+	private String generarId() {
 		Random random = new Random();
 		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
 		// Si el número es negativo, lo convertimos a positivo
@@ -58,81 +54,8 @@ public class Producto {
 		return Long.toString(randomNumber);
 	}
 
-	/**
-	 * @return the nombre
-	 */
-	public String getNombre() {
-		return nombre;
-	}
-
-	/**
-	 * @param nombre the nombre to set
-	 */
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	/**
-	 * @return the precioUn
-	 */
-	public Float getPrecioUnidad() {
-		return precioUnidad;
-	}
-
-	/**
-	 * @param precioUn the precioUn to set
-	 */
-	public void setPrecioUnidad(Float precioUn) {
-		this.precioUnidad = precioUn;
-	}
-
-	/**
-	 * @return the cantidad
-	 */
-	public Integer getCantidad() {
-		return cantidad;
-	}
-
-	/**
-	 * @param cantidad the cantidad to set
-	 */
-	public void setCantidad(Integer cantidad) {
-		this.cantidad = cantidad;
-	}
-
-	/**
-	 * @return the genero
-	 */
-	public String getGenero() {
-		return genero;
-	}
-
-	/**
-	 * @param genero the genero to set
-	 */
-	public void setGenero(String genero) {
-		this.genero = genero;
-	}
-
-	/**
-	 * @return the stock
-	 */
-	public Boolean getStock() {
-		return stock;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Integer id) {
-		this.id = generarId();
+	public void consumir(int cant) {
+		this.cantidad -= cant;
 	}
 
 	/**
@@ -145,6 +68,50 @@ public class Producto {
 			this.stock = true;
 		}
 		return this.stock;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public Float getPrecioUnidad() {
+		return precioUnidad;
+	}
+
+	public void setPrecioUnidad(Float precioUn) {
+		this.precioUnidad = precioUn;
+	}
+
+	public Integer getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(Integer cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public String getGenero() {
+		return genero;
+	}
+
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
+
+	public Boolean getStock() {
+		return stock;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = generarId();
 	}
 
 }

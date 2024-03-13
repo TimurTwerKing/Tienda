@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 /app/
 /data/
 /leer/
 /logic/
 /menu/
+=======
+/logic/
+/data/
+/menu/
+/leer/
+/store/
+/app/
+>>>>>>> 923928d63d9edda271ba2cdb138756d651d152b4
