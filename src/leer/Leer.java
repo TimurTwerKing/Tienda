@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
  */
 
 public class Leer {
+	
+	
 
 	/**
 	 * Lee una línea de texto desde la consola.

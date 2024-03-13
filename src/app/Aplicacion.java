@@ -3,11 +3,8 @@
  */
 package app;
 
-import java.util.TreeMap;
-
 import data.GestionProducto;
 import leer.Leer;
-import logic.Producto;
 import menu.Menu;
 
 /**
@@ -22,25 +19,43 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		TreeMap<String, Producto> catalogoTreeMap = new TreeMap<>();
 		GestionProducto gestionProductos = new GestionProducto();
 
-		gestionProductos.cargarProductos(catalogoTreeMap);
+		gestionProductos.cargarProductos();
 		Menu.Mensaje_Inicial();
 
+//		boolean pagar = false;
 		boolean continuar = true;
-
 		do {
 
 			Menu.Opciones_Menu();
 
 			switch (Leer.datoInt()) {
 			case 1:
-				gestionProductos.mostrarProductos(catalogoTreeMap);
+				gestionProductos.mostrarProductosCatalogo();
 				continuar = false;
 				break;
 			case 2:
-				System.out.println("Seleccione producto para su compra: \n");
+
+				Menu.opcionMostrarProductosDisponibles();
+//				do {
+					System.out.println(
+							"\n****************************************\nMOSTRAMOS CATALOGO\n********************************************\n");
+					gestionProductos.mostrarProductosCatalogo();
+					//AGREGAMOS A LA CESTA
+					gestionProductos.agregarA_CestaPorNombre("Rambo", 3);
+					gestionProductos.agregarA_CestaPorNombre("Slayer", 5);
+
+					System.out.println(
+							"\n********************************************\nMOSTRAR LA CESTA\n********************************************\n");
+					gestionProductos.mostrarProductosCesta();
+					// VENDEMOS
+					gestionProductos.venderProductosDesdeCesta();
+					System.out.println(
+							"\n****************************************\nMOSTRAMOS LO QUE QUEDA DE CATALOGO\n********************************************\n");
+					gestionProductos.mostrarProductosCatalogo();
+
+//				} while (pagar = false);
 
 				continuar = false;
 				break;
