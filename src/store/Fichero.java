@@ -14,7 +14,7 @@ import java.io.PrintWriter;
  */
 public class Fichero {
 //Metodo : leer ficher, escribiir fichero
-	String ruta = "C:/Users/Timur/projects/Tienda/FICHERO/RutasFicher.txt";
+	String ruta = "C:/Users/Timur/projects/Tienda/FICHERO/RutasFichero.txt";
 	FileWriter fichero = null;
 	PrintWriter pw = null;
 
