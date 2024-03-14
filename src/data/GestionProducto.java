@@ -13,7 +13,7 @@ public class GestionProducto {
 
 	private TreeMap<String, Producto> catalogoTreeMap = new TreeMap<>();
 	private TreeMap<String, Producto> cesta = new TreeMap<>();
-
+	private int aux;
 //CONOSTRUCTORES
 	public GestionProducto() {
 	}
@@ -23,6 +23,8 @@ public class GestionProducto {
 	}
 
 	// METODOS
+	// ==============================================
+	// CARGA DE PRODUCTOS DESDE FUUTURA BASE DE DATOS
 	public void cargarProductos() {
 		Producto cine1 = new Cine("Rambo", 4.95f, 5, true, "Accion", "Sylvester Stallone");
 		Producto cine2 = new Cine("Willy Wonka", 30.2f, 5, true, "Fantasía", "Roberto");
@@ -40,59 +42,66 @@ public class GestionProducto {
 		this.catalogoTreeMap.put(musica3.getId(), musica3);
 	}
 
-	// Metodo para agregar elementos a la cesta por nombre del producto + su
-	// cantidad.
+	// AGREGA PRODUCTOS & CANTIDAD DEL CATALOGO POR NOMBRE A UN TREEMAP LLAMADO
+	// "CESTA".
 	public void agregarA_CestaPorNombre(String nombreProducto, int cantidad) {
-		TreeMap<String, Producto> copiaCatalogo = new TreeMap<>(this.catalogoTreeMap);
-		for (Map.Entry<String, Producto> entry : copiaCatalogo.entrySet()) {
+		this.aux=cantidad;
+		for (Map.Entry<String, Producto> entry : this.catalogoTreeMap.entrySet()) {
 			Producto producto = entry.getValue();
 			if (producto.getNombre().equals(nombreProducto)) {
-				producto.setCantidad(cantidad);
 				cesta.put(entry.getKey(), producto);
+				
 			}
+			for(Map.Entry<String, Producto> entryCesta : this.cesta.entrySet()) {
+				Producto productoCesta = entryCesta.getValue();
+				if (productoCesta.getNombre().equals(nombreProducto)){
+					productoCesta.setCantidad(aux);
+				}
+			}
+			
 		}
 	}
 
+	
+	
+	
+	// RESTA LA CANTIDAD DE LA CESTA AL CATALOGO DE PRODUCTOS
 	public void venderProductosDesdeCesta() {
-		for (Map.Entry<String, Producto> entry : this.catalogoTreeMap.entrySet()) {
-			Producto productoCatalogo = entry.getValue();
-			
-			for (Map.Entry<String, Producto> entryCesta : this.cesta.entrySet()) {
-				Producto productoCesta = entryCesta.getValue();
-				if (productoCatalogo.getNombre().equals(productoCesta.getNombre())) {
+		//TODO@: crearTiket() + mostrarProductosCesta() ¬_¬
+		//TODO@: añadir condicion de cantidad de producto
+
+		for (Map.Entry<String, Producto> entryCesta : cesta.entrySet()) {
+			Producto productoCesta = entryCesta.getValue();
+
+			for (Map.Entry<String, Producto> entry : catalogoTreeMap.entrySet()) {
+				Producto productoCatalogo = entry.getValue();
+
+				if (productoCesta.getNombre().equals(productoCatalogo.getNombre())) {
 					productoCatalogo.setCantidad(productoCatalogo.getCantidad() - productoCesta.getCantidad());
 					// productoCatalogo.consumir(productoCestaCantidad);
-				}	
+
+				}
 			}
 		}
-		
-
-//		for (Map.Entry<String, Producto> entryCesta : cesta.entrySet()) {
-//			Producto productoCesta = entryCesta.getValue();
-//			
-//			for (Map.Entry<String, Producto> entry : catalogoTreeMap.entrySet()) {
-//				Producto productoCatalogo = entry.getValue();
-//				if (productoCesta.getNombre().equals(productoCatalogo.getNombre())) {
-//					productoCatalogo.setCantidad(productoCatalogo.getCantidad() - productoCesta.getCantidad());
-//					// productoCatalogo.consumir(productoCestaCantidad);
-//
-//				}
-//			}
-//		}
 
 	}
 
-// Metodo para vender cantidad de productos deseada sin agregar a la cesta. 
+	// RESTA CANTIDAD DE PRODUCTOS AL CATALOGO POR EL ID.
 	public void venderProductoUnico(String id, int cantidadConsumir) {
 		Producto producto = this.catalogoTreeMap.get(id);
 		producto.consumir(cantidadConsumir);
 	}
 
+	// CREA TIKET INICIAL CON LA FECHA DE ACTUAL
 	public String crearTiket() {
 		Date fecha = new Date();
 		long fechaAux = fecha.getTime();
 		return Long.toString(fechaAux);
+		// TODO@: AÑADIR PRODUCTOS COMPRADOS CON LA INFORMACION CORRESPONDIENTE.
 	}
+
+	// MUESTRA PRODUCTOS QUE HAY EN EL CATALOGO MOSTRANDO NOMBRE, CANTIDAD Y EL
+	// PRECIO POR UNIDAD.
 
 	public void mostrarProductosCatalogo() {
 		for (Map.Entry<String, Producto> entry : this.catalogoTreeMap.entrySet()) {
@@ -103,6 +112,8 @@ public class GestionProducto {
 		}
 	}
 
+	// MUESTRA PRODUCTOS QUE HAY EN EL LA CESTA MOSTRANDO NOMBRE, CANTIDAD Y EL
+	// PRECIO POR UNIDAD.
 	public void mostrarProductosCesta() {
 		for (Map.Entry<String, Producto> entry : this.cesta.entrySet()) {
 			Producto producto = entry.getValue();
