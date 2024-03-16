@@ -3,8 +3,11 @@
  */
 package app;
 
+import java.util.TreeMap;
+
 import data.GestionProducto;
 import leer.Leer;
+import logic.Producto;
 import menu.Menu;
 
 /**
@@ -21,7 +24,13 @@ public class Aplicacion {
 
 		GestionProducto gestionProductos = new GestionProducto();
 
-		gestionProductos.cargarProductos();
+		TreeMap<String, Producto> catalogo = new TreeMap<>();
+		TreeMap<String, Producto> cesta = new TreeMap<>();
+
+		gestionProductos.cargarProductos(catalogo);
+
+		gestionProductos.cargarProductos(cesta);
+		
 		Menu.Mensaje_Inicial();
 
 //		boolean pagar = false;
@@ -39,21 +48,21 @@ public class Aplicacion {
 
 				Menu.opcionMostrarProductosDisponibles();
 //				do {
-					System.out.println(
-							"\n****************************************\nMOSTRAMOS CATALOGO\n********************************************\n");
-					gestionProductos.mostrarProductosCatalogo();
-					//AGREGAMOS A LA CESTA
-					gestionProductos.agregarA_CestaPorNombre("Rambo", 3);
-					gestionProductos.agregarA_CestaPorNombre("Slayer", 5);
+				System.out.println(
+						"\n****************************************\nMOSTRAMOS CATALOGO\n********************************************\n");
+				gestionProductos.mostrarProductosCatalogo();
+				// AGREGAMOS A LA CESTA
+				gestionProductos.agregarA_CestaPorNombre("Rambo", 3);
+				gestionProductos.agregarA_CestaPorNombre("Slayer", 5);
 
-					System.out.println(
-							"\n********************************************\nMOSTRAR LA CESTA\n********************************************\n");
-					gestionProductos.mostrarProductosCesta();
-					// VENDEMOS
-					gestionProductos.venderProductosDesdeCesta();
-					System.out.println(
-							"\n****************************************\nMOSTRAMOS LO QUE QUEDA DE CATALOGO\n********************************************\n");
-					gestionProductos.mostrarProductosCatalogo();
+				System.out.println(
+						"\n********************************************\nMOSTRAR LA CESTA\n********************************************\n");
+				gestionProductos.mostrarProductosCesta();
+				// VENDEMOS
+				gestionProductos.venderProductosDesdeCesta();
+				System.out.println(
+						"\n****************************************\nMOSTRAMOS LO QUE QUEDA DE CATALOGO\n********************************************\n");
+				gestionProductos.mostrarProductosCatalogo();
 
 //				} while (pagar = false);
 

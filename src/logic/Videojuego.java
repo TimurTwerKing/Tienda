@@ -13,7 +13,7 @@ package logic;
  */
 
 public class Videojuego extends Producto {
-	private String desarrollaador;
+	private String desarrollador;
 
 	public Videojuego() {
 
@@ -25,11 +25,11 @@ public class Videojuego extends Producto {
 	}
 
 	public String getDesarrollaador() {
-		return desarrollaador;
+		return desarrollador;
 	}
 
 	public void setDesarrollaador(String desarrollaador) {
-		this.desarrollaador = desarrollaador;
+		this.desarrollador = desarrollaador;
 	}
 
 }
