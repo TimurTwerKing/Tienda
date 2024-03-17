@@ -14,12 +14,17 @@ package logic;
 public class Cine extends Producto {
 	private String actor;
 
-	public Cine() {
-
+	public Cine(Producto productoCatalogo) {
+		super(productoCatalogo);
 	}
 
 	public Cine(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, String actor) {
 		super(nombre, precioUn, cantidad, stock, genero);
+	}
+
+	public Cine(Producto productoCatalogo, String actor) {
+		super(productoCatalogo);
+		this.actor = actor;
 	}
 
 	public String getActor() {

@@ -1,4 +1,4 @@
-/**
+/** 
  * 
  */
 package app;
@@ -22,18 +22,15 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		GestionProducto gestionProductos = new GestionProducto();
-
 		TreeMap<String, Producto> catalogo = new TreeMap<>();
 		TreeMap<String, Producto> cesta = new TreeMap<>();
 
+		GestionProducto gestionProductos = new GestionProducto(catalogo);
+
 		gestionProductos.cargarProductos(catalogo);
 
-		gestionProductos.cargarProductos(cesta);
-		
 		Menu.Mensaje_Inicial();
 
-//		boolean pagar = false;
 		boolean continuar = true;
 		do {
 
@@ -41,33 +38,40 @@ public class Aplicacion {
 
 			switch (Leer.datoInt()) {
 			case 1:
-				gestionProductos.mostrarProductosCatalogo();
+				gestionProductos.mostrarProductosCatalogo(catalogo);
 				continuar = false;
 				break;
+
 			case 2:
+				boolean pagar = false;
+				System.out.println(gestionProductos.mostrarProductosCatalogo(catalogo));
+				Menu.comprarProductosDisponibles();
+				do {
+					System.out.println("Escriba nombre del producto: ");
+					String nombrePorducto = Leer.datoString();
+					System.out.println("Escriba la cantidad del producto seleccionado: ");
+					Integer cantidadProducto = Leer.datoInt();
+					gestionProductos.agregarA_CestaPorNombre(cesta, catalogo, nombrePorducto, cantidadProducto);
+					Menu.seguirComprandoPagar();
+					String opcion = Leer.datoString();
+					if (opcion.equals("pagar")) {
+						pagar = true;
+					}
+				} while (!pagar);
+				System.out.println("\nver cesta\n\n" + gestionProductos.mostrarProductosCesta(cesta));
+				System.out.println("\nvender cesta\n\n" + gestionProductos.venderProductosDesdeCesta(cesta, catalogo));
+				System.out.println("\ncatalogo\n\n" + gestionProductos.mostrarProductosCatalogo(catalogo));
 
-				Menu.opcionMostrarProductosDisponibles();
-//				do {
-				System.out.println(
-						"\n****************************************\nMOSTRAMOS CATALOGO\n********************************************\n");
-				gestionProductos.mostrarProductosCatalogo();
-				// AGREGAMOS A LA CESTA
-				gestionProductos.agregarA_CestaPorNombre("Rambo", 3);
-				gestionProductos.agregarA_CestaPorNombre("Slayer", 5);
-
-				System.out.println(
-						"\n********************************************\nMOSTRAR LA CESTA\n********************************************\n");
-				gestionProductos.mostrarProductosCesta();
-				// VENDEMOS
-				gestionProductos.venderProductosDesdeCesta();
-				System.out.println(
-						"\n****************************************\nMOSTRAMOS LO QUE QUEDA DE CATALOGO\n********************************************\n");
-				gestionProductos.mostrarProductosCatalogo();
-
-//				} while (pagar = false);
+//				if (Leer.datoString().equals("si")) {
+//					Menu.deseaTiket();
+//
+//				} else if (Leer.datoString().equals("no")) {
+//					Menu.deseaTiket();
+//				}
 
 				continuar = false;
 				break;
+
 			case 3:
 
 				break;

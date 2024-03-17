@@ -3,7 +3,7 @@
  */
 package leer;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedInputStream; 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,14 +18,13 @@ import java.io.InputStreamReader;
 
 public class Leer {
 	
-	
 
 	/**
 	 * Lee una línea de texto desde la consola.
 	 *
 	 * @return El texto ingresado por el usuario.
 	 */
-	public static String dato() {
+	public static String datoString() {
 		String sdato = " ";
 		try {
 			InputStreamReader isr = new InputStreamReader(System.in);
@@ -44,7 +43,7 @@ public class Leer {
 	 *         tal.
 	 */
 	public static int datoInt() {
-		return Integer.parseInt(dato());
+		return Integer.parseInt(datoString());
 	}
 
 	/**
@@ -54,7 +53,7 @@ public class Leer {
 	 * @return El número de punto flotante ingresado por el usuario.
 	 */
 	public static float datoFloat() {
-		return Float.parseFloat(dato());
+		return Float.parseFloat(datoString());
 	}
 
 	/**
@@ -81,7 +80,7 @@ public class Leer {
 	 *         como tal.
 	 */
 	public static long datoLong() {
-		return Long.parseLong(dato());
+		return Long.parseLong(datoString());
 	}
 
 }

@@ -15,13 +15,18 @@ package logic;
 public class Videojuego extends Producto {
 	private String desarrollador;
 
-	public Videojuego() {
-
+	public Videojuego(Producto productoCatalogo) {
+		super(productoCatalogo);
 	}
 
 	public Videojuego(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero,
 			String desarrollaador) {
 		super(nombre, precioUn, cantidad, stock, genero);
+	}
+
+	public Videojuego(Producto productoCatalogo, String desarrollador) {
+		super(productoCatalogo);
+		this.desarrollador = desarrollador;
 	}
 
 	public String getDesarrollaador() {

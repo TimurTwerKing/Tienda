@@ -21,6 +21,9 @@ public class Producto {
 	private String id;
 
 //CONSTRUCTORES
+	public Producto(Producto productoCatalogo) {
+	}
+
 	public Producto() {
 	}
 
