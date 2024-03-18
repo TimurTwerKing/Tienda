@@ -1,1 +1,1 @@
-Tiket_Compra: C:\Users\Timur\projects\Tienda\FICHERO\Tiket.txt
+C:\Users\Timur\projects\Tienda\FICHERO\Tiket.txt

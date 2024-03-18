@@ -9,6 +9,7 @@ import data.GestionProducto;
 import leer.Leer;
 import logic.Producto;
 import menu.Menu;
+import store.Fichero;
 
 /**
  * @author Timur Bogach
@@ -24,7 +25,7 @@ public class Aplicacion {
 
 		TreeMap<String, Producto> catalogo = new TreeMap<>();
 		TreeMap<String, Producto> cesta = new TreeMap<>();
-
+		Fichero f = new Fichero();
 		GestionProducto gestionProductos = new GestionProducto(catalogo);
 
 		gestionProductos.cargarProductos(catalogo);
@@ -45,29 +46,34 @@ public class Aplicacion {
 			case 2:
 				boolean pagar = false;
 				System.out.println(gestionProductos.mostrarProductosCatalogo(catalogo));
-				Menu.comprarProductosDisponibles();
+				Menu.seguirComprando_Pagar();
 				do {
 					System.out.println("Escriba nombre del producto: ");
 					String nombrePorducto = Leer.datoString();
 					System.out.println("Escriba la cantidad del producto seleccionado: ");
 					Integer cantidadProducto = Leer.datoInt();
 					gestionProductos.agregarA_CestaPorNombre(cesta, catalogo, nombrePorducto, cantidadProducto);
-					Menu.seguirComprandoPagar();
-					String opcion = Leer.datoString();
-					if (opcion.equals("pagar")) {
+					Menu.seguirComprando_Pagar();
+					String opcionPagar = Leer.datoString();
+					if (opcionPagar.equals("pagar")) {
 						pagar = true;
 					}
 				} while (!pagar);
-				System.out.println("\nver cesta\n\n" + gestionProductos.mostrarProductosCesta(cesta));
-				System.out.println("\nvender cesta\n\n" + gestionProductos.venderProductosDesdeCesta(cesta, catalogo));
-				System.out.println("\ncatalogo\n\n" + gestionProductos.mostrarProductosCatalogo(catalogo));
+				String tiketAUX = gestionProductos.venderProductosDesdeCesta(cesta, catalogo);
+				System.out.println(tiketAUX);
 
-//				if (Leer.datoString().equals("si")) {
-//					Menu.deseaTiket();
-//
-//				} else if (Leer.datoString().equals("no")) {
-//					Menu.deseaTiket();
-//				}
+//				System.out.println("\nver cesta\n\n" + gestionProductos.mostrarProductosCesta(cesta));
+//				System.out.println("\nvender cesta\n\n" + gestionProductos.venderProductosDesdeCesta(cesta, catalogo));
+//				System.out.println("\ncatalogo\n\n" + gestionProductos.mostrarProductosCatalogo(catalogo));
+
+				Menu.deseaTiket();
+				String opcionTiket = Leer.datoString();
+				if (opcionTiket.equals("si")) {
+					f.escribirFichero(tiketAUX);
+
+				} else if (opcionTiket.equals("no")) {
+
+				}
 
 				continuar = false;
 				break;

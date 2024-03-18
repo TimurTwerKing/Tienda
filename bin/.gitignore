@@ -1,4 +1,5 @@
 /app/
+/menu/
 /data/
 /logic/
-/menu/
+/store/

@@ -22,21 +22,16 @@ public class Menu {
 
 	public static void mostrarProductosCesta() {
 		System.out.println("\n Su cesta de compra: \n");
+
 	}
 
 	public static void deseaTiket() {
 		System.out.println("\n Desea la copia de su Tiket? \nsi/no");
 	}
 
-	public static void comprarProductosDisponibles() {
+	public static void seguirComprando_Pagar() {
 		System.out.println(
-				"\nSeleccione productos para agregar a su cesta de compra. \n Escriba nombre del producto deseado y despues "
-						+ "la cantidad. CCunado quiera pagar, esciba pagar:\n");
-	}
-
-	public static void seguirComprandoPagar() {
-		System.out.println(
-				"\n Si desea seguir comprando presione INTRO y siga agregando productos a su cesta. \n Escriba pagar si quiere terminar su compra.");
+				"\n Si desea seguir comprando presione INTRO y siga agregando productos a su cesta. \n Escriba pagar si quiere terminar su compra.\n");
 	}
 
 	public static void Mensaje_Inicial() {
