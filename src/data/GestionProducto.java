@@ -32,7 +32,7 @@ public class GestionProducto {
 			String nombreProducto, int cantidad) {
 		for (Map.Entry<String, Producto> entryCatalogo : catalogo.entrySet()) {
 			Producto productoCatalogo = entryCatalogo.getValue();
-			if (productoCatalogo.getNombre().equals(nombreProducto)) {
+			if (productoCatalogo.getNombre().equalsIgnoreCase(nombreProducto)) {
 				// Creamos un nuevo producto con los mismos valores que el producto encontrado
 				// en el catálogo
 				Producto productoEnCesta = new Producto(productoCatalogo.getNombre(),
@@ -72,7 +72,7 @@ public class GestionProducto {
 
 			for (Map.Entry<String, Producto> entryCatalogo : catalogo.entrySet()) {
 				Producto productoCatalogo = entryCatalogo.getValue();
-				if (productoCesta.getNombre().equals(productoCatalogo.getNombre())) {
+				if (productoCesta.getNombre().equalsIgnoreCase(productoCatalogo.getNombre())) {
 					if (productoCatalogo.getCantidad() < productoCesta.getCantidad()) {
 						resultado.append("No hay suficientes ").append(productoCatalogo.getNombre())
 								.append(" disponibles.\n");
