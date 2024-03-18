@@ -1,5 +1,10 @@
 # ignora las configuraciones
 .settings/*
 # ignora carpetas
+<<<<<<< HEAD
 FICHERO/RutasFichero
 FICHERO/OutFichero
+=======
+#/OutFichero
+#/RutasFuchero
+>>>>>>> 00cfe3f49d22aa6713fbfa96d21da70ed8e24203
