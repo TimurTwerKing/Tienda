@@ -19,8 +19,6 @@ public class Fichero {
 	String ruta = "C:/Users/Timur/projects/Tienda/FICHERO/RutasFichero.txt";
 	FileWriter fichero = null;
 	PrintWriter pw = null;
-	FileReader rd = null;
-	String rutaCadena;
 
 	public void escribirFichero(String pepe) {
 

@@ -22,24 +22,19 @@ import store.Fichero;
 public class Aplicacion {
 
 	public static void main(String[] args) {
-
 		TreeMap<String, Producto> catalogo = new TreeMap<>();
 		TreeMap<String, Producto> cesta = new TreeMap<>();
-		Fichero f = new Fichero();
 		GestionProducto gestionProductos = new GestionProducto(catalogo);
-
 		gestionProductos.cargarProductos(catalogo);
-
+		Fichero f = new Fichero();
+		
 		Menu.Mensaje_Inicial();
-
 		boolean continuar = true;
 		do {
-
 			Menu.Opciones_Menu();
-
 			switch (Leer.datoInt()) {
 			case 1:
-				gestionProductos.mostrarProductosCatalogo(catalogo);
+				System.out.println(gestionProductos.mostrarProductosCatalogo(catalogo));
 				continuar = false;
 				break;
 
@@ -55,26 +50,18 @@ public class Aplicacion {
 					gestionProductos.agregarA_CestaPorNombre(cesta, catalogo, nombrePorducto, cantidadProducto);
 					Menu.seguirComprando_Pagar();
 					String opcionPagar = Leer.datoString();
-					if (opcionPagar.equals("pagar")) {
+					if (opcionPagar.equalsIgnoreCase("pagar")) {
 						pagar = true;
 					}
 				} while (!pagar);
 				String tiketAUX = gestionProductos.venderProductosDesdeCesta(cesta, catalogo);
 				System.out.println(tiketAUX);
-
-//				System.out.println("\nver cesta\n\n" + gestionProductos.mostrarProductosCesta(cesta));
-//				System.out.println("\nvender cesta\n\n" + gestionProductos.venderProductosDesdeCesta(cesta, catalogo));
-//				System.out.println("\ncatalogo\n\n" + gestionProductos.mostrarProductosCatalogo(catalogo));
-
 				Menu.deseaTiket();
 				String opcionTiket = Leer.datoString();
 				if (opcionTiket.equals("si")) {
 					f.escribirFichero(tiketAUX);
-
 				} else if (opcionTiket.equals("no")) {
-
 				}
-
 				continuar = false;
 				break;
 
