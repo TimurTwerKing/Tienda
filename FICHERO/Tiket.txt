@@ -1,6 +1,6 @@
 ************* TICKET DE COMPRA *************
-Ticket creado el 19/03/2024 19:41:49
-Numero ID: 548200513776985
+Ticket creado el 20/03/2024 18:09:24
+Numero ID: 674024210458571
 *********************************************
 
 Nombre: Slayer
@@ -10,10 +10,10 @@ Cantidad vendida: 3
 Precio Total Producto: 19.98 euros.
 
 Nombre: Rambo
-Unidades: 4
+Unidades: 2
 Precio Unitario: 4.95 euros.
-Cantidad vendida: 4
-Precio Total Producto: 19.8 euros.
+Cantidad vendida: 2
+Precio Total Producto: 9.9 euros.
 
-Precio Total de la Compra: 39.78 euros.
+Precio Total de la Compra: 29.88 euros.
 
