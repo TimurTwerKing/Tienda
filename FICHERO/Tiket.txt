@@ -1,19 +1,11 @@
 ************* TICKET DE COMPRA *************
-Ticket creado el 19/03/2024 19:41:49
-Numero ID: 548200513776985
+Ticket creado el 21/03/2024 14:46:24
+Numero ID: 728579227
 *********************************************
 
-Nombre: Slayer
-Unidades: 3
-Precio Unitario: 6.66 euros.
-Cantidad vendida: 3
-Precio Total Producto: 19.98 euros.
+Nombre: Willy Wonka
+Unidades: 2
+Precio Unitario: 30.2 euros.
 
-Nombre: Rambo
-Unidades: 4
-Precio Unitario: 4.95 euros.
-Cantidad vendida: 4
-Precio Total Producto: 19.8 euros.
-
-Precio Total de la Compra: 39.78 euros.
+Precio Total de la Compra: 0.0 euros.
 

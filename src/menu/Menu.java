@@ -20,6 +20,14 @@ public class Menu {
 	 * @todo Implementar funccion para mostrar productos disponibles al usuario
 	 */
 
+	public static void elegirProductoParaCesta() {
+		System.out.println("Escriba el ID del producto que desea agregar a la cesta: ");
+	}
+	
+	public static void cantidadProductoParaCesta() {
+		System.out.println("Escriba la cantidad deseada del producto seleccionado: ");
+	}
+	
 	public static void mostrarProductosCesta() {
 		System.out.println("\n Su cesta de compra: \n");
 
@@ -31,7 +39,7 @@ public class Menu {
 
 	public static void seguirComprando_Pagar() {
 		System.out.println(
-				"\n Si desea seguir comprando presione INTRO y siga agregando productos a su cesta. \n Escriba pagar si quiere terminar su compra.\n");
+				"\n-Presione INTRO y siga agregando productos a su cesta. \n-Escriba PAGAR si quiere terminar su compra.\n");
 	}
 
 	public static void Mensaje_Inicial() {

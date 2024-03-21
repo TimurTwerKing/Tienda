@@ -18,7 +18,7 @@ public class Producto {
 	private Integer cantidad;
 	private Boolean stock;
 	private String genero;
-	private String id;
+	private Integer id;
 
 //CONSTRUCTORES
 	public Producto(Producto productoCatalogo) {
@@ -47,14 +47,14 @@ public class Producto {
 				+ ", genero=" + genero + "]" + ", id=" + id + "]";
 	}
 
-	private String generarId() {
+	private int generarId() {
 		Random random = new Random();
-		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
+		int randomNumber = random.nextInt() % 1000000; // Limita el número generado a 10 dígitos
 		// Si el número es negativo, lo convertimos a positivo
 		if (randomNumber < 0) {
 			randomNumber = -randomNumber;
 		}
-		return Long.toString(randomNumber);
+		return randomNumber;
 	}
 
 	public void consumir(int cant) {
@@ -109,7 +109,7 @@ public class Producto {
 		return stock;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 

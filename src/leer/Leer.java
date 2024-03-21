@@ -3,7 +3,7 @@
  */
 package leer;
 
-import java.io.BufferedInputStream; 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
  */
 
 public class Leer {
-	
 
 	/**
 	 * Lee una línea de texto desde la consola.
@@ -42,8 +41,29 @@ public class Leer {
 	 * @return El entero ingresado por el usuario y de no ser asi lo devuelve como
 	 *         tal.
 	 */
+//	public static int datoInt() {
+//		return Integer.parseInt(datoString());
+//	}
+
 	public static int datoInt() {
-		return Integer.parseInt(datoString());
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int numero = 0;
+		boolean entradaValida = false;
+
+		do {
+			try {
+				String input = br.readLine();
+				numero = Integer.parseInt(input);
+				if (numero > 0) {
+					entradaValida = true;
+				} else {
+					System.out.println("Error: ¡Debe ingresar un número válido!");
+				}
+			} catch (NumberFormatException | IOException e) {
+				System.out.println("Error: ¡Debe ingresar un número válido!");
+			}
+		} while (!entradaValida);
+		return numero;
 	}
 
 	/**
