@@ -36,7 +36,6 @@ public class TestConexion {
 
 	public static void consulta_select() {
 
-		Conexion conexion = new Conexion();
 		Connection cn = null;
 		Statement stm = null;
 		ResultSet rs = null;
@@ -45,7 +44,7 @@ public class TestConexion {
 
 		try {
 			// Abrimos la conexion con la base de datos
-			cn = conexion.conectar();
+			cn = Conexion.conectar();
 			stm = cn.createStatement();
 			// Pasamos la consulta al ResultSet
 			rs = stm.executeQuery(selectTableSQL);
@@ -76,7 +75,6 @@ public class TestConexion {
 
 	public static void consulta_insert(String usuario, String clave) {
 
-		Conexion conexion = new Conexion();
 		Connection cn = null;
 		PreparedStatement ps = null;
 
@@ -86,7 +84,7 @@ public class TestConexion {
 
 		try {
 
-			cn = conexion.conectar();
+			cn = Conexion.conectar();
 			ps = cn.prepareStatement(insertTableSQL);
 
 			ps.setString(1, usuario);
@@ -122,7 +120,6 @@ public class TestConexion {
 
 	public static void consulta_update(int id_usuario, String usuario, String clave) {
 
-		Conexion conexion = new Conexion();
 		Connection cn = null;
 		Statement stm = null;
 
@@ -132,7 +129,7 @@ public class TestConexion {
 
 		try {
 
-			cn = conexion.conectar();
+			cn = Conexion.conectar();
 			stm = cn.createStatement();
 			int valor = stm.executeUpdate(updateTableSQL);
 

@@ -14,9 +14,9 @@ import logic.Musica;
 import logic.PagarTarjeta;
 import logic.Producto;
 import logic.Videojuego;
+import modelo.Cliente;
 import mySQL_DB.Conexion;
 import store.Fichero;
-import user.Cliente;
 
 public class GestionProducto {
 
@@ -31,8 +31,7 @@ public class GestionProducto {
 	// Método para cargar productos
 	public List<Producto> cargarProductos() throws SQLException {
 		String consulta = "SELECT * FROM PRODUCTO";
-		Conexion conexion = new Conexion();
-		Connection conn = conexion.conectar(); // Obtener la conexion
+		Connection conn = Conexion.conectar(); // Obtener la conexion
 
 		try (PreparedStatement pstmt = conn.prepareStatement(consulta)) {
 			ResultSet rs = pstmt.executeQuery();
@@ -146,7 +145,7 @@ public class GestionProducto {
 					PagarTarjeta.pagar(cliente);
 					Tiket tiket = new Tiket();
 					try {
-						String tiketAUX = tiket.crearTicket(gestionProductos.cesta);//TIKET
+						String tiketAUX = tiket.crearTicket(gestionProductos.cesta);// TIKET
 						System.out.println(tiketAUX);
 						System.out.println("¿Desea guardar el ticket? (si/no)");
 						String opcionTiket = sc.next().trim().toLowerCase();
@@ -176,9 +175,7 @@ public class GestionProducto {
 
 	// Método para vender artículos y actualizar la base de datos
 	public void venderArticulos() throws SQLException {
-		Conexion conexion = new Conexion();
-		Connection conn = conexion.conectar();
-
+		Connection conn = Conexion.conectar();
 		try {
 			for (Producto productoEnCesta : cesta) {
 				Producto producto = buscarProductoPorId(productoEnCesta.getId());
@@ -250,6 +247,15 @@ public class GestionProducto {
 		}
 
 		return resultado.toString();
+	}
+
+	// Método para calcular y mostrar el importe total de la compra actual
+	public double mostrarImporteTotal() {
+		double total = 0.0;
+		for (Producto producto : cesta) {
+			total += producto.getPrecioUnidad() * producto.getCantidad();
+		}
+		return total;
 	}
 }
 

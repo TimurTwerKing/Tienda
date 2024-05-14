@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import data.GestionProducto;
 import menu.Menu;
+import modelo.Cliente;
 import store.Fichero;
 
 /**
@@ -21,6 +22,18 @@ import store.Fichero;
 public class Aplicacion {
 
 	public static void main(String[] args) {
+// @TODO: agregar cliente + pedido
+		
+//		String nombreCliente = "Jhoonny";
+//		Cliente cliente = Cliente.getClienteByNombre(nombreCliente);
+//
+//		if (cliente != null) {
+//			System.out.println("Cliente encontrado: " + cliente.getNombre());
+//			// Aquí puedes hacer más operaciones con el cliente recuperado
+//		} else {
+//			System.out.println("Cliente no encontrado");
+//		}
+
 		GestionProducto gestionProductos = new GestionProducto();
 		try {
 			gestionProductos.cargarProductos();
@@ -61,7 +74,8 @@ public class Aplicacion {
 				break;
 
 			case 3:
-				// Otras opciones si es necesario
+				double total = gestionProductos.mostrarImporteTotal();
+				System.out.println("El importe total de la compra actual es: $" + total);
 				break;
 
 			default:

@@ -1,5 +1,6 @@
-/app/
 /data/
+/user/
 /logic/
 /mySQL_DB/
-/leer/
+/app/
+/modelo/

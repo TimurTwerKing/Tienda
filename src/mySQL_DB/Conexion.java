@@ -28,7 +28,7 @@ public class Conexion {
 		}
 	}
 
-	public Connection conectar() {
+	public static Connection conectar() {
 		Connection conexion = null;
 
 		try {
@@ -46,5 +46,7 @@ public class Conexion {
 
 		return conexion;
 	}
+
+	
 
 }

@@ -1,8 +1,10 @@
 package logic;
 
 import java.util.Scanner;
+
+import modelo.Cliente;
+
 import java.util.NoSuchElementException;
-import user.Cliente;
 
 /**
  * @autor Timur Bogach
