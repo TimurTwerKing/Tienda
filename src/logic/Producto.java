@@ -3,8 +3,6 @@
  */
 package logic;
 
-import java.util.Random;
-
 /**
  * @author Timur Bogach
  * @date 11 feb 2024
@@ -18,7 +16,8 @@ public class Producto {
 	private Integer cantidad;
 	private Boolean stock;
 	private String genero;
-	private String id;
+	private Integer idProducto;
+	private Integer idCategoria;
 
 //CONSTRUCTORES
 	public Producto(Producto productoCatalogo) {
@@ -27,39 +26,41 @@ public class Producto {
 	public Producto() {
 	}
 
-	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero) {
+	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
+			Integer idCategoria) {
 		this.nombre = nombre;
 		this.precioUnidad = precioUn;
 		this.cantidad = cantidad;
 		this.stock = stock;
 		this.genero = genero;
-		this.id = generarId();
+		this.idProducto = idProducto;
+		this.idCategoria=idCategoria;
 	}
 //METODOS
 
 	public void mostrarDatos() {
 		System.out.println("\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock="
-				+ stock + ", genero=" + genero + "]" + ", id=" + id + "]");
+				+ stock + ", genero=" + genero + "]" + ", id=" + idProducto + "]");
 	}
 
 	public String toString() {
 		return "\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock=" + stock
-				+ ", genero=" + genero + "]" + ", id=" + id + "]";
+				+ ", genero=" + genero + "]" + ", id=" + idProducto + "]";
 	}
 
-	private String generarId() {
-		Random random = new Random();
-		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
-		// Si el número es negativo, lo convertimos a positivo
-		if (randomNumber < 0) {
-			randomNumber = -randomNumber;
-		}
-		return Long.toString(randomNumber);
-	}
+//	private String generarId() {
+//		Random random = new Random();
+//		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
+//		// Si el número es negativo, lo convertimos a positivo
+//		if (randomNumber < 0) {
+//			randomNumber = -randomNumber;
+//		}
+//		return Long.toString(randomNumber);
+//	}
 
-	public void consumir(int cant) {
-		this.cantidad -= cant;
-	}
+//	public void consumir(int cant) {
+//		this.cantidad -= cant;
+//	}
 
 	/**
 	 * Nos devuelve si hay stock de un producto o no
@@ -109,12 +110,32 @@ public class Producto {
 		return stock;
 	}
 
-	public String getId() {
-		return id;
+	public Integer getId() {
+		return idProducto;
 	}
 
-	public void setId(Integer id) {
-		this.id = generarId();
+	public void setId(Integer idProducto) {
+		this.idProducto = idProducto;
+	}
+
+	public Integer getIdProducto() {
+		return idProducto;
+	}
+
+	public void setIdProducto(Integer idProducto) {
+		this.idProducto = idProducto;
+	}
+
+	public Integer getIdCategoria() {
+		return idCategoria;
+	}
+
+	public void setIdCategoria(Integer idCategoria) {
+		this.idCategoria = idCategoria;
+	}
+
+	public void setStock(Boolean stock) {
+		this.stock = stock;
 	}
 
 }

@@ -18,9 +18,10 @@ public class Musica extends Producto {
 		super(productoCatalogo);
 	}
 
-	public Musica(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, String compositor) {
-		super(nombre, precioUn, cantidad, stock, genero);
-		this.setCompositor(compositor);
+	public Musica(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
+			Integer idCategoria, String compositor) {
+		super(nombre, precioUn, cantidad, stock, genero, idProducto, idCategoria);
+		this.compositor = compositor;
 	}
 
 	public Musica(Producto productoCatalogo, String compositor) {

@@ -4,37 +4,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import java.util.Calendar;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import logic.Cine;
 import logic.Musica;
+import logic.PagarTarjeta;
 import logic.Producto;
 import logic.Videojuego;
 import mySQL_DB.Conexion;
+import store.Fichero;
+import user.Cliente;
 
 public class GestionProducto {
 
-	private TreeMap<Integer, Producto> catalogo;
-	private TreeMap<Integer, Integer> cesta;
+	private List<Producto> catalogo;
+	private List<Producto> cesta;
 
 	public GestionProducto() {
-		this.catalogo = new TreeMap<>();
-		this.cesta = new TreeMap<>();
+		this.catalogo = new ArrayList<>();
+		this.cesta = new ArrayList<>();
 	}
 
 	// Método para cargar productos
-	public TreeMap<Integer, Producto> cargarProductos() throws SQLException {
+	public List<Producto> cargarProductos() throws SQLException {
 		String consulta = "SELECT * FROM PRODUCTO";
 		Conexion conexion = new Conexion();
-		Connection conn = conexion.conectar(); // Obtener la conexión desde la clase Conexion
+		Connection conn = conexion.conectar(); // Obtener la conexion
 
 		try (PreparedStatement pstmt = conn.prepareStatement(consulta)) {
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				int id = rs.getInt("id");
+				int idProducto = rs.getInt("id");
 				String nombre = rs.getString("nombre");
 				float precio = rs.getFloat("precio");
 				int cantidad = rs.getInt("cantidad");
@@ -60,24 +63,27 @@ public class GestionProducto {
 					// Crear el producto según la categoría
 					switch (idCategoria) {
 					case 1:
-						producto = new Cine(nombre, precio, cantidad, stock, genero, atributoEspecifico);
+						producto = new Cine(nombre, precio, cantidad, stock, genero, idProducto, atributoEspecifico,
+								idCategoria);
 						break;
 					case 2:
-						producto = new Videojuego(nombre, precio, cantidad, stock, genero, atributoEspecifico);
+						producto = new Videojuego(nombre, precio, cantidad, stock, genero, idProducto, idCategoria,
+								atributoEspecifico);
 						break;
 					case 3:
-						producto = new Musica(nombre, precio, cantidad, stock, genero, atributoEspecifico);
+						producto = new Musica(nombre, precio, cantidad, stock, genero, idProducto, idCategoria,
+								atributoEspecifico);
 						break;
 					default:
-						producto = new Producto(nombre, precio, cantidad, stock, genero);
+						producto = new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
 					}
 				} else {
 					// Si el producto no está en stock
-					producto = new Producto(nombre, precio, cantidad, stock, genero);
+					producto = new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
 				}
 
-				// Agregar el producto al TreeMap
-				this.catalogo.put(id, producto);
+				// Agregar el producto al ArrayList
+				this.catalogo.add(producto);
 			}
 		} finally {
 			if (conn != null) {
@@ -89,15 +95,82 @@ public class GestionProducto {
 
 	// Método para agregar artículos a la cesta
 	public void agregarCesta(int productoId, int cantidad) {
-		if (catalogo.containsKey(productoId)) {
-			Producto producto = catalogo.get(productoId);
+		Producto producto = buscarProductoPorId(productoId);
+		if (producto != null) {
 			if (producto.getCantidad() >= cantidad) {
-				cesta.put(productoId, cantidad);
+				cesta.add(new Producto(producto.getNombre(), producto.getPrecioUnidad(), cantidad, producto.hayStock(),
+						producto.getGenero(), producto.getId(), producto.getIdCategoria()));
 			} else {
 				System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
 			}
 		} else {
 			System.out.println("Producto no encontrado en el catálogo.");
+		}
+	}
+
+	// Método para buscar un producto por su ID en el catálogo
+	private Producto buscarProductoPorId(int productoId) {
+		for (Producto producto : catalogo) {
+			if (producto.getId() == productoId) {
+				return producto;
+			}
+		}
+		return null;
+	}
+
+	public static void realizarCompra(GestionProducto gestionProductos, Fichero f, Scanner sc) {
+		boolean seguirComprando = true;
+		boolean pagar = false;
+
+		while (seguirComprando && !pagar) {
+			System.out.println(gestionProductos.mostrarProductosCatalogo());
+
+			System.out.println("Escriba ID del producto: ");
+			int productoID = sc.nextInt();
+
+			System.out.println("Escriba la cantidad del producto seleccionado: ");
+			int cantidadProducto = sc.nextInt();
+
+			gestionProductos.agregarCesta(productoID, cantidadProducto);
+
+			while (true) {
+				System.out.println("¿Desea seguir comprando, pagar o cancelar?\n");
+				String opcion = sc.next().trim().toLowerCase();
+
+				if (opcion.equals("seguir comprando")) {
+					break;
+				} else if (opcion.equals("pagar")) {
+					pagar = true;
+					seguirComprando = false;
+					Cliente cliente = new Cliente();
+					PagarTarjeta.pagar(cliente);
+					Tiket tiket = new Tiket();
+					try {
+						String tiketAUX = tiket.crearTicket(gestionProductos.cesta);//TIKET
+						System.out.println(tiketAUX);
+						System.out.println("¿Desea guardar el ticket? (si/no)");
+						String opcionTiket = sc.next().trim().toLowerCase();
+
+						if (opcionTiket.equals("si")) {
+							f.escribirFichero(tiketAUX);
+						}
+					} catch (NoSuchElementException e) {
+						System.out.println("Error element");
+						e.getStackTrace();
+					} catch (NumberFormatException e) {
+						System.out.println("Error num Format");
+						e.getStackTrace();
+					}
+					break;
+				} else if (opcion.equals("cancelar")) {
+					seguirComprando = false;
+					pagar = false;
+					System.out.println("Compra cancelada.");
+					break;
+				} else {
+					System.out.println("Opción no válida, por favor elija 'seguir comprando', 'pagar' o 'cancelar'.");
+				}
+			}
 		}
 	}
 
@@ -107,24 +180,23 @@ public class GestionProducto {
 		Connection conn = conexion.conectar();
 
 		try {
-			for (Map.Entry<Integer, Integer> entry : cesta.entrySet()) {
-				int productoId = entry.getKey();
-				int cantidadVendida = entry.getValue();
+			for (Producto productoEnCesta : cesta) {
+				Producto producto = buscarProductoPorId(productoEnCesta.getId());
+				if (producto != null) {
+					int cantidadVendida = productoEnCesta.getCantidad();
+					int nuevaCantidad = producto.getCantidad() - cantidadVendida;
 
-				// Obtener el producto del catálogo
-				Producto producto = catalogo.get(productoId);
-				int nuevaCantidad = producto.getCantidad() - cantidadVendida;
+					// Actualizar la cantidad en la base de datos
+					String updateQuery = "UPDATE Producto SET cantidad = ? WHERE id = ?";
+					try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+						pstmt.setInt(1, nuevaCantidad);
+						pstmt.setInt(2, producto.getId());
+						pstmt.executeUpdate();
+					}
 
-				// Actualizar la cantidad en la base de datos
-				String updateQuery = "UPDATE Producto SET cantidad = ? WHERE id = ?";
-				try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
-					pstmt.setInt(1, nuevaCantidad);
-					pstmt.setInt(2, productoId);
-					pstmt.executeUpdate();
+					// Actualizar la cantidad en el catálogo local
+					producto.setCantidad(nuevaCantidad);
 				}
-
-				// Actualizar la cantidad en el catálogo local
-				producto.setCantidad(nuevaCantidad);
 			}
 
 			// Limpiar la cesta después de vender
@@ -136,59 +208,20 @@ public class GestionProducto {
 		}
 	}
 
-	// Método para crear un ticket
-	public String crearTiket() {
-		String numeroTicket = generarNumeroTicket();
-		StringBuilder ticketBuilder = new StringBuilder();
-		ticketBuilder.append("Ticket Número: ").append(numeroTicket).append("\n");
-		ticketBuilder.append("Fecha: ").append(Calendar.getInstance().getTime()).append("\n\n");
-		ticketBuilder.append("Artículos:\n");
-
-		float total = 0;
-
-		for (Map.Entry<Integer, Integer> entry : cesta.entrySet()) {
-			int productoId = entry.getKey();
-			int cantidad = entry.getValue();
-			Producto producto = catalogo.get(productoId);
-
-			float precioTotalProducto = producto.getPrecioUnidad() * cantidad;
-			total += precioTotalProducto;
-
-			ticketBuilder.append("Producto: ").append(producto.getNombre()).append("\n").append("Cantidad: ")
-					.append(cantidad).append("\n").append("Precio Unitario: ").append(producto.getPrecioUnidad())
-					.append("\n").append("Precio Total: ").append(precioTotalProducto).append("\n\n");
-		}
-
-		ticketBuilder.append("Total a pagar: ").append(total).append("\n");
-
-		return ticketBuilder.toString();
-	}
-
-	// Método para generar un número de ticket único
-	private String generarNumeroTicket() {
-		return "TKT" + System.currentTimeMillis();
-	}
-
 	// Método para mostrar los productos en la cesta
 	public String mostrarProductosCesta() {
 		StringBuilder resultado = new StringBuilder();
 		float precioTotal = 0;
 
-		for (Map.Entry<Integer, Integer> entry : this.cesta.entrySet()) {
-			int productoId = entry.getKey();
-			int cantidad = entry.getValue();
+		for (Producto producto : cesta) {
+			float precioTotalProducto = producto.getPrecioUnidad() * producto.getCantidad();
+			precioTotal += precioTotalProducto;
 
-			Producto producto = this.catalogo.get(productoId);
-
-			if (producto != null) {
-				float precioTotalProducto = producto.getPrecioUnidad() * cantidad;
-				precioTotal += precioTotalProducto;
-
-				resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
-				resultado.append("Cantidad en cesta: ").append(cantidad).append("\n");
-				resultado.append("Precio Unitario: ").append(producto.getPrecioUnidad()).append(" euros.\n");
-				resultado.append("Precio Total: ").append(precioTotalProducto).append(" euros.\n\n");
-			}
+			resultado.append("ID: ").append(producto.getId()).append("\n");
+			resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
+			resultado.append("Cantidad en cesta: ").append(producto.getCantidad()).append("\n");
+			resultado.append("Precio Unitario: ").append(producto.getPrecioUnidad()).append(" euros.\n");
+			resultado.append("Precio Total: ").append(precioTotalProducto).append(" euros.\n\n");
 		}
 
 		resultado.append("Precio Total de la Cesta: ").append(precioTotal).append(" euros.\n");
@@ -199,8 +232,16 @@ public class GestionProducto {
 	public String mostrarProductosCatalogo() {
 		StringBuilder resultado = new StringBuilder();
 
-		for (Map.Entry<Integer, Producto> entry : this.catalogo.entrySet()) {
-			Producto producto = entry.getValue();
+		for (Producto producto : catalogo) {
+			int genero = producto.getIdCategoria();
+
+			if (genero == 1) {
+				resultado.append("Pelicula\n");
+			} else if (genero == 2) {
+				resultado.append("Videojuegos\n");
+			} else {
+				resultado.append("Musica\n");
+			}
 
 			resultado.append("ID: ").append(producto.getId()).append("\n");
 			resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
@@ -210,6 +251,52 @@ public class GestionProducto {
 
 		return resultado.toString();
 	}
+}
+
+//	// Método para contar la cantidad de un producto en la cesta
+//	public int contarCantidadEnCesta(int productoId) {
+//	    int cantidad = 0;
+//	    for (Integer id : cesta) {
+//	        if (id == productoId) {
+//	            cantidad++;
+//	        }
+//	    }
+//	    return cantidad;
+//	}
+
+//	// Método para crear un ticket
+//	public String crearTiket() {
+//		String numeroTicket = generarNumeroTicket();
+//		StringBuilder ticketBuilder = new StringBuilder();
+//		ticketBuilder.append("Ticket Número: ").append(numeroTicket).append("\n");
+//		ticketBuilder.append("Fecha: ").append(Calendar.getInstance().getTime()).append("\n\n");
+//		ticketBuilder.append("Artículos:\n");
+//
+//		float total = 0;
+//
+//		for (int productoId : cesta) {
+//			Producto producto = buscarProductoPorId(productoId);
+//
+//			if (producto != null) {
+//				float precioTotalProducto = producto.getPrecioUnidad() * producto.getCantidad();
+//				total += precioTotalProducto;
+//
+//				ticketBuilder.append("Producto: ").append(producto.getNombre()).append("\n").append("Cantidad: ")
+//						.append(producto.getCantidad()).append("\n").append("Precio Unitario: ")
+//						.append(producto.getPrecioUnidad()).append("\n").append("Precio Total: ")
+//						.append(precioTotalProducto).append("\n\n");
+//			}
+//		}
+//
+//		ticketBuilder.append("Total a pagar: ").append(total).append("\n");
+//
+//		return ticketBuilder.toString();
+//	}
+//
+//	// Método para generar un número de ticket único
+//	private String generarNumeroTicket() {
+//		return "TKT" + System.currentTimeMillis();
+//	}
 
 //	private TreeMap<Integer, Producto> catalogo = new TreeMap<>();
 //
@@ -462,4 +549,3 @@ public class GestionProducto {
 //resultado.append("Precio Total de la Compra: ").append(precioTotal).append(" euros.\n");
 //return resultado.toString();
 //}
-}

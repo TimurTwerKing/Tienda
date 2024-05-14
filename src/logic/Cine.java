@@ -18,8 +18,9 @@ public class Cine extends Producto {
 		super(productoCatalogo);
 	}
 
-	public Cine(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, String actor) {
-		super(nombre, precioUn, cantidad, stock, genero);
+	public Cine(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero,Integer idProducto, String actor,Integer idCategoria) {
+		super(nombre, precioUn, cantidad, stock, genero, idProducto, idCategoria);
+		this.actor = actor;
 	}
 
 	public Cine(Producto productoCatalogo, String actor) {

@@ -1,19 +1,16 @@
-************* TICKET DE COMPRA *************
-Ticket creado el 20/03/2024 18:09:24
-Numero ID: 674024210458571
-*********************************************
+Ticket Número: TKT1715702446491
+Fecha: Tue May 14 18:00:46 CEST 2024
 
-Nombre: Slayer
-Unidades: 3
-Precio Unitario: 6.66 euros.
-Cantidad vendida: 3
-Precio Total Producto: 19.98 euros.
+Artículos:
+Producto: Born in the U.S.A. - Bruce Springsteen
+Cantidad: 3
+Precio Unitario: 13.99
+Precio Total: 41.97
 
-Nombre: Rambo
-Unidades: 2
-Precio Unitario: 4.95 euros.
-Cantidad vendida: 2
-Precio Total Producto: 9.9 euros.
+Producto: 21 - Adele
+Cantidad: 4
+Precio Unitario: 14.99
+Precio Total: 59.96
 
-Precio Total de la Compra: 29.88 euros.
+Total a pagar: 101.93
 

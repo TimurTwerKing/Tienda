@@ -13,7 +13,7 @@ public class Conexion {
 	private static final String CLAVE = "33142";
 
 	// Para versión mysql-conector-java-5.1.6.jar + mysql Server 5.7
-	private static final String CONTROLADOR = "com.mysql.jdbc.Driver";
+	private static final String CONTROLADOR = "com.mysql.cj.jdbc.Driver";
 	private static final String URL = "jdbc:mysql://" + UBICACION + ":" + PUERTO + "/" + NOMBRE_BD
 			+ "?useUnicode=true&characterEncoding=utf-8";
 

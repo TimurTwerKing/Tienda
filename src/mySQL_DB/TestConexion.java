@@ -1,4 +1,5 @@
 package mySQL_DB;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,8 +9,6 @@ import java.sql.Statement;
 //public class TestConexion {
 
 public class TestConexion {
-
-
 
 	private static String selectTableSQL;
 	private static String insertTableSQL;
@@ -171,7 +170,7 @@ public class TestConexion {
 	public static void main(String[] args) {
 
 		consulta_select();
-		
+
 		// consulta_insert("Javier", "123");
 		// consulta_update(3, "ESPADA", "45");
 

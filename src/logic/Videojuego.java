@@ -19,9 +19,10 @@ public class Videojuego extends Producto {
 		super(productoCatalogo);
 	}
 
-	public Videojuego(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero,
-			String desarrollaador) {
-		super(nombre, precioUn, cantidad, stock, genero);
+	public Videojuego(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
+			Integer idCategoria, String desarrollador) {
+		super(nombre, precioUn, cantidad, stock, genero, idProducto, idCategoria);
+		this.desarrollador = desarrollador;
 	}
 
 	public Videojuego(Producto productoCatalogo, String desarrollador) {
