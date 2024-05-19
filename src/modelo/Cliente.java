@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import mySQL_DB.Conexion;
+import util.Conexion;
 
 /**
  * @autor Timur Bogach

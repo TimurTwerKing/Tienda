@@ -1,7 +1,7 @@
 /**
 * 
 */
-package logic;
+package data;
 
 /**
  * @author Timur Bogach

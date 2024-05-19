@@ -1,11 +1,11 @@
-package logic;
+package data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import modelo.Cliente;
-import mySQL_DB.Conexion;
+import util.Conexion;
 
 /**
  * @autor Timur Bogach

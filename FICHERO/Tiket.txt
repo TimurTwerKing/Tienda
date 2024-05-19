@@ -1,16 +1,7 @@
-Ticket Número: TKT1715702446491
-Fecha: Tue May 14 18:00:46 CEST 2024
+Ticket Número: TKT1716136617196
+Fecha: Sun May 19 18:36:57 CEST 2024
 
 Artículos:
-Producto: Born in the U.S.A. - Bruce Springsteen
-Cantidad: 3
-Precio Unitario: 13.99
-Precio Total: 41.97
-
-Producto: 21 - Adele
-Cantidad: 4
-Precio Unitario: 14.99
-Precio Total: 59.96
-
-Total a pagar: 101.93
+Precio Total de la Cesta: 0.0 euros.
+Total a pagar: 0.0
 

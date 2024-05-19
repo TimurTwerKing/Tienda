@@ -1,10 +1,12 @@
-package mySQL_DB;
+package test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import util.Conexion;
 
 //public class TestConexion {
 
