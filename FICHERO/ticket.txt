@@ -1,0 +1,11 @@
+Ticket de Compra
+================
+Cliente: Ana Garcia
+Fecha: Sat May 18 22:13:25 CEST 2024
+
+Productos:
+Cerveza - 2.0€
+
+Total: 2.0€
+================
+
