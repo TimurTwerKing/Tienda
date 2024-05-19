@@ -1,2 +1,12 @@
+<<<<<<< HEAD
 /leer/
 /store/
+=======
+/app/
+/data/
+/logic/
+/menu/
+/modelo/
+/test/
+/util/
+>>>>>>> develop
