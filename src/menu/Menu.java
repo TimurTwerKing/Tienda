@@ -1,60 +1,49 @@
-/**
- * 
- */
 package menu;
 
 /**
- * @author Timur Bogach
- * @date 11 feb 2024
- * 
- *       Clase Menu: Proporciona métodos para mostrar mensajes relacionados con
- *       la tienda virtual.
+ * Clase para mostrar los menús e instrucciones en la consola.
  */
-
 public class Menu {
+
 	/**
-	 * Muestra un mensaje de bienvenida a la tienda virtual. Informa sobre los
-	 * productos disponibles y las reglas de venta.
+	 * Muestra el mensaje inicial de la aplicación.
 	 */
-	/**
-	 * @todo Implementar funccion para mostrar productos disponibles al usuario
-	 */
-
-	public static void mostrarProductosCesta() {
-		System.out.println("\n Su cesta de compra: \n");
-
-	}
-
-	public static void deseaTiket() {
-		System.out.println("\n Desea la copia de su Tiket? \nsi/no");
-	}
-
-	public static void seguirComprando_Pagar() {
-		System.out.println(
-				"\n Si desea seguir comprando presione INTRO y siga agregando productos a su cesta. \n Escriba pagar si quiere terminar su compra.\n");
-	}
-
 	public static void Mensaje_Inicial() {
-		System.out.println(
-				"Bienvenido a la tienda virtual\n\n" + "El programa simula una tienda que vende juegos, música y cine\n"
-						+ "Solamente se pueden vender productos si aparecen disponibles en la tienda\n");
+		System.out.println("Bienvenido a la Tienda Online");
 	}
 
 	/**
-	 * Muestra las opciones del menú de la tienda virtual. Permite al usuario
-	 * seleccionar acciones como mostrar productos, comprar, mostrar la caja o
-	 * salir.
+	 * Muestra las opciones del menú principal.
 	 */
 	public static void Opciones_Menu() {
-		System.out.println("\nSeleccione qué desea realizar:\n\n" + "\t1. Mostrar productos. (Listar productos)\n"
-				+ "\t2. Comprar productos\n" + "\t3. Mostrar caja. (Importe total de la compra actual)\n"
-				+ "\tSALIR --> Pulse cualquier otro número\n");
+		System.out.println("\nSeleccione una opción:");
+		System.out.println("1. Mostrar productos");
+		System.out.println("2. Realizar pedido");
+		System.out.println("3. Mostrar importe total");
+		System.out.println("4. Salir");
 	}
 
 	/**
-	 * Muestra un mensaje de despedida al usuario.
+	 * Muestra las opciones de seguir comprando o pagar.
+	 */
+	public static void seguirComprando_Pagar() {
+		System.out.println("Seleccione una opción:");
+		System.out.println("1. Pagar");
+		System.out.println("2. Seguir comprando");
+		System.out.println("3. Cancelar compra");
+	}
+
+	/**
+	 * Muestra el mensaje de finalización de la aplicación.
 	 */
 	public static void Mensaje_Fin() {
-		System.out.println("\n---- Gracias por usar este software. ----");
+		System.out.println("Gracias por usar la Tienda Online");
+	}
+
+	/**
+	 * Pregunta al usuario si desea un ticket.
+	 */
+	public static void deseaTiket() {
+		System.out.println("¿Desea un ticket? (si/no)");
 	}
 }

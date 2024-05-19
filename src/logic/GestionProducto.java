@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import data.Cine;
 import data.Musica;
 import data.Producto;
@@ -14,9 +13,10 @@ import data.Videojuego;
 import util.Conexion;
 
 /**
+ * Clase para gestionar los productos del catálogo.
+ * 
  * @autor Timur Bogach
  * @date 19 may 2024
- * @param Clase para gestionar los productos del catálogo.
  */
 public class GestionProducto {
 
@@ -46,6 +46,17 @@ public class GestionProducto {
 			}
 		}
 		return this.catalogo;
+	}
+
+	/**
+	 * Verifica si hay suficiente stock de un producto.
+	 * 
+	 * @param producto El producto a verificar.
+	 * @param cantidad La cantidad solicitada.
+	 * @return true si hay suficiente stock, false en caso contrario.
+	 */
+	boolean haySuficienteStock(Producto producto, int cantidad) {
+		return producto.getCantidad() >= cantidad;
 	}
 
 	/**

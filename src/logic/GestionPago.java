@@ -3,16 +3,17 @@ package logic;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import data.Producto;
+import modelo.Cliente;
 import util.Conexion;
 
 /**
- * Clase para gestionar la generación de tickets.
+ * Clase para gestionar el pago de los productos en la cesta.
  * 
  * @autor Timur Bogach
  * @date 14 may 2024
- * @param Clase para gestionar el pago de los productos en la cesta.
  */
 public class GestionPago {
 	private GestionProducto gestionProducto;
@@ -27,6 +28,69 @@ public class GestionPago {
 	public GestionPago(GestionProducto gestionProducto, GestionPedido gestionPedido) {
 		this.gestionProducto = gestionProducto;
 		this.gestionPedido = gestionPedido;
+	}
+
+	/**
+	 * Método para seleccionar el método de pago.
+	 * 
+	 * @param cliente El cliente que realiza el pago.
+	 * @param sc      El objeto Scanner para leer la entrada del usuario.
+	 */
+	public void metodoDePago(Cliente cliente, Scanner sc) {
+		int opcion;
+		boolean aux = true;
+		do {
+			System.out.println("Opciones a pagar:\n");
+			System.out.println("1. Pago con tarjeta");
+			opcion = sc.nextInt();
+			switch (opcion) {
+			case 1:
+				pagar(cliente, sc);
+				aux = false;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+				break;
+			}
+		} while (aux);
+	}
+
+	/**
+	 * Método para realizar el pago con tarjeta.
+	 * 
+	 * @param cliente El cliente que realiza el pago.
+	 * @param sc      El objeto Scanner para leer la entrada del usuario.
+	 */
+	public void pagar(Cliente cliente, Scanner sc) throws NoSuchElementException, NumberFormatException {
+		boolean tarjetaValida = false;
+		do {
+			try {
+				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
+				System.out.println("Introduzca su tarjeta con los espacios correspondientes: \nEj 3444 666666 55555");
+				String tipo = sc.nextLine(); // Ejemplo: 3444 666666 55555
+				tipo = tipo.replace(" ", "");
+				int longitud = tipo.length();
+				if (longitud == 15 || longitud == 16) {
+					if (tipo.startsWith("3") && longitud == 15) {
+						System.out.println("Gracias por pagar con American Express\n");
+						tarjetaValida = true;
+					} else if (tipo.startsWith("4") && longitud == 16) {
+						System.out.println("Gracias por pagar con Visa\n");
+						tarjetaValida = true;
+					} else if (tipo.startsWith("5") && longitud == 16) {
+						System.out.println("Gracias por pagar con Master Card\n");
+						tarjetaValida = true;
+					} else {
+						System.out.println("Número de tarjeta no válido. Inténtelo de nuevo.");
+					}
+				} else {
+					System.out.println("Número de tarjeta no válido. Inténtelo de nuevo.");
+				}
+			} catch (Exception e) {
+				System.out.println("Ha ocurrido un error con la entrada de la tarjeta. Por favor, inténtelo de nuevo.");
+				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
+			}
+		} while (!tarjetaValida);
 	}
 
 	/**

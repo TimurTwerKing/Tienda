@@ -1,14 +1,14 @@
 package test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import data.Producto;
 import logic.GestionProducto;
+import data.Producto;
 
 /**
  * Pruebas unitarias para el método mostrarProductosCatalogo() de la clase
@@ -17,7 +17,7 @@ import logic.GestionProducto;
  * @autor Timur Bogach
  * @date 16 may 2024
  */
-class TestMostrarProductos {
+public class TestMostrarProductos {
 
 	private GestionProducto gestionProducto;
 
@@ -25,7 +25,7 @@ class TestMostrarProductos {
 	 * Configuración inicial antes de cada prueba. Inicializa una instancia de
 	 * GestionProducto.
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() {
 		gestionProducto = new GestionProducto();
 	}

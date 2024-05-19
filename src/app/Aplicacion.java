@@ -2,26 +2,26 @@ package app;
 
 import java.sql.SQLException;
 import java.util.Scanner;
-
 import data.Tiket;
-import logic.GestionProducto;
-import logic.GestionPedido;
 import logic.GestionPago;
+import logic.GestionPedido;
+import logic.GestionProducto;
 import menu.Menu;
+import modelo.Cliente;
 import util.Fichero;
 
 /**
+ * Clase principal que gestiona la aplicación y orquesta otras clases.
+ * 
  * @autor Timur Bogach
  * @date 19 may 2024
- * @param Clase Aplicacion: Clase principal que gestiona la aplicación y
- *              orquesta otras clases.
  */
-
 public class Aplicacion {
 	public static void main(String[] args) {
 		GestionProducto gestionProductos = new GestionProducto();
 		GestionPedido gestionPedido = new GestionPedido(gestionProductos);
 		GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido);
+		Cliente cliente = new Cliente();
 		Tiket tiket = new Tiket();
 
 		try {
@@ -45,7 +45,7 @@ public class Aplicacion {
 				System.out.println(gestionProductos.mostrarProductosCatalogo());
 				break;
 			case 2:
-				realizarCompra(gestionPedido, gestionPago, fichero, sc, tiket);
+				gestionPedido.realizarPedido(gestionPago, cliente, fichero, sc, tiket);//TODO EL TIKET!!!
 				break;
 			case 3:
 				double total = gestionPedido.mostrarImporteTotal();
@@ -59,38 +59,5 @@ public class Aplicacion {
 
 		Menu.Mensaje_Fin();
 		sc.close();
-	}
-
-	private static void realizarCompra(GestionPedido gestionPedido, GestionPago gestionPago, Fichero fichero,
-			Scanner sc, Tiket tiket) {
-		boolean pagar = false;
-		while (!pagar) {
-			System.out.println("Escriba ID del producto: ");
-			int productoID = sc.nextInt();
-			System.out.println("Escriba la cantidad del producto seleccionado: ");
-			int cantidadProducto = sc.nextInt();
-			gestionPedido.agregarCesta(productoID, cantidadProducto);
-			Menu.seguirComprando_Pagar();
-			String opcionPagar = sc.next();
-			if (opcionPagar.equalsIgnoreCase("pagar")) {
-				pagar = true;
-			} else if (opcionPagar.equalsIgnoreCase("cancelar")) {
-				pagar = false;
-			}
-		}
-
-		try {
-			gestionPago.venderArticulos();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		String ticket = tiket.crearTicket(gestionPedido);
-		System.out.println(ticket);
-		Menu.deseaTiket();
-		String opcionTiket = sc.next();
-		if (opcionTiket.equalsIgnoreCase("si")) {
-			fichero.escribirFichero(ticket);
-		}
 	}
 }

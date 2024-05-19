@@ -1,14 +1,20 @@
 package logic;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 import data.Producto;
+import data.Tiket;
+import menu.Menu;
+import modelo.Cliente;
+import util.Fichero;
 
 /**
+ * Clase para gestionar los pedidos y la cesta de compra.
+ * 
  * @autor Timur Bogach
  * @date 19 may 2024
- * @param Clase para gestionar los pedidos y la cesta de compra.
  */
 public class GestionPedido {
 
@@ -26,6 +32,54 @@ public class GestionPedido {
 	}
 
 	/**
+	 * Realiza un pedido agregando productos a la cesta y manejando el pago.
+	 * 
+	 * @param gestionPago La instancia de GestionPago.
+	 * @param cliente     El cliente que realiza el pedido.
+	 * @param fichero     La instancia de Fichero para guardar el ticket.
+	 * @param sc          El objeto Scanner para leer la entrada del usuario.
+	 * @param tiket       La instancia de Tiket para generar el ticket.
+	 */
+	public void realizarPedido(GestionPago gestionPago, Cliente cliente, Fichero fichero, Scanner sc, Tiket tiket) {
+		boolean pagar = false;
+		while (!pagar) {
+			System.out.println("Escriba ID del producto: ");
+			int productoID = sc.nextInt();
+			System.out.println("Escriba la cantidad del producto seleccionado: ");
+			int cantidadProducto = sc.nextInt();
+			agregarCesta(productoID, cantidadProducto);
+			Menu.seguirComprando_Pagar();
+			int opcionPagar = sc.nextInt();
+			if (opcionPagar == 1) {
+				gestionPago.metodoDePago(cliente, sc);
+				pagar = true;
+			} else if (opcionPagar == 2) {
+				pagar = false;
+			} else if (opcionPagar == 3) {
+				cesta.clear();
+				System.out.println("Compra cancelada.");
+				return;
+			}
+		}
+
+		try {
+			gestionPago.venderArticulos();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		// Generar y mostrar el ticket después de la venta
+		String ticket = tiket.crearTicket(this);
+		System.out.println(ticket);
+
+		Menu.deseaTiket();
+		String opcionTiket = sc.next();
+		if (opcionTiket.equalsIgnoreCase("si")) {
+			fichero.escribirFichero(ticket);
+		}
+	}
+
+	/**
 	 * Agrega un producto a la cesta de compra.
 	 * 
 	 * @param productoId El ID del producto a agregar.
@@ -34,7 +88,7 @@ public class GestionPedido {
 	public void agregarCesta(int productoId, int cantidad) {
 		Producto producto = gestionProducto.buscarProductoPorId(productoId);
 		if (producto != null) {
-			if (haySuficienteStock(producto, cantidad)) {
+			if (gestionProducto.haySuficienteStock(producto, cantidad)) {
 				cesta.add(crearProductoParaCesta(producto, cantidad));
 			} else {
 				System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
@@ -42,17 +96,6 @@ public class GestionPedido {
 		} else {
 			System.out.println("Producto no encontrado en el catálogo.");
 		}
-	}
-
-	/**
-	 * Verifica si hay suficiente stock de un producto.
-	 * 
-	 * @param producto El producto a verificar.
-	 * @param cantidad La cantidad solicitada.
-	 * @return true si hay suficiente stock, false en caso contrario.
-	 */
-	private boolean haySuficienteStock(Producto producto, int cantidad) {
-		return producto.getCantidad() >= cantidad;
 	}
 
 	/**
@@ -77,7 +120,7 @@ public class GestionPedido {
 		float precioTotal = 0;
 
 		for (Producto producto : cesta) {
-			float precioTotalProducto = calcularPrecioTotalProducto(producto);
+			float precioTotalProducto = calcularPrecioTotalProductoCesta(producto);
 			precioTotal += precioTotalProducto;
 			resultado.append(obtenerDetalleProductoEnCesta(producto, precioTotalProducto)).append("\n\n");
 		}
@@ -92,7 +135,7 @@ public class GestionPedido {
 	 * @param producto El producto.
 	 * @return El precio total del producto.
 	 */
-	private float calcularPrecioTotalProducto(Producto producto) {
+	private float calcularPrecioTotalProductoCesta(Producto producto) {
 		return producto.getPrecioUnidad() * producto.getCantidad();
 	}
 
@@ -115,7 +158,11 @@ public class GestionPedido {
 	 * @return El importe total de la compra.
 	 */
 	public double mostrarImporteTotal() {
-		return cesta.stream().mapToDouble(producto -> producto.getPrecioUnidad() * producto.getCantidad()).sum();
+		float total = 0.0f;
+		for (Producto producto : cesta) {
+			total += producto.getPrecioUnidad() * producto.getCantidad();
+		}
+		return total;
 	}
 
 	/**
