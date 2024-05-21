@@ -42,12 +42,15 @@ public class GestionPago {
 		do {
 			System.out.println("Opciones a pagar:\n");
 			System.out.println("1. Pago con tarjeta");
+			System.out.println("2. Atras");
 			opcion = sc.nextInt();
 			switch (opcion) {
 			case 1:
 				pagar(cliente, sc);
 				aux = false;
 				break;
+			case 2:
+				return;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");
 				break;

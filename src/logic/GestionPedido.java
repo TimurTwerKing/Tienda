@@ -19,38 +19,40 @@ import util.Fichero;
 public class GestionPedido {
 
 	private List<Producto> cesta;
-	private GestionProducto gestionProducto;
 
 	/**
 	 * Constructor de la clase.
-	 * 
-	 * @param gestionProducto La instancia de GestionProducto.
 	 */
-	public GestionPedido(GestionProducto gestionProducto) {
+	public GestionPedido() {
 		this.cesta = new ArrayList<>();
-		this.gestionProducto = gestionProducto;
 	}
 
 	/**
 	 * Realiza un pedido agregando productos a la cesta y manejando el pago.
 	 * 
-	 * @param gestionPago La instancia de GestionPago.
-	 * @param cliente     El cliente que realiza el pedido.
-	 * @param fichero     La instancia de Fichero para guardar el ticket.
-	 * @param sc          El objeto Scanner para leer la entrada del usuario.
-	 * @param tiket       La instancia de Tiket para generar el ticket.
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente que realiza el pedido.
+	 * @param fichero          La instancia de Fichero para guardar el ticket.
+	 * @param sc               El objeto Scanner para leer la entrada del usuario.
+	 * @param tiket            La instancia de Tiket para generar el ticket.
 	 */
-	public void realizarPedido(GestionPago gestionPago, Cliente cliente, Fichero fichero, Scanner sc, Tiket tiket) {
+	public void realizarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
+			Fichero fichero, Scanner sc, Tiket tiket) {
 		boolean pagar = false;
+		String ticket = null;
 		while (!pagar) {
 			System.out.println("Escriba ID del producto: ");
 			int productoID = sc.nextInt();
 			System.out.println("Escriba la cantidad del producto seleccionado: ");
 			int cantidadProducto = sc.nextInt();
-			agregarCesta(productoID, cantidadProducto);
+
+			agregarCesta(gestionProductos, productoID, cantidadProducto);
 			Menu.seguirComprando_Pagar();
 			int opcionPagar = sc.nextInt();
 			if (opcionPagar == 1) {
+				ticket = tiket.crearTicket(cesta, gestionProductos);
+				System.out.println(ticket);
 				gestionPago.metodoDePago(cliente, sc);
 				pagar = true;
 			} else if (opcionPagar == 2) {
@@ -68,13 +70,9 @@ public class GestionPedido {
 			e.printStackTrace();
 		}
 
-		// Generar y mostrar el ticket después de la venta
-		String ticket = tiket.crearTicket(this);
-		System.out.println(ticket);
-
 		Menu.deseaTiket();
-		String opcionTiket = sc.next();
-		if (opcionTiket.equalsIgnoreCase("si")) {
+		int opcionTiket = sc.nextInt();
+		if (opcionTiket == 1) {
 			fichero.escribirFichero(ticket);
 		}
 	}
@@ -82,13 +80,14 @@ public class GestionPedido {
 	/**
 	 * Agrega un producto a la cesta de compra.
 	 * 
-	 * @param productoId El ID del producto a agregar.
-	 * @param cantidad   La cantidad del producto a agregar.
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param productoId       El ID del producto a agregar.
+	 * @param cantidad         La cantidad del producto a agregar.
 	 */
-	public void agregarCesta(int productoId, int cantidad) {
-		Producto producto = gestionProducto.buscarProductoPorId(productoId);
+	public void agregarCesta(GestionProducto gestionProductos, int productoId, int cantidad) {
+		Producto producto = gestionProductos.buscarProductoPorId(productoId);
 		if (producto != null) {
-			if (gestionProducto.haySuficienteStock(producto, cantidad)) {
+			if (gestionProductos.haySuficienteStock(producto, cantidad)) {
 				cesta.add(crearProductoParaCesta(producto, cantidad));
 			} else {
 				System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());

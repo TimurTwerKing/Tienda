@@ -55,7 +55,7 @@ public class GestionProducto {
 	 * @param cantidad La cantidad solicitada.
 	 * @return true si hay suficiente stock, false en caso contrario.
 	 */
-	boolean haySuficienteStock(Producto producto, int cantidad) {
+	public boolean haySuficienteStock(Producto producto, int cantidad) {
 		return producto.getCantidad() >= cantidad;
 	}
 
@@ -107,40 +107,18 @@ public class GestionProducto {
 	}
 
 	/**
-	 * Crea un objeto Producto que tiene stock, basado en su categoría.
-	 *
-	 * @param idProducto         El ID del producto.
-	 * @param nombre             El nombre del producto.
-	 * @param precio             El precio del producto.
-	 * @param cantidad           La cantidad disponible del producto.
-	 * @param stock              Si el producto está en stock.
-	 * @param genero             El género del producto.
-	 * @param idCategoria        La categoría del producto.
-	 * @param atributoEspecifico El atributo específico del producto.
-	 * @return Un objeto Producto.
-	 */
-	private Producto crearProductoConStock(int idProducto, String nombre, float precio, int cantidad, boolean stock,
-			String genero, int idCategoria, String atributoEspecifico) {
-		switch (idCategoria) {
-		case 1:
-			return new Cine(nombre, precio, cantidad, stock, genero, idProducto, atributoEspecifico, idCategoria);
-		case 2:
-			return new Videojuego(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
-		case 3:
-			return new Musica(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
-		default:
-			return new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
-		}
-	}
-
-	/**
 	 * Busca un producto en el catálogo por su ID.
 	 *
 	 * @param productoId El ID del producto.
 	 * @return El producto encontrado, o null si no se encuentra.
 	 */
 	public Producto buscarProductoPorId(int productoId) {
-		return catalogo.stream().filter(producto -> producto.getId() == productoId).findFirst().orElse(null);
+		for (Producto producto : catalogo) {
+			if (producto.getId() == productoId) {
+				return producto;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -181,9 +159,69 @@ public class GestionProducto {
 	/**
 	 * Agrega un producto al catálogo.
 	 *
-	 * @param producto El producto a agregar.
+	 * @param nombre      El nombre del producto.
+	 * @param precio      El precio del producto.
+	 * @param cantidad    La cantidad disponible del producto.
+	 * @param stock       Si el producto está en stock.
+	 * @param genero      El género del producto.
+	 * @param idCategoria La categoría del producto.
+	 */
+	public void agregarProducto(String nombre, float precio, int cantidad, boolean stock, String genero,
+			int idCategoria) {
+		Producto nuevoProducto = new Producto(nombre, precio, cantidad, stock, genero, 0, idCategoria);
+		this.catalogo.add(nuevoProducto);
+		System.out.println("Producto agregado exitosamente.");
+	}
+
+	/**
+	 * Agrega un producto al catálogo.
+	 *
+	 * @param Producto yay generado
 	 */
 	public void agregarProducto(Producto producto) {
 		this.catalogo.add(producto);
+		System.out.println("Producto agregado exitosamente.");
+	}
+
+	/**
+	 * Borra un producto del catálogo por su ID.
+	 *
+	 * @param productoId El ID del producto a borrar.
+	 */
+	public void borrarProducto(int productoId) {
+		Producto producto = buscarProductoPorId(productoId);
+		if (producto != null) {
+			catalogo.remove(producto);
+			System.out.println("Producto eliminado exitosamente.");
+		} else {
+			System.out.println("Producto no encontrado.");
+		}
+	}
+
+	/**
+	 * Crea un objeto Producto que tiene stock, basado en su categoría.
+	 *
+	 * @param idProducto         El ID del producto.
+	 * @param nombre             El nombre del producto.
+	 * @param precio             El precio del producto.
+	 * @param cantidad           La cantidad disponible del producto.
+	 * @param stock              Si el producto está en stock.
+	 * @param genero             El género del producto.
+	 * @param idCategoria        La categoría del producto.
+	 * @param atributoEspecifico El atributo específico del producto.
+	 * @return Un objeto Producto.
+	 */
+	private Producto crearProductoConStock(int idProducto, String nombre, float precio, int cantidad, boolean stock,
+			String genero, int idCategoria, String atributoEspecifico) {
+		switch (idCategoria) {
+		case 1:
+			return new Cine(nombre, precio, cantidad, stock, genero, idProducto, atributoEspecifico, idCategoria);
+		case 2:
+			return new Videojuego(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
+		case 3:
+			return new Musica(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
+		default:
+			return new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
+		}
 	}
 }

@@ -9,25 +9,29 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
+ * Clase para manejar la lectura y escritura en ficheros.
+ * 
  * @autor Timur Bogach
  * @date 6 mar 2024
- * 
  */
 public class Fichero {
 
-//Metodo : leer ficher, escribiir fichero
-	String ruta = "C:/Users/Timur/projects/Tienda/FICHERO/RutasFichero.txt";
-	FileWriter fichero = null;
-	PrintWriter pw = null;
+	private String ruta = "C:/Users/Timur/projects/Tienda/FICHERO/RutasFichero.txt";
+	private FileWriter fichero = null;
+	private PrintWriter pw = null;
 
-	public void escribirFichero(String pepe) {
-
+	/**
+	 * Escribe en un fichero.
+	 * 
+	 * @param contenido El contenido a escribir en el fichero.
+	 */
+	public void escribirFichero(String contenido) {
 		try {
 			// Añadir flag a true para no machacar contenido del fichero de escritura
 			fichero = new FileWriter(leerRuta(ruta), false);
 			pw = new PrintWriter(fichero);
 
-			pw.println(pepe);
+			pw.println(contenido);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -36,8 +40,7 @@ public class Fichero {
 				// Nuevamente aprovechamos el finally para
 				// asegurarnos que se cierra el fichero.
 				if (null != fichero) {
-
-					System.out.println("La escritura en el fichero escritura.txt se ha completado con exito");
+					System.out.println("La escritura en el fichero se ha completado con éxito.");
 					fichero.close();
 				}
 			} catch (Exception e2) {
@@ -46,22 +49,41 @@ public class Fichero {
 		}
 	}
 
+	/**
+	 * Muestra el contenido de un fichero.
+	 * 
+	 * @param ruta La ruta del fichero.
+	 * @return El contenido del fichero.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public String muestraContenido(String ruta) throws FileNotFoundException, IOException {
-
 		FileReader fichero = new FileReader(ruta);
 		BufferedReader buffer = new BufferedReader(fichero);
-		String cadena = buffer.toString();
+		StringBuilder cadena = new StringBuilder();
+		String linea;
+
+		while ((linea = buffer.readLine()) != null) {
+			cadena.append(linea).append("\n");
+		}
 
 		buffer.close();
 		fichero.close();
 
-		return cadena;
+		return cadena.toString();
 	}
 
+	/**
+	 * Lee la ruta desde un fichero.
+	 * 
+	 * @param ruta La ruta del fichero.
+	 * @return La ruta leída.
+	 * @throws IOException
+	 */
 	public String leerRuta(String ruta) throws IOException {
 		String rutaAux = "";
 		// Creamos un FileReader especificando la ruta
-		// en la que se encuentra nuestro archivo de configuracion
+		// en la que se encuentra nuestro archivo de configuración
 		FileReader file = new FileReader(ruta);
 
 		// Creamos el Objeto Scanner a partir del FileReader creado
@@ -70,14 +92,8 @@ public class Fichero {
 		// Este bucle nos va a permitir recorrer nuestro fichero
 		// hasta el final
 		while (scanner.hasNextLine()) {
-			// Obtenemos la siguiente linea del fichero
-			Scanner line = new Scanner(scanner.nextLine());
-
-			// Especificamos el separador introducido entre variable y
-			// valor en nuestro archivo de configuracion.
-
-			rutaAux = line.next();
-			line.close();
+			// Obtenemos la siguiente línea del fichero
+			rutaAux = scanner.nextLine();
 		}
 
 		// Cerramos scanner y fichero
