@@ -72,6 +72,14 @@ public class Tiket {
 		return total;
 	}
 
+	 public Tiket(String numeroTiket, float total) {
+	        this.numeroTiket = numeroTiket;
+	        this.total = total;
+	    }
+
+	 public Tiket() {
+	    }
+	
 	/**
 	 * Genera un número de ticket único.
 	 *

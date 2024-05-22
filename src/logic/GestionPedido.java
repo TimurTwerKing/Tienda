@@ -2,16 +2,17 @@ package logic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+
 import data.Producto;
 import data.Tiket;
 import menu.Menu;
 import modelo.Cliente;
-import util.Conexion;
 import util.Fichero;
 
 /**
@@ -42,7 +43,7 @@ public class GestionPedido {
 	 * @param tiket            La instancia de Tiket para generar el ticket.
 	 */
 	public void generarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
-			Fichero fichero, Scanner sc, Tiket tiket) {
+			Fichero fichero, Scanner sc, Tiket tiket, Connection conn) {
 		boolean continuarCompra = true;
 		while (continuarCompra) {
 			System.out.println("Escriba ID del producto: ");
@@ -54,7 +55,7 @@ public class GestionPedido {
 			Menu.seguirComprando_Pagar();
 			int opcionPagar = sc.nextInt();
 			if (opcionPagar == 1) { // PAGAR
-				realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
+				realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket, conn);
 				// Volver al menú de compra
 				continuarCompra = false;
 			} else if (opcionPagar == 2) { // SEGUIR COMPRANDO
@@ -77,15 +78,15 @@ public class GestionPedido {
 	 * @param tiket            La instancia de Tiket para generar el ticket.
 	 */
 	public void realizarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
-			Fichero fichero, Scanner sc, Tiket tiket) {
+			Fichero fichero, Scanner sc, Tiket tiket, Connection conn) {
 		String ticket = tiket.crearTicket(cesta, gestionProductos);
 		System.out.println(ticket);
 		gestionPago.metodoDePago(cliente, sc);
 
 		try {
 			gestionPago.venderArticulos();
-			guardarPedidoEnBaseDeDatos(cliente.getCodigo());// TODO
-			guardarTiketEnBaseDeDatos(tiket, cliente.getCodigo());// TODO
+			guardarPedidoEnBaseDeDatos(cliente.getCodigo(), cesta, conn);
+			guardarTiketEnBaseDeDatos(tiket, cliente.getCodigo(), conn);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -96,17 +97,13 @@ public class GestionPedido {
 			fichero.escribirFichero(ticket);
 		}
 		Menu.Mensaje_Fin_Compra();
-
 	}
 
-	/**
-	 * Guarda el pedido en la base de datos.
-	 * 
-	 * @param idCliente El ID del cliente que realizó el pedido.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	public void guardarPedidoEnBaseDeDatos(int idCliente) throws SQLException {
-		Connection conn = Conexion.conectar();
+	public void guardarPedidoEnBaseDeDatos(int idCliente, List<Producto> cesta, Connection conn) throws SQLException {
+		if (!verificarClienteExiste(idCliente, conn)) {
+			throw new SQLException("El cliente con ID " + idCliente + " no existe.");
+		}
+
 		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
 		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
 
@@ -135,22 +132,13 @@ public class GestionPedido {
 				pstmtDetalle.addBatch();
 			}
 			pstmtDetalle.executeBatch();
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
-	/**
-	 * Guarda el tiket en la base de datos.
-	 * 
-	 * @param tiket    La instancia de Tiket.
-	 * @param idPedido El ID del pedido asociado.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	private void guardarTiketEnBaseDeDatos(Tiket tiket, int idPedido) throws SQLException {
-		Connection conn = Conexion.conectar();
+	private void guardarTiketEnBaseDeDatos(Tiket tiket, int idPedido, Connection conn) throws SQLException {
 		String sql = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -158,11 +146,23 @@ public class GestionPedido {
 			pstmt.setString(2, tiket.getNumeroTiket());
 			pstmt.setFloat(3, tiket.getTotal());
 			pstmt.executeUpdate();
-		} finally {
-			if (conn != null) {
-				conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	private boolean verificarClienteExiste(int idCliente, Connection conn) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Cliente WHERE idCliente = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idCliente);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
 			}
 		}
+		return false;
 	}
 
 	/**

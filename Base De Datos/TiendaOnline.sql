@@ -51,7 +51,7 @@ CREATE TABLE Detalles_Producto (
 
 -- Tabla Cliente con campo único para correo electrónico
 CREATE TABLE Cliente (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    idCliente INT AUTO_INCREMENT PRIMARY KEY,
     numero_cliente VARCHAR(50) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE Pedido (
     orden_de_pedido INT AUTO_INCREMENT PRIMARY KEY,
     codigo_cliente INT,
     fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (codigo_cliente) REFERENCES Cliente(id)
+    FOREIGN KEY (codigo_cliente) REFERENCES Cliente(idCliente)
 );
 
 -- Tabla Detalle_Pedido con nombres consistentes

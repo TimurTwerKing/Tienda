@@ -27,7 +27,7 @@ public class Conexion {
 			e.printStackTrace();
 		}
 	}
-
+ 
 	public static Connection conectar() {
 		Connection conexion = null;
 

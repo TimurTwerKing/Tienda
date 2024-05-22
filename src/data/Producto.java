@@ -107,4 +107,7 @@ public class Producto {
 	public void setStock(Boolean stock) {
 		this.stock = stock;
 	}
+	
+	
+	
 }

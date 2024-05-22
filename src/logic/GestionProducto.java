@@ -178,21 +178,29 @@ public class GestionProducto {
 	}
 
 	/**
-	 * Agrega un producto al catálogo.
+	 * Agrega un producto al catálogo y Base de Datos.
 	 * 
 	 * @param producto de la clase producto
 	 */
 	public void agregarProducto(Producto producto) {
-
 		catalogo.add(producto);
-
 		try {
 			agregarProductoABaseDeDatos(producto);
 		} catch (SQLException e) {
 			e.printStackTrace();
+			System.out.println("No ha sido posible registrar el producto en la base de datos.");
 		}
 	}
 
+	/**
+	 * Agrega un producto al catálogo.
+	 * 
+	 * @param producto de la clase producto
+	 */
+	public void agregarProductoTest(Producto producto) {
+		catalogo.add(producto);
+	}
+ 
 	/**
 	 * Agrega un producto a la base de datos.
 	 * 

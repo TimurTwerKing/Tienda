@@ -51,7 +51,7 @@ public class Aplicacion {// TODO gestionPedido 87-88
 			Menu.mostrarMenuPrincipal();
 			int opcionPrincipal = sc.nextInt();
 
-			switch (opcionPrincipal) {
+			switch (opcionPrincipal) {	
 			case 1:
 				// Menú para usuarios
 				boolean volverUsuario = false;
@@ -64,13 +64,13 @@ public class Aplicacion {// TODO gestionPedido 87-88
 
 						// TODO: Implementar el login de usuario con la base de datos
 						GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
-								fichero, tiket);
+								fichero, tiket, conn);
 						break;
 					case 2:
 						// Registro de usuario
 						gestionCliente.crearCliente(sc);
 						GestionMenu.manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente,
-								fichero, tiket);
+								fichero, tiket, conn);
 						break;
 					case 3:
 						volverUsuario = true;

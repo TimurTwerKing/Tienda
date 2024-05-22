@@ -23,7 +23,7 @@ public class TestConexion {
 				rs.close();
 			}
 			if (stm != null) {
-				stm.close();
+				stm.close(); 
 			}
 			if (cn != null) {
 				cn.close();

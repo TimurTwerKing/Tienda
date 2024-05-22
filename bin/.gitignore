@@ -1,7 +1,5 @@
-/data/
-/modelo/
-/util/
-/app/
-/logic/
 /test/
-/menu/
+/logic/
+/app/
+/util/
+/data/
