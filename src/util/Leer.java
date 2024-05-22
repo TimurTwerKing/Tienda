@@ -3,7 +3,7 @@
  */
 package util;
 
-import java.io.BufferedInputStream; 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
  */
 
 public class Leer {
-	
 
 	/**
 	 * Lee una línea de texto desde la consola.

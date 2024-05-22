@@ -10,7 +10,6 @@ import data.Cine;
 import data.Musica;
 import data.Producto;
 import data.Videojuego;
-import util.Conexion;
 
 /**
  * Clase para gestionar los productos del catálogo.
@@ -21,6 +20,15 @@ import util.Conexion;
 public class GestionProducto {
 
 	private List<Producto> catalogo;
+	private Connection conn;
+
+	/**
+	 * Constructor de la clase. Inicializa la lista de productos del catálogo.
+	 */
+	public GestionProducto(Connection conn) {
+		this.catalogo = new ArrayList<>();
+		this.conn = conn;
+	}
 
 	/**
 	 * Constructor de la clase. Inicializa la lista de productos del catálogo.
@@ -36,10 +44,8 @@ public class GestionProducto {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public List<Producto> cargarProductos() throws SQLException {
-		String consulta = "SELECT * FROM PRODUCTO";
-		try (Connection conn = Conexion.conectar();
-				PreparedStatement pstmt = conn.prepareStatement(consulta);
-				ResultSet rs = pstmt.executeQuery()) {
+		String consulta = "SELECT * FROM Producto";
+		try (PreparedStatement pstmt = conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
 				Producto producto = crearProductoDesdeResultSet(rs);
 				this.catalogo.add(producto);
@@ -94,118 +100,27 @@ public class GestionProducto {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	private String obtenerAtributoEspecifico(ResultSet rs, int idCategoria) throws SQLException {
-		switch (idCategoria) {
-		case 1:
-			return rs.getString("actor");
-		case 2:
-			return rs.getString("desarrollador");
-		case 3:
-			return rs.getString("compositor");
-		default:
-			return "";
-		}
-	}
-
-	/**
-	 * Busca un producto en el catálogo por su ID.
-	 *
-	 * @param productoId El ID del producto.
-	 * @return El producto encontrado, o null si no se encuentra.
-	 */
-	public Producto buscarProductoPorId(int productoId) {
-		for (Producto producto : catalogo) {
-			if (producto.getId() == productoId) {
-				return producto;
+		String consultaDetalle = "SELECT valor_detalle FROM Detalles_Producto WHERE id_producto = ?";
+		String atributoEspecifico = null;
+		try (PreparedStatement pstmtDetalle = conn.prepareStatement(consultaDetalle)) {
+			pstmtDetalle.setInt(1, rs.getInt("id"));
+			try (ResultSet rsDetalle = pstmtDetalle.executeQuery()) {
+				if (rsDetalle.next()) {
+					atributoEspecifico = rsDetalle.getString("valor_detalle");
+				}
 			}
 		}
-		return null;
+		return atributoEspecifico;
 	}
 
 	/**
-	 * Muestra los productos del catálogo en un formato legible.
-	 *
-	 * @return Una cadena con los detalles de los productos del catálogo.
-	 */
-	public String mostrarProductosCatalogo() {
-		StringBuilder resultado = new StringBuilder();
-		for (Producto producto : catalogo) {
-			resultado.append(obtenerDetalleProducto(producto)).append("\n\n");
-		}
-		return resultado.toString();
-	}
-
-	/**
-	 * Obtiene los detalles de un producto en un formato legible.
-	 *
-	 * @param producto El producto.
-	 * @return Una cadena con los detalles del producto.
-	 */
-	private String obtenerDetalleProducto(Producto producto) {
-		StringBuilder detalle = new StringBuilder();
-		int genero = producto.getIdCategoria();
-		if (genero == 1) {
-			detalle.append("Pelicula\n");
-		} else if (genero == 2) {
-			detalle.append("Videojuegos\n");
-		} else {
-			detalle.append("Musica\n");
-		}
-		detalle.append("ID: ").append(producto.getId()).append("\n").append("Nombre: ").append(producto.getNombre())
-				.append("\n").append("Disponible: ").append(producto.getCantidad()).append("\n")
-				.append("Precio Unitario: ").append(producto.getPrecioUnidad()).append(" euros.");
-		return detalle.toString();
-	}
-
-	/**
-	 * Agrega un producto al catálogo.
-	 *
-	 * @param nombre      El nombre del producto.
-	 * @param precio      El precio del producto.
-	 * @param cantidad    La cantidad disponible del producto.
-	 * @param stock       Si el producto está en stock.
-	 * @param genero      El género del producto.
-	 * @param idCategoria La categoría del producto.
-	 */
-	public void agregarProducto(String nombre, float precio, int cantidad, boolean stock, String genero,
-			int idCategoria) {
-		Producto nuevoProducto = new Producto(nombre, precio, cantidad, stock, genero, 0, idCategoria);
-		this.catalogo.add(nuevoProducto);
-		System.out.println("Producto agregado exitosamente.");
-	}
-
-	/**
-	 * Agrega un producto al catálogo.
-	 *
-	 * @param Producto yay generado
-	 */
-	public void agregarProducto(Producto producto) {
-		this.catalogo.add(producto);
-		System.out.println("Producto agregado exitosamente.");
-	}
-
-	/**
-	 * Borra un producto del catálogo por su ID.
-	 *
-	 * @param productoId El ID del producto a borrar.
-	 */
-	public void borrarProducto(int productoId) {
-		Producto producto = buscarProductoPorId(productoId);
-		if (producto != null) {
-			catalogo.remove(producto);
-			System.out.println("Producto eliminado exitosamente.");
-		} else {
-			System.out.println("Producto no encontrado.");
-		}
-	}
-
-	/**
-	 * Crea un objeto Producto que tiene stock, basado en su categoría.
+	 * Crea un producto con stock basado en su categoría.
 	 *
 	 * @param idProducto         El ID del producto.
 	 * @param nombre             El nombre del producto.
 	 * @param precio             El precio del producto.
-	 * @param cantidad           La cantidad disponible del producto.
-	 * @param stock              Si el producto está en stock.
+	 * @param cantidad           La cantidad del producto.
+	 * @param stock              El stock del producto.
 	 * @param genero             El género del producto.
 	 * @param idCategoria        La categoría del producto.
 	 * @param atributoEspecifico El atributo específico del producto.
@@ -223,5 +138,128 @@ public class GestionProducto {
 		default:
 			return new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
 		}
+	}
+
+	/**
+	 * Muestra los productos del catálogo en un formato legible.
+	 * 
+	 * @return Una cadena con los detalles de los productos en el catálogo.
+	 */
+	public String mostrarProductosCatalogo() {
+		StringBuilder resultado = new StringBuilder();
+		for (Producto producto : catalogo) {
+			resultado.append("ID: ").append(producto.getId()).append("\n").append("Nombre: ")
+					.append(producto.getNombre()).append("\n").append("Precio: ").append(producto.getPrecioUnidad())
+					.append(" euros\n").append("Cantidad: ").append(producto.getCantidad()).append("\n\n");
+		}
+		return resultado.toString();
+	}
+
+	/**
+	 * Agrega un producto al catálogo.
+	 * 
+	 * @param nombre      El nombre del producto.
+	 * @param precio      El precio del producto.
+	 * @param cantidad    La cantidad del producto.
+	 * @param stock       El stock del producto.
+	 * @param genero      El género del producto.
+	 * @param idCategoria La categoría del producto.
+	 */
+	public void agregarProducto(String nombre, float precio, int cantidad, boolean stock, String genero,
+			int idCategoria) {
+		Producto producto = new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria);
+		catalogo.add(producto);
+
+		try {
+			agregarProductoABaseDeDatos(producto);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Agrega un producto al catálogo.
+	 * 
+	 * @param producto de la clase producto
+	 */
+	public void agregarProducto(Producto producto) {
+
+		catalogo.add(producto);
+
+		try {
+			agregarProductoABaseDeDatos(producto);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Agrega un producto a la base de datos.
+	 * 
+	 * @param producto El producto a agregar.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void agregarProductoABaseDeDatos(Producto producto) throws SQLException {
+		String sql = "INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria) VALUES (?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, producto.getNombre());
+			pstmt.setFloat(2, producto.getPrecioUnidad());
+			pstmt.setInt(3, producto.getCantidad());
+			pstmt.setBoolean(4, producto.getStock());
+			pstmt.setString(5, producto.getGenero());
+			pstmt.setInt(6, producto.getIdCategoria());
+			pstmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Borra un producto del catálogo y de la base de datos.
+	 * 
+	 * @param id El ID del producto a borrar.
+	 */
+	public void borrarProducto(int id) {
+		Producto producto = buscarProductoPorIdCatalogo(id);
+		if (producto != null) {
+			catalogo.remove(producto);
+			try {
+				borrarProductoDeBaseDeDatos(id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			System.out.println("Producto eliminado exitosamente.");
+		} else {
+			System.out.println("Producto no encontrado.");
+		}
+	}
+
+	/**
+	 * Borra un producto de la base de datos.
+	 * 
+	 * @param id El ID del producto a borrar.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void borrarProductoDeBaseDeDatos(int id) throws SQLException {
+		String sql = "DELETE FROM Producto WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			pstmt.executeUpdate();
+		}
+	}
+
+	/**
+	 * Busca un producto en el catálogo por su ID.
+	 * 
+	 * @param id El ID del producto.
+	 * @return El producto encontrado, o null si no se encuentra.
+	 */
+	public Producto buscarProductoPorIdCatalogo(int id) {
+		for (Producto producto : catalogo) {
+			if (producto.getId() == id) {
+				return producto;
+			}
+		}
+		return null;
 	}
 }

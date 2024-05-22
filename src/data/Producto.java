@@ -1,15 +1,11 @@
-/**
- * 
- */
 package data;
 
 /**
- * @author Timur Bogach
- * @date 11 feb 2024
+ * Clase Producto: Contiene métodos para la gestión de productos.
  * 
- *       Clase Producto: Contiene métodos para la gestion de productos.
+ * @autor Timur Bogach
+ * @date 11 feb 2024
  */
-
 public class Producto {
 	private String nombre;
 	private Float precioUnidad;
@@ -19,7 +15,7 @@ public class Producto {
 	private Integer idProducto;
 	private Integer idCategoria;
 
-//CONSTRUCTORES
+	// Constructores
 	public Producto(Producto productoCatalogo) {
 	}
 
@@ -34,10 +30,10 @@ public class Producto {
 		this.stock = stock;
 		this.genero = genero;
 		this.idProducto = idProducto;
-		this.idCategoria=idCategoria;
+		this.idCategoria = idCategoria;
 	}
-//METODOS
 
+	// Métodos
 	public void mostrarDatos() {
 		System.out.println("\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock="
 				+ stock + ", genero=" + genero + "]" + ", id=" + idProducto + "]");
@@ -48,25 +44,6 @@ public class Producto {
 				+ ", genero=" + genero + "]" + ", id=" + idProducto + "]";
 	}
 
-//	private String generarId() {
-//		Random random = new Random();
-//		long randomNumber = random.nextLong() % 10000000000L; // Limita el número generado a 10 dígitos
-//		// Si el número es negativo, lo convertimos a positivo
-//		if (randomNumber < 0) {
-//			randomNumber = -randomNumber;
-//		}
-//		return Long.toString(randomNumber);
-//	}
-
-//	public void consumir(int cant) {
-//		this.cantidad -= cant;
-//	}
-
-	/**
-	 * Nos devuelve si hay stock de un producto o no
-	 * 
-	 * @return
-	 */
 	public boolean hayStock() {
 		if (getCantidad() > 0) {
 			this.stock = true;
@@ -74,6 +51,7 @@ public class Producto {
 		return this.stock;
 	}
 
+	// Getters y Setters
 	public String getNombre() {
 		return nombre;
 	}
@@ -118,14 +96,6 @@ public class Producto {
 		this.idProducto = idProducto;
 	}
 
-	public Integer getIdProducto() {
-		return idProducto;
-	}
-
-	public void setIdProducto(Integer idProducto) {
-		this.idProducto = idProducto;
-	}
-
 	public Integer getIdCategoria() {
 		return idCategoria;
 	}
@@ -137,5 +107,4 @@ public class Producto {
 	public void setStock(Boolean stock) {
 		this.stock = stock;
 	}
-
 }

@@ -13,6 +13,9 @@ import logic.GestionProducto;
  */
 public class Tiket {
 
+	private String numeroTiket;
+	private float total;
+
 	/**
 	 * Crea un ticket usando la lista de productos en la cesta.
 	 *
@@ -21,10 +24,10 @@ public class Tiket {
 	 * @return Una cadena con los detalles del ticket.
 	 */
 	public String crearTicket(List<Producto> cesta, GestionProducto gestionProductos) {
-		String numeroTicket = generarNumeroTicket();
+		this.numeroTiket = generarNumeroTiket();
 		StringBuilder ticketBuilder = new StringBuilder();
 		ticketBuilder.append("\n");
-		ticketBuilder.append("Ticket Número: ").append(numeroTicket).append("\n");
+		ticketBuilder.append("Ticket Número: ").append(numeroTiket).append("\n");
 		ticketBuilder.append("Fecha: ").append(Calendar.getInstance().getTime()).append("\n\n");
 		ticketBuilder.append("Artículos:\n");
 
@@ -33,7 +36,7 @@ public class Tiket {
 			ticketBuilder.append(obtenerDetalleProducto(producto)).append("\n\n");
 		}
 
-		double total = calcularImporteTotal(cesta);
+		this.total = calcularImporteTotal(cesta);
 		ticketBuilder.append("Total a pagar: ").append(total).append(" euros\n");
 
 		return ticketBuilder.toString();
@@ -61,8 +64,8 @@ public class Tiket {
 	 * @param cesta La lista de productos en la cesta.
 	 * @return El importe total de la compra.
 	 */
-	private double calcularImporteTotal(List<Producto> cesta) {
-		double total = 0.0;
+	private float calcularImporteTotal(List<Producto> cesta) {
+		float total = 0.0f;
 		for (Producto producto : cesta) {
 			total += producto.getPrecioUnidad() * producto.getCantidad();
 		}
@@ -74,7 +77,15 @@ public class Tiket {
 	 *
 	 * @return El número de ticket generado.
 	 */
-	private String generarNumeroTicket() {
+	private String generarNumeroTiket() {
 		return "TKT" + System.currentTimeMillis();
+	}
+
+	public String getNumeroTiket() {
+		return numeroTiket;
+	}
+
+	public float getTotal() {
+		return total;
 	}
 }

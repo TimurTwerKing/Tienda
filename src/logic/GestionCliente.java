@@ -1,7 +1,10 @@
 package logic;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 import modelo.Cliente;
 
 /**
@@ -17,7 +20,7 @@ public class GestionCliente {
 	/**
 	 * Constructor de la clase. Inicializa la lista de clientes.
 	 */
-	public GestionCliente() {
+	public GestionCliente(Connection conn) {
 		this.clientes = new ArrayList<>();
 	}
 
@@ -26,9 +29,48 @@ public class GestionCliente {
 	 * 
 	 * @param cliente El cliente a agregar.
 	 */
-	public void agregarCliente(Cliente cliente) {
-		this.clientes.add(cliente);
-		System.out.println("Cliente agregado exitosamente.");
+	public boolean agregarCliente(Cliente cliente) {
+		try {
+			this.clientes.add(cliente);
+			System.out.println("Cliente agregado exitosamente.");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public void crearCliente(Scanner sc) {
+		System.out.println("Ingrese el número de cliente:");
+		String numerocliente = sc.nextLine();
+		System.out.println("Ingrese el nombre:");
+		String nombre = sc.nextLine();
+		System.out.println("Ingrese los apellidos:");
+		String apellidos = sc.nextLine();
+		System.out.println("Ingrese la dirección:");
+		String direccion = sc.nextLine();
+		System.out.println("Ingrese la localidad:");
+		String localidad = sc.nextLine();
+		System.out.println("Ingrese la provincia:");
+		String provincia = sc.nextLine();
+		System.out.println("Ingrese el país:");
+		String pais = sc.nextLine();
+		System.out.println("Ingrese el código postal:");
+		String codigopostal = sc.nextLine();
+		System.out.println("Ingrese el teléfono:");
+		String telefono = sc.nextLine();
+		System.out.println("Ingrese el correo electrónico:");
+		String mail = sc.nextLine();
+		System.out.println("Ingrese las observaciones:");
+		String observaciones = sc.nextLine();
+
+		Cliente cliente = new Cliente(numerocliente, nombre, apellidos, direccion, localidad, provincia, pais,
+				codigopostal, telefono, mail, observaciones);
+		boolean resultado = agregarCliente(cliente);
+		if (resultado) {
+			System.out.println("Cliente agregado con éxito.");
+		} else {
+			System.out.println("Error al agregar el cliente.");
+		}
 	}
 
 	/**

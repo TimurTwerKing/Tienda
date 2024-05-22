@@ -1,18 +1,14 @@
-/**
-* 
-*/
 package data;
 
 /**
- * @author Timur Bogach
- * @date 11 feb 2024
+ * Clase Musica: Contiene métodos para añadir productos de música y mostrar
+ * datos.
  * 
- *       Clase Musica: Contiene métodos para añadir de productos-Musica y mostr
- *       datos.
+ * @autor Timur Bogach
+ * @date 11 feb 2024
  */
-
 public class Musica extends Producto {
-	private String compositor;// Autor de la canción
+	private String compositor; // Autor de la canción
 
 	public Musica(Producto productoCatalogo) {
 		super(productoCatalogo);
@@ -36,5 +32,4 @@ public class Musica extends Producto {
 	public void setCompositor(String compositor) {
 		this.compositor = compositor;
 	}
-
 }

@@ -1,8 +1,10 @@
 package app;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 import data.Tiket;
+import logic.GestionAlbaran;
 import logic.GestionCliente;
 import logic.GestionMenu;
 import logic.GestionPago;
@@ -10,6 +12,7 @@ import logic.GestionPedido;
 import logic.GestionProducto;
 import menu.Menu;
 import modelo.Cliente;
+import util.Conexion;
 import util.Fichero;
 
 /**
@@ -18,13 +21,15 @@ import util.Fichero;
  * @autor Timur Bogach
  * @date 19 may 2024
  */
-public class Aplicacion {
+public class Aplicacion {// TODO gestionPedido 87-88
 	public static void main(String[] args) {
 		// Inicialización de las clases de gestión
-		GestionProducto gestionProductos = new GestionProducto();
-		GestionPedido gestionPedido = new GestionPedido();
-		GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido);
-		GestionCliente gestionCliente = new GestionCliente();
+		Connection conn = Conexion.conectar();
+		GestionProducto gestionProductos = new GestionProducto(conn);
+		GestionPedido gestionPedido = new GestionPedido(conn);
+		GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido, conn);
+		GestionCliente gestionCliente = new GestionCliente(conn);
+		GestionAlbaran gestionAlbaran = new GestionAlbaran();
 		Cliente cliente = new Cliente();
 		Tiket tiket = new Tiket();
 		Fichero fichero = new Fichero();
@@ -55,13 +60,15 @@ public class Aplicacion {
 					int opcionUsuario = sc.nextInt();
 
 					switch (opcionUsuario) {
-					case 1:
-						// Login de usuario
-						GestionMenu.manejarMenuLogin(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-								tiket);
+					case 1: // Login de usuario
+
+						// TODO: Implementar el login de usuario con la base de datos
+						GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
+								fichero, tiket);
 						break;
 					case 2:
 						// Registro de usuario
+						gestionCliente.crearCliente(sc);
 						GestionMenu.manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente,
 								fichero, tiket);
 						break;
@@ -112,6 +119,21 @@ public class Aplicacion {
 						gestionCliente.borrarCliente(idCliente);
 						break;
 					case 4:
+						// Guardar albarán
+						System.out.println("Ingrese el ID del proveedor:");
+						int idProveedor = sc.nextInt();
+						sc.nextLine(); // Limpiar el buffer
+						System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
+						String fechaEntrega = sc.nextLine();
+
+						try {
+							gestionAlbaran.guardarAlbaranEnBaseDeDatos(idProveedor, fechaEntrega, conn);
+							System.out.println("Albarán guardado exitosamente.");
+						} catch (SQLException e) {
+							System.out.println("Error al guardar el albarán: " + e.getMessage());
+						}
+						break;
+					case 5:
 						volverAdmin = true;
 						break;
 					default:

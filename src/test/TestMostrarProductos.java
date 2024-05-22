@@ -1,14 +1,14 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import logic.GestionProducto;
 import data.Producto;
+import logic.GestionProducto;
 
 /**
  * Pruebas unitarias para el método mostrarProductosCatalogo() de la clase

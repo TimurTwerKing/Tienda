@@ -8,9 +8,10 @@ import modelo.Cliente;
 import util.Conexion;
 
 /**
+ * Clase Pedido: Contiene métodos para gestionar los pedidos.
+ * 
  * @autor Timur Bogach
  * @date 14 may 2024
- * 
  */
 public class Pedido {
 	private int ordendepedido;
@@ -22,19 +23,16 @@ public class Pedido {
 	public Pedido() {
 	}
 
-	// Constructor con parámetros
 	public Pedido(int codigocliente, int producto, int cantidad) {
 		this.codigocliente = codigocliente;
 		this.producto = producto;
 		this.cantidad = cantidad;
 	}
 
-	// Método para hacer un pedido usando un cliente existente
 	public static boolean hacerPedido(Cliente cliente, int producto, int cantidad) {
 		String sql = "INSERT INTO Pedido (codigocliente, producto, cantidad) VALUES (?, ?, ?)";
 
 		try (Connection conn = Conexion.conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-
 			stmt.setInt(1, cliente.getCodigo());
 			stmt.setInt(2, producto);
 			stmt.setInt(3, cantidad);
@@ -79,5 +77,4 @@ public class Pedido {
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
-
 }

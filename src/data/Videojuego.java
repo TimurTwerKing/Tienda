@@ -1,17 +1,12 @@
-/**
- * 
- */
 package data;
 
 /**
- * @author Timur Bogach
+ * Clase Videojuego: Contiene métodos para añadir productos de videojuegos y
+ * mostrar datos.
+ * 
+ * @autor Timur Bogach
  * @date 11 feb 2024
- * 
- *       Clase Videojuego: Contiene métodos para añadir de productos-Videojuego
- *       y mostr datos
- * 
  */
-
 public class Videojuego extends Producto {
 	private String desarrollador;
 
@@ -37,5 +32,4 @@ public class Videojuego extends Producto {
 	public void setDesarrollaador(String desarrollaador) {
 		this.desarrollador = desarrollaador;
 	}
-
 }

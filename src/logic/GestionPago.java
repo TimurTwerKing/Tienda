@@ -25,7 +25,7 @@ public class GestionPago {
 	 * @param gestionProducto La instancia de GestionProducto.
 	 * @param gestionPedido   La instancia de GestionPedido.
 	 */
-	public GestionPago(GestionProducto gestionProducto, GestionPedido gestionPedido) {
+	public GestionPago(GestionProducto gestionProducto, GestionPedido gestionPedido, Connection conn) {
 		this.gestionProducto = gestionProducto;
 		this.gestionPedido = gestionPedido;
 	}
@@ -37,25 +37,26 @@ public class GestionPago {
 	 * @param sc      El objeto Scanner para leer la entrada del usuario.
 	 */
 	public void metodoDePago(Cliente cliente, Scanner sc) {
-		int opcion;
 		boolean aux = true;
-		do {
+		while (aux) {
 			System.out.println("Opciones a pagar:\n");
 			System.out.println("1. Pago con tarjeta");
 			System.out.println("2. Atras");
-			opcion = sc.nextInt();
+			int opcion = sc.nextInt();
 			switch (opcion) {
 			case 1:
-				pagar(cliente, sc);
+				pagarConTarjeta(cliente, sc);
 				aux = false;
 				break;
 			case 2:
-				return;
+				// Volver al menú anterior
+				aux = false;
+				break;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");
 				break;
 			}
-		} while (aux);
+		}
 	}
 
 	/**
@@ -64,9 +65,9 @@ public class GestionPago {
 	 * @param cliente El cliente que realiza el pago.
 	 * @param sc      El objeto Scanner para leer la entrada del usuario.
 	 */
-	public void pagar(Cliente cliente, Scanner sc) throws NoSuchElementException, NumberFormatException {
+	public void pagarConTarjeta(Cliente cliente, Scanner sc) throws NoSuchElementException, NumberFormatException {
 		boolean tarjetaValida = false;
-		do {
+		while (!tarjetaValida) {
 			try {
 				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
 				System.out.println("Introduzca su tarjeta con los espacios correspondientes: \nEj 3444 666666 55555");
@@ -93,7 +94,7 @@ public class GestionPago {
 				System.out.println("Ha ocurrido un error con la entrada de la tarjeta. Por favor, inténtelo de nuevo.");
 				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
 			}
-		} while (!tarjetaValida);
+		}
 	}
 
 	/**
@@ -125,7 +126,7 @@ public class GestionPago {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	private void actualizarProductoEnBaseDeDatos(Connection conn, Producto productoEnCesta) throws SQLException {
-		Producto producto = gestionProducto.buscarProductoPorId(productoEnCesta.getId());
+		Producto producto = gestionProducto.buscarProductoPorIdCatalogo(productoEnCesta.getId());
 		if (producto != null) {
 			int cantidadVendida = productoEnCesta.getCantidad();
 			int nuevaCantidad = producto.getCantidad() - cantidadVendida;
@@ -145,7 +146,7 @@ public class GestionPago {
 	 * @param productoEnCesta El producto vendido.
 	 */
 	private void actualizarProductoEnCatalogo(Producto productoEnCesta) {
-		Producto producto = gestionProducto.buscarProductoPorId(productoEnCesta.getId());
+		Producto producto = gestionProducto.buscarProductoPorIdCatalogo(productoEnCesta.getId());
 		if (producto != null) {
 			int cantidadVendida = productoEnCesta.getCantidad();
 			int nuevaCantidad = producto.getCantidad() - cantidadVendida;

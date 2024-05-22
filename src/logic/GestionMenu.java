@@ -14,56 +14,24 @@ import data.Tiket;
  */
 public class GestionMenu {
 
-	public static void manejarMenuLogin(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) {
-		boolean volverLogin = false;
-		while (!volverLogin) {
-			Menu.mostrarMenuLogin();
-			int opcionLogin = sc.nextInt();
+	public static void manejarMenuUsuario(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket) {
+		boolean volver = false;
+		while (!volver) {
+			Menu.mostrarMenuUsuario();
+			int opcionUsuario = sc.nextInt();
 
-			switch (opcionLogin) {
-			case 1:
-				boolean volverComprar = false;
-				while (!volverComprar) {
-					Menu.mostrarMenuComprar();
-					System.out.println(gestionProductos.mostrarProductosCatalogo());
-					int opcionComprar = sc.nextInt();
-
-					switch (opcionComprar) {
-					case 1:
-						gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
-						volverLogin = true; // Volver al menú de cliente después de realizar la compra
-						volverComprar = true;
-						break;
-					case 2:
-						volverComprar = true;
-						break;
-					default:
-						System.out.println("Opción no válida. Intente de nuevo.");
-					}
-				}
+			switch (opcionUsuario) {
+			case 1: // Login de usuario
+				// TODO: Implementar el login de usuario con la base de datos
+				menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 				break;
-			case 2:
-				boolean volverCarrito = false;
-				while (!volverCarrito) {
-					Menu.mostrarMenuCarrito();
-					int opcionCarrito = sc.nextInt();
-
-					switch (opcionCarrito) {
-					case 1:
-						// Aquí deberías implementar la lógica para borrar un producto del carrito
-						System.out.println("Funcionalidad para borrar producto no implementada.");
-						break;
-					case 2:
-						volverCarrito = true;
-						break;
-					default:
-						System.out.println("Opción no válida. Intente de nuevo.");
-					}
-				}
+			case 2: // Registro de usuario
+				gestionCliente.crearCliente(sc);
+				manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 				break;
-			case 3:
-				volverLogin = true;
+			case 3: // Volver
+				volver = true;
 				break;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");
@@ -71,56 +39,144 @@ public class GestionMenu {
 		}
 	}
 
+	public static void manejarMenuAdministrador(Scanner sc, GestionProducto gestionProductos,
+			GestionCliente gestionCliente) {
+		boolean volver = false;
+		while (!volver) {
+			Menu.mostrarMenuAdministrador();
+			int opcionAdmin = sc.nextInt();
+
+			switch (opcionAdmin) {
+			case 1: // Agregar productos
+				Menu.mensajeAgregarProducto();
+				sc.nextLine(); // Limpiar el buffer
+				String nombre = sc.nextLine();
+				float precio = sc.nextFloat();
+				int cantidad = sc.nextInt();
+				boolean stock = sc.nextBoolean();
+				sc.nextLine(); // Limpiar el buffer
+				String genero = sc.nextLine();
+				int idCategoria = sc.nextInt();
+
+				gestionProductos.agregarProducto(nombre, precio, cantidad, stock, genero, idCategoria);
+				break;
+			case 2: // Borrar productos
+				System.out.println("Productos en el catálogo:");
+				System.out.println(gestionProductos.mostrarProductosCatalogo());
+				System.out.println("Ingrese el ID del producto a borrar:");
+				int idProducto = sc.nextInt();
+				gestionProductos.borrarProducto(idProducto);
+				break;
+			case 3: // Eliminar usuarios
+				System.out.println("Clientes en el sistema:");
+				System.out.println(gestionCliente.mostrarClientes());
+				System.out.println("Ingrese el ID del cliente a eliminar:");
+				int idCliente = sc.nextInt();
+				gestionCliente.borrarCliente(idCliente);
+				break;
+			case 4: // Volver
+				volver = true;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	public static void menuUsuarioLogueado(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) {
+		boolean volver = false;
+		while (!volver) {
+			Menu.mostrarMenuPrincipalUsuario();
+			int opcion = sc.nextInt();
+
+			switch (opcion) {
+			case 1: // Agregar productos a la cesta
+				System.out.println(gestionProductos.mostrarProductosCatalogo());
+				gestionPedido.generarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
+				break;
+			case 2: // Ver cesta
+				mostrarCesta(sc, gestionPedido, gestionProductos, gestionPago, cliente, fichero, tiket);
+				break;
+			case 3: // Volver
+				volver = true;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	private static void mostrarCesta(Scanner sc, GestionPedido gestionPedido, GestionProducto gestionProductos,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) {
+		boolean volver = false;
+		while (!volver) {
+			if (gestionPedido.cestaVacia()) {
+				System.out.println("La cesta de su compra está vacía.\n");
+				return;
+			} else {
+				System.out.println(gestionPedido.mostrarProductosCesta());
+				Menu.mostrarMenuCesta();
+				int opcion = sc.nextInt();
+
+				switch (opcion) {
+				case 1: // Realizar la compra
+					gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
+					volver = true;
+					break;
+				case 2: // Borrar producto
+					System.out.println("Escriba el ID del producto que desea eliminar: ");
+					int idParaEliminar = sc.nextInt();
+					gestionPedido.borrarProductoPorIdCesta(idParaEliminar);
+					break;
+				case 3: // Volver
+					volver = true;
+					break;
+				default:
+					System.out.println("Opción no válida. Intente de nuevo.");
+				}
+			}
+		}
+	}
+
 	public static void manejarMenuRegistrar(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) {
-		boolean volverRegistrar = false;
-		while (!volverRegistrar) {
+		boolean volver = false;
+		while (!volver) {
 			Menu.mostrarMenuRegistrar();
-			int opcionRegistrar = sc.nextInt();
+			int opcion = sc.nextInt();
 
-			switch (opcionRegistrar) {
-			case 1:
-				boolean volverComprarReg = false;
-				while (!volverComprarReg) {
-					Menu.mostrarMenuComprar();
-					System.out.println(gestionProductos.mostrarProductosCatalogo());
-					int opcionComprarReg = sc.nextInt();
-
-					switch (opcionComprarReg) {
-					case 1:
-						gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
-						volverRegistrar = true; // Volver al menú de cliente después de realizar la compra
-						volverComprarReg = true;
-						break;
-					case 2:
-						volverComprarReg = true;
-						break;
-					default:
-						System.out.println("Opción no válida. Intente de nuevo.");
-					}
-				}
+			switch (opcion) {
+			case 1: // Comprar
+				realizarCompraRegistrada(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 				break;
-			case 2:
-				boolean volverCarritoReg = false;
-				while (!volverCarritoReg) {
-					Menu.mostrarMenuCarrito();
-					int opcionCarritoReg = sc.nextInt();
-
-					switch (opcionCarritoReg) {
-					case 1:
-						// Aquí deberías implementar la lógica para borrar un producto del carrito
-						System.out.println("Funcionalidad para borrar producto no implementada.");
-						break;
-					case 2:
-						volverCarritoReg = true;
-						break;
-					default:
-						System.out.println("Opción no válida. Intente de nuevo.");
-					}
-				}
+			case 2: // Ver cesta
+				mostrarCesta(sc, gestionPedido, gestionProductos, gestionPago, cliente, fichero, tiket);
 				break;
-			case 3:
-				volverRegistrar = true;
+			case 3: // Volver
+				volver = true;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	private static void realizarCompraRegistrada(Scanner sc, GestionProducto gestionProductos,
+			GestionPedido gestionPedido, GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) {
+		boolean volver = false;
+		while (!volver) {
+			Menu.mostrarMenuComprar_Pagar();
+			System.out.println(gestionProductos.mostrarProductosCatalogo());
+			int opcion = sc.nextInt();
+
+			switch (opcion) {
+			case 1: // Pagar
+				gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
+				volver = true;
+				break;
+			case 2: // Volver
+				volver = true;
 				break;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");

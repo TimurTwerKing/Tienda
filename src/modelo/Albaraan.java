@@ -1,5 +1,6 @@
 package modelo;
 
+import java.sql.Connection;
 import java.util.Calendar;
 
 /**
@@ -16,7 +17,7 @@ public class Albaraan {
 
 	// Constructor
 
-	public int getCodigo() {
+	public int getCodigo(Connection conn) {
 		return codigo;
 	}
 

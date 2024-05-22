@@ -1,13 +1,17 @@
 package logic;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import data.Producto;
 import data.Tiket;
 import menu.Menu;
 import modelo.Cliente;
+import util.Conexion;
 import util.Fichero;
 
 /**
@@ -23,7 +27,7 @@ public class GestionPedido {
 	/**
 	 * Constructor de la clase.
 	 */
-	public GestionPedido() {
+	public GestionPedido(Connection conn) {
 		this.cesta = new ArrayList<>();
 	}
 
@@ -37,11 +41,10 @@ public class GestionPedido {
 	 * @param sc               El objeto Scanner para leer la entrada del usuario.
 	 * @param tiket            La instancia de Tiket para generar el ticket.
 	 */
-	public void realizarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
+	public void generarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
 			Fichero fichero, Scanner sc, Tiket tiket) {
-		boolean pagar = false;
-		String ticket = null;
-		while (!pagar) {
+		boolean continuarCompra = true;
+		while (continuarCompra) {
 			System.out.println("Escriba ID del producto: ");
 			int productoID = sc.nextInt();
 			System.out.println("Escriba la cantidad del producto seleccionado: ");
@@ -50,22 +53,39 @@ public class GestionPedido {
 			agregarCesta(gestionProductos, productoID, cantidadProducto);
 			Menu.seguirComprando_Pagar();
 			int opcionPagar = sc.nextInt();
-			if (opcionPagar == 1) {
-				ticket = tiket.crearTicket(cesta, gestionProductos);
-				System.out.println(ticket);
-				gestionPago.metodoDePago(cliente, sc);
-				pagar = true;
-			} else if (opcionPagar == 2) {
-				pagar = false;
-			} else if (opcionPagar == 3) {
-				cesta.clear();
-				System.out.println("Compra cancelada.");
-				return;
+			if (opcionPagar == 1) { // PAGAR
+				realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket);
+				// Volver al menú de compra
+				continuarCompra = false;
+			} else if (opcionPagar == 2) { // SEGUIR COMPRANDO
+				continuarCompra = true;
+			} else if (opcionPagar == 3) { // ATRAS
+				continuarCompra = false;
 			}
 		}
+	}
+
+	/**
+	 * Realiza la compra del pedido realizado previamente y guarda datos en BD
+	 * (pedido y tiket).
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente que realiza el pedido.
+	 * @param fichero          La instancia de Fichero para guardar el ticket.
+	 * @param sc               El objeto Scanner para leer la entrada del usuario.
+	 * @param tiket            La instancia de Tiket para generar el ticket.
+	 */
+	public void realizarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
+			Fichero fichero, Scanner sc, Tiket tiket) {
+		String ticket = tiket.crearTicket(cesta, gestionProductos);
+		System.out.println(ticket);
+		gestionPago.metodoDePago(cliente, sc);
 
 		try {
 			gestionPago.venderArticulos();
+			guardarPedidoEnBaseDeDatos(cliente.getCodigo());// TODO
+			guardarTiketEnBaseDeDatos(tiket, cliente.getCodigo());// TODO
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -74,6 +94,74 @@ public class GestionPedido {
 		int opcionTiket = sc.nextInt();
 		if (opcionTiket == 1) {
 			fichero.escribirFichero(ticket);
+		}
+		Menu.Mensaje_Fin_Compra();
+
+	}
+
+	/**
+	 * Guarda el pedido en la base de datos.
+	 * 
+	 * @param idCliente El ID del cliente que realizó el pedido.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public void guardarPedidoEnBaseDeDatos(int idCliente) throws SQLException {
+		Connection conn = Conexion.conectar();
+		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
+		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
+
+		try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, PreparedStatement.RETURN_GENERATED_KEYS);
+				PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalle)) {
+
+			// Insertar pedido
+			pstmtPedido.setInt(1, idCliente);
+			pstmtPedido.executeUpdate();
+
+			// Obtener el ID del pedido generado
+			int idPedido;
+			try (var rs = pstmtPedido.getGeneratedKeys()) {
+				if (rs.next()) {
+					idPedido = rs.getInt(1);
+				} else {
+					throw new SQLException("Error al obtener el ID del pedido.");
+				}
+			}
+
+			// Insertar detalles del pedido
+			for (Producto producto : cesta) {
+				pstmtDetalle.setInt(1, idPedido);
+				pstmtDetalle.setInt(2, producto.getId());
+				pstmtDetalle.setInt(3, producto.getCantidad());
+				pstmtDetalle.addBatch();
+			}
+			pstmtDetalle.executeBatch();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
+		}
+	}
+
+	/**
+	 * Guarda el tiket en la base de datos.
+	 * 
+	 * @param tiket    La instancia de Tiket.
+	 * @param idPedido El ID del pedido asociado.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void guardarTiketEnBaseDeDatos(Tiket tiket, int idPedido) throws SQLException {
+		Connection conn = Conexion.conectar();
+		String sql = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idPedido);
+			pstmt.setString(2, tiket.getNumeroTiket());
+			pstmt.setFloat(3, tiket.getTotal());
+			pstmt.executeUpdate();
+		} finally {
+			if (conn != null) {
+				conn.close();
+			}
 		}
 	}
 
@@ -85,7 +173,7 @@ public class GestionPedido {
 	 * @param cantidad         La cantidad del producto a agregar.
 	 */
 	public void agregarCesta(GestionProducto gestionProductos, int productoId, int cantidad) {
-		Producto producto = gestionProductos.buscarProductoPorId(productoId);
+		Producto producto = gestionProductos.buscarProductoPorIdCatalogo(productoId);
 		if (producto != null) {
 			if (gestionProductos.haySuficienteStock(producto, cantidad)) {
 				cesta.add(crearProductoParaCesta(producto, cantidad));
@@ -98,6 +186,25 @@ public class GestionPedido {
 	}
 
 	/**
+	 * Elimina un producto de la cesta por su ID.
+	 * 
+	 * @param id El ID del producto a eliminar.
+	 */
+	public void borrarProductoPorIdCesta(int id) {
+		// Utilizamos un Iterator para evitar ConcurrentModificationException
+		Iterator<Producto> iterator = cesta.iterator();
+		while (iterator.hasNext()) {
+			Producto producto = iterator.next();
+			if (producto.getId() == id) {
+				iterator.remove();
+				System.out.println("Producto eliminado de la cesta.");
+				return; // Salimos del método después de eliminar el producto
+			}
+		}
+		System.out.println("Producto no encontrado en la cesta.");
+	}
+
+	/**
 	 * Crea un objeto Producto para la cesta de compra.
 	 * 
 	 * @param producto El producto original.
@@ -107,6 +214,10 @@ public class GestionPedido {
 	private Producto crearProductoParaCesta(Producto producto, int cantidad) {
 		return new Producto(producto.getNombre(), producto.getPrecioUnidad(), cantidad, producto.hayStock(),
 				producto.getGenero(), producto.getId(), producto.getIdCategoria());
+	}
+
+	public boolean cestaVacia() {
+		return cesta.isEmpty();
 	}
 
 	/**
