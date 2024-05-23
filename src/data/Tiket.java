@@ -1,5 +1,8 @@
 package data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -15,6 +18,26 @@ public class Tiket {
 
 	private String numeroTiket;
 	private float total;
+
+	/**
+	 * Guarda el ticket en la base de datos.
+	 * 
+	 * @param idPedido    El ID del pedido relacionado con el ticket.
+	 * @param numeroTiket El número del ticket.
+	 * @param total       El total de la compra.
+	 * @param conn        La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public void guardarTicketEnBaseDeDatos(int idPedido, String numeroTiket, double total, Connection conn)
+	        throws SQLException {
+	    String sqlTicket = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
+	    try (PreparedStatement pstmtTicket = conn.prepareStatement(sqlTicket)) {
+	        pstmtTicket.setInt(1, idPedido);
+	        pstmtTicket.setString(2, numeroTiket);
+	        pstmtTicket.setBigDecimal(3, new java.math.BigDecimal(total));
+	        pstmtTicket.executeUpdate();
+	    }
+	}
 
 	/**
 	 * Crea un ticket usando la lista de productos en la cesta.
@@ -72,14 +95,14 @@ public class Tiket {
 		return total;
 	}
 
-	 public Tiket(String numeroTiket, float total) {
-	        this.numeroTiket = numeroTiket;
-	        this.total = total;
-	    }
+	public Tiket(String numeroTiket, float total) {
+		this.numeroTiket = numeroTiket;
+		this.total = total;
+	}
 
-	 public Tiket() {
-	    }
-	
+	public Tiket() {
+	}
+
 	/**
 	 * Genera un número de ticket único.
 	 *

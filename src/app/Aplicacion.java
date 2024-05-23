@@ -22,7 +22,7 @@ import util.Fichero;
  * @date 19 may 2024
  */
 public class Aplicacion {// TODO gestionPedido 87-88
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// Inicialización de las clases de gestión
 		Connection conn = Conexion.conectar();
 		GestionProducto gestionProductos = new GestionProducto(conn);
@@ -30,7 +30,10 @@ public class Aplicacion {// TODO gestionPedido 87-88
 		GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido, conn);
 		GestionCliente gestionCliente = new GestionCliente(conn);
 		GestionAlbaran gestionAlbaran = new GestionAlbaran();
-		Cliente cliente = new Cliente();
+		Cliente cliente = new Cliente("C011", "Jhoonny", "Meentero", "Carrera 15 #123", "Ciudad", "Provincia", "España",
+				"28090", "601234567", "jhoonny.meentero@example.com", "Cliente frecuente de productos de tecnología",
+				11);
+		System.out.println(cliente.getId());
 		Tiket tiket = new Tiket();
 		Fichero fichero = new Fichero();
 		Scanner sc = new Scanner(System.in);
@@ -51,7 +54,7 @@ public class Aplicacion {// TODO gestionPedido 87-88
 			Menu.mostrarMenuPrincipal();
 			int opcionPrincipal = sc.nextInt();
 
-			switch (opcionPrincipal) {	
+			switch (opcionPrincipal) {
 			case 1:
 				// Menú para usuarios
 				boolean volverUsuario = false;
@@ -61,6 +64,19 @@ public class Aplicacion {// TODO gestionPedido 87-88
 
 					switch (opcionUsuario) {
 					case 1: // Login de usuario
+						// CARGA CLIENTE TODO: implementar seccion para elegir cleintes.
+//						try {
+//							gestionCliente.cargarClientes(conn);
+//						} catch (SQLException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						try {
+//							gestionCliente.elegirCliente(sc, conn);
+//						} catch (SQLException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 
 						// TODO: Implementar el login de usuario con la base de datos
 						GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
@@ -68,7 +84,7 @@ public class Aplicacion {// TODO gestionPedido 87-88
 						break;
 					case 2:
 						// Registro de usuario
-						gestionCliente.crearCliente(sc);
+						//gestionCliente.crearCliente(sc);
 						GestionMenu.manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente,
 								fichero, tiket, conn);
 						break;

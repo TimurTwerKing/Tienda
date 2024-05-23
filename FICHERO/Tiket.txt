@@ -1,6 +1,6 @@
 
-Ticket Número: TKT1716329509944
-Fecha: Wed May 22 00:11:49 CEST 2024
+Ticket Número: TKT1716419536510
+Fecha: Thu May 23 01:12:16 CEST 2024
 
 Artículos:
 ID: 1
@@ -9,5 +9,11 @@ Cantidad: 1
 Precio Unitario: 16.99 euros
 Total: 16.99 euros
 
-Total a pagar: 16.989999771118164 euros
+ID: 1
+Nombre: The Shawshank Redemption
+Cantidad: 2
+Precio Unitario: 16.99 euros
+Total: 33.98 euros
+
+Total a pagar: 50.97 euros
 

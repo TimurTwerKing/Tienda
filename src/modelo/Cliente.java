@@ -7,45 +7,56 @@ package modelo;
  * @date 19 may 2024
  */
 public class Cliente {
-	private String numerocliente;
+	private String numeroCliente;
 	private String nombre;
 	private String apellidos;
 	private String direccion;
 	private String localidad;
 	private String provincia;
 	private String pais;
-	private String codigopostal;
+	private String codigoPostal;
 	private String telefono;
 	private String mail;
 	private String observaciones;
-	private int codigo; // Código de cliente
+	private int id; // Código de cliente
 
 	// Constructores
 	public Cliente() {
 	}
 
 	public Cliente(String numerocliente, String nombre, String apellidos, String direccion, String localidad,
-			String provincia, String pais, String codigopostal, String telefono, String mail, String observaciones) {
-		this.numerocliente = numerocliente;
+			String provincia, String pais, String codigopostal, String telefono, String mail, String observaciones,
+			Integer id) {
+		this.numeroCliente = numerocliente;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.direccion = direccion;
 		this.localidad = localidad;
 		this.provincia = provincia;
 		this.pais = pais;
-		this.codigopostal = codigopostal;
+		this.codigoPostal = codigopostal;
 		this.telefono = telefono;
 		this.mail = mail;
 		this.observaciones = observaciones;
+		this.id = id;
 	}
 
 	// Getters y Setters
-	public String getNumerocliente() {
-		return numerocliente;
+
+	public String getNumeroCliente() {
+		return numeroCliente;
 	}
 
-	public void setNumerocliente(String numerocliente) {
-		this.numerocliente = numerocliente;
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setNumeroCliente(String numerocliente) {
+		this.numeroCliente = numerocliente;
 	}
 
 	public String getNombre() {
@@ -97,11 +108,11 @@ public class Cliente {
 	}
 
 	public String getCodigopostal() {
-		return codigopostal;
+		return codigoPostal;
 	}
 
 	public void setCodigopostal(String codigopostal) {
-		this.codigopostal = codigopostal;
+		this.codigoPostal = codigopostal;
 	}
 
 	public String getTelefono() {
@@ -129,19 +140,19 @@ public class Cliente {
 	}
 
 	public int getCodigo() {
-		return codigo;
+		return id;
 	}
 
 	public void setCodigo(int codigo) {
-		this.codigo = codigo;
+		this.id = codigo;
 	}
 
 	// Método para mostrar los datos del cliente
 	@Override
 	public String toString() {
-		return "Cliente [numerocliente=" + numerocliente + ", nombre=" + nombre + ", apellidos=" + apellidos
+		return "Cliente [numerocliente=" + numeroCliente + ", nombre=" + nombre + ", apellidos=" + apellidos
 				+ ", direccion=" + direccion + ", localidad=" + localidad + ", provincia=" + provincia + ", pais="
-				+ pais + ", codigopostal=" + codigopostal + ", telefono=" + telefono + ", mail=" + mail
+				+ pais + ", codigopostal=" + codigoPostal + ", telefono=" + telefono + ", mail=" + mail
 				+ ", observaciones=" + observaciones + "]";
 	}
 }

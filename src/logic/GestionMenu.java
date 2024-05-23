@@ -1,6 +1,7 @@
 package logic;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 import menu.Menu;
 import modelo.Cliente;
@@ -17,7 +18,7 @@ public class GestionMenu {
 
 	public static void manejarMenuUsuario(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket,
-			Connection conn) {
+			Connection conn) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuUsuario();
@@ -29,7 +30,7 @@ public class GestionMenu {
 				menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 				break;
 			case 2: // Registro de usuario
-				gestionCliente.crearCliente(sc);
+//				gestionCliente.crearCliente(sc);
 				manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 				break;
 			case 3: // Volver
@@ -86,7 +87,7 @@ public class GestionMenu {
 	}
 
 	public static void menuUsuarioLogueado(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) {
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuPrincipalUsuario();
@@ -95,10 +96,11 @@ public class GestionMenu {
 			switch (opcion) {
 			case 1: // Agregar productos a la cesta
 				System.out.println(gestionProductos.mostrarProductosCatalogo());
-				gestionPedido.generarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket, conn);
+				gestionPedido.generarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket,
+						conn);
 				break;
 			case 2: // Ver cesta
-				mostrarCesta(sc, gestionPedido, gestionProductos, gestionPago, cliente, fichero, tiket, conn);
+				mostrarCesta(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 				break;
 			case 3: // Volver
 				volver = true;
@@ -109,8 +111,8 @@ public class GestionMenu {
 		}
 	}
 
-	private static void mostrarCesta(Scanner sc, GestionPedido gestionPedido, GestionProducto gestionProductos,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) {
+	private static void mostrarCesta(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			if (gestionPedido.cestaVacia()) {
@@ -123,7 +125,7 @@ public class GestionMenu {
 
 				switch (opcion) {
 				case 1: // Realizar la compra
-					gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket, conn);
+					gestionPedido.realizarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 					volver = true;
 					break;
 				case 2: // Borrar producto
@@ -142,7 +144,7 @@ public class GestionMenu {
 	}
 
 	public static void manejarMenuRegistrar(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) {
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuRegistrar();
@@ -154,7 +156,7 @@ public class GestionMenu {
 						conn);
 				break;
 			case 2: // Ver cesta
-				mostrarCesta(sc, gestionPedido, gestionProductos, gestionPago, cliente, fichero, tiket, conn);
+				mostrarCesta(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 				break;
 			case 3: // Volver
 				volver = true;
@@ -167,7 +169,7 @@ public class GestionMenu {
 
 	private static void realizarCompraRegistrada(Scanner sc, GestionProducto gestionProductos,
 			GestionPedido gestionPedido, GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket,
-			Connection conn) {
+			Connection conn) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuComprar_Pagar();
@@ -176,7 +178,7 @@ public class GestionMenu {
 
 			switch (opcion) {
 			case 1: // Pagar
-				gestionPedido.realizarPedido(gestionProductos, gestionPago, cliente, fichero, sc, tiket, conn);
+				gestionPedido.realizarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 				volver = true;
 				break;
 			case 2: // Volver
