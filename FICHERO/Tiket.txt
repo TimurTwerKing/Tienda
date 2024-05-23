@@ -1,6 +1,6 @@
 
-Ticket Número: TKT1716419536510
-Fecha: Thu May 23 01:12:16 CEST 2024
+Ticket Número: TKT1716468397700
+Fecha: Thu May 23 14:46:37 CEST 2024
 
 Artículos:
 ID: 1
@@ -9,11 +9,11 @@ Cantidad: 1
 Precio Unitario: 16.99 euros
 Total: 16.99 euros
 
-ID: 1
-Nombre: The Shawshank Redemption
-Cantidad: 2
-Precio Unitario: 16.99 euros
-Total: 33.98 euros
+ID: 30
+Nombre: 21 - Adele
+Cantidad: 4
+Precio Unitario: 14.99 euros
+Total: 59.96 euros
 
-Total a pagar: 50.97 euros
+Total a pagar: 76.95 euros
 

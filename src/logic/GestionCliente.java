@@ -28,6 +28,64 @@ public class GestionCliente {
 	}
 
 	/**
+	 * Método para agregar un cliente a la base de datos.
+	 * 
+	 * @param cliente El cliente a agregar.
+	 * @param conn    La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public void agregarCliente(Cliente cliente, Connection conn) throws SQLException {
+		
+		
+		String sql = "INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+			pstmt.setString(1, cliente.getNumeroCliente());
+			pstmt.setString(2, cliente.getNombre());
+			pstmt.setString(3, cliente.getApellidos());
+			pstmt.setString(4, cliente.getDireccion());
+			pstmt.setString(5, cliente.getLocalidad());
+			pstmt.setString(6, cliente.getProvincia());
+			pstmt.setString(7, cliente.getPais());
+			pstmt.setString(8, cliente.getCodigoPostal());
+			pstmt.setString(9, cliente.getTelefono());
+			pstmt.setString(10, cliente.getMail());
+			pstmt.setString(11, cliente.getObservaciones());
+
+			pstmt.executeUpdate();
+
+			try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					cliente.setId(generatedKeys.getInt(1)); // Set the generated ID to the cliente object
+				} else {
+					throw new SQLException("No se pudo obtener el ID del cliente.");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Método para verificar si un cliente existe por su correo electrónico.
+	 * 
+	 * @param mail El correo electrónico del cliente.
+	 * @param conn La conexión a la base de datos.
+	 * @return true si el cliente existe, false en caso contrario.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public boolean verificarClienteExiste(String mail, Connection conn) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Cliente WHERE mail = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, mail);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Método para obtener una lista de clientes de la base de datos.
 	 * 
 	 * @param conn La conexión a la base de datos.
@@ -107,39 +165,46 @@ public class GestionCliente {
 		}
 	}
 
-//	public void crearCliente(Scanner sc) {
-//		System.out.println("Ingrese el número de cliente:");
-//		String numerocliente = sc.nextLine();
-//		System.out.println("Ingrese el nombre:");
-//		String nombre = sc.nextLine();
-//		System.out.println("Ingrese los apellidos:");
-//		String apellidos = sc.nextLine();
-//		System.out.println("Ingrese la dirección:");
-//		String direccion = sc.nextLine();
-//		System.out.println("Ingrese la localidad:");
-//		String localidad = sc.nextLine();
-//		System.out.println("Ingrese la provincia:");
-//		String provincia = sc.nextLine();
-//		System.out.println("Ingrese el país:");
-//		String pais = sc.nextLine();
-//		System.out.println("Ingrese el código postal:");
-//		String codigopostal = sc.nextLine();
-//		System.out.println("Ingrese el teléfono:");
-//		String telefono = sc.nextLine();
-//		System.out.println("Ingrese el correo electrónico:");
-//		String mail = sc.nextLine();
-//		System.out.println("Ingrese las observaciones:");
-//		String observaciones = sc.nextLine();
-//
-//		Cliente cliente = new Cliente(numerocliente, nombre, apellidos, direccion, localidad, provincia, pais,
-//				codigopostal, telefono, mail, observaciones,id);
+	public Cliente crearCliente(Scanner sc) {
+		try {
+			System.out.println("Ingrese el número de cliente:");
+			String numerocliente = sc.nextLine();
+			System.out.println("Ingrese el nombre:");
+			String nombre = sc.nextLine();
+			System.out.println("Ingrese los apellidos:");
+			String apellidos = sc.nextLine();
+			System.out.println("Ingrese la dirección:");
+			String direccion = sc.nextLine();
+			System.out.println("Ingrese la localidad:");
+			String localidad = sc.nextLine();
+			System.out.println("Ingrese la provincia:");
+			String provincia = sc.nextLine();
+			System.out.println("Ingrese el país:");
+			String pais = sc.nextLine();
+			System.out.println("Ingrese el código postal:");
+			String codigopostal = sc.nextLine();
+			System.out.println("Ingrese el teléfono:");
+			String telefono = sc.nextLine();
+			System.out.println("Ingrese el correo electrónico:");
+			String mail = sc.nextLine();
+			System.out.println("Ingrese las observaciones:");
+			String observaciones = sc.nextLine();
+
+			Cliente cliente = new Cliente(numerocliente, nombre, apellidos, direccion, localidad, provincia, pais,
+					codigopostal, telefono, mail, observaciones);
+			return cliente;
+		} catch (Exception e) {
+			e.getStackTrace();
+			System.out.println("Error al agregar el cliente.");
+			return null;
+		}
 //		boolean resultado = agregarCliente(cliente);
 //		if (resultado) {
 //			System.out.println("Cliente agregado con éxito.");
 //		} else {
 //			System.out.println("Error al agregar el cliente.");
 //		}
-//	}
+	}
 
 	/**
 	 * Borra un cliente de la lista por su ID.

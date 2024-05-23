@@ -33,7 +33,7 @@ public class Pedido {
 		String sql = "INSERT INTO Pedido (codigocliente, producto, cantidad) VALUES (?, ?, ?)";
 
 		try (Connection conn = Conexion.conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-			stmt.setInt(1, cliente.getCodigo());
+			stmt.setInt(1, cliente.getId());
 			stmt.setInt(2, producto);
 			stmt.setInt(3, cantidad);
 

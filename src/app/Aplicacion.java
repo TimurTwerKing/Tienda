@@ -78,13 +78,16 @@ public class Aplicacion {// TODO gestionPedido 87-88
 //							e.printStackTrace();
 //						}
 
+						// Cliente clienteCreado = gestionCliente.crearCliente(sc); //TODO CREACION
+						// CLIENTE PARA SU USO
+
 						// TODO: Implementar el login de usuario con la base de datos
 						GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
 								fichero, tiket, conn);
 						break;
 					case 2:
 						// Registro de usuario
-						//gestionCliente.crearCliente(sc);
+						// gestionCliente.crearCliente(sc);
 						GestionMenu.manejarMenuRegistrar(sc, gestionProductos, gestionPedido, gestionPago, cliente,
 								fichero, tiket, conn);
 						break;

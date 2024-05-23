@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Scanner;
+
 /**
  * Clase Cliente: Contiene información y métodos para gestionar clientes.
  * 
@@ -18,7 +20,7 @@ public class Cliente {
 	private String telefono;
 	private String mail;
 	private String observaciones;
-	private int id; // Código de cliente
+	private int id; // ID CLIENTE AUTO INCREMENTADO
 
 	// Constructores
 	public Cliente() {
@@ -41,22 +43,29 @@ public class Cliente {
 		this.id = id;
 	}
 
+	public Cliente(String numerocliente, String nombre, String apellidos, String direccion, String localidad,
+			String provincia, String pais, String codigopostal, String telefono, String mail, String observaciones) {
+		this.numeroCliente = numerocliente;
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.direccion = direccion;
+		this.localidad = localidad;
+		this.provincia = provincia;
+		this.pais = pais;
+		this.codigoPostal = codigopostal;
+		this.telefono = telefono;
+		this.mail = mail;
+		this.observaciones = observaciones;
+	}
+
 	// Getters y Setters
 
 	public String getNumeroCliente() {
 		return numeroCliente;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public void setNumeroCliente(String numerocliente) {
-		this.numeroCliente = numerocliente;
+	public void setNumeroCliente(String numeroCliente) {
+		this.numeroCliente = numeroCliente;
 	}
 
 	public String getNombre() {
@@ -107,12 +116,12 @@ public class Cliente {
 		this.pais = pais;
 	}
 
-	public String getCodigopostal() {
+	public String getCodigoPostal() {
 		return codigoPostal;
 	}
 
-	public void setCodigopostal(String codigopostal) {
-		this.codigoPostal = codigopostal;
+	public void setCodigoPostal(String codigoPostal) {
+		this.codigoPostal = codigoPostal;
 	}
 
 	public String getTelefono() {
@@ -139,12 +148,13 @@ public class Cliente {
 		this.observaciones = observaciones;
 	}
 
-	public int getCodigo() {
+	public int getId() {
 		return id;
 	}
 
-	public void setCodigo(int codigo) {
-		this.id = codigo;
+	public void setId(int id) {
+		this.id = id;
+
 	}
 
 	// Método para mostrar los datos del cliente
@@ -155,4 +165,6 @@ public class Cliente {
 				+ pais + ", codigopostal=" + codigoPostal + ", telefono=" + telefono + ", mail=" + mail
 				+ ", observaciones=" + observaciones + "]";
 	}
+
+	
 }

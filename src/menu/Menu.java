@@ -13,7 +13,7 @@ public class Menu {
     }
 
     public static void Mensaje_Fin() {
-        System.out.println("Gracias por utilizar la aplicación. ¡Hasta luego!");
+        System.out.println("Gracias por utilizar la aplicación. ¡Hasta luego!\n");
     }
 
     public static void Mensaje_Fin_Compra() {
