@@ -1,6 +1,3 @@
-/**
- * 
- */
 package util;
 
 import java.io.BufferedInputStream;
@@ -9,14 +6,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
+ * Clase Leer: Contiene métodos para la lectura de datos desde la consola.
+ * Utilizada para la entrada de datos por teclado.
+ * 
  * @author Timur Bogach
  * @date 11 feb 2024
- * 
- *       Clase Leer: Contiene métodos para la lectura de datos desde la consola.
- *       Utilizada para la entrada de datos por teclado.
  */
-
 public class Leer {
+
+	/**
+	 * Limpia el buffer de entrada.
+	 */
+	private static void limpiarBuffer() {
+		try {
+			while (System.in.available() > 0) {
+				System.in.read();
+			}
+		} catch (IOException e) {
+			System.out.println("Error al limpiar el buffer: " + e.getMessage());
+		}
+	}
 
 	/**
 	 * Lee una línea de texto desde la consola.
@@ -24,6 +33,7 @@ public class Leer {
 	 * @return El texto ingresado por el usuario.
 	 */
 	public static String datoString() {
+		limpiarBuffer();
 		String sdato = " ";
 		try {
 			InputStreamReader isr = new InputStreamReader(System.in);
@@ -32,7 +42,7 @@ public class Leer {
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
-		return sdato; 
+		return sdato;
 	}
 
 	/**
@@ -42,6 +52,7 @@ public class Leer {
 	 *         tal.
 	 */
 	public static int datoInt() {
+		limpiarBuffer();
 		return Integer.parseInt(datoString());
 	}
 
@@ -52,6 +63,7 @@ public class Leer {
 	 * @return El número de punto flotante ingresado por el usuario.
 	 */
 	public static float datoFloat() {
+		limpiarBuffer();
 		return Float.parseFloat(datoString());
 	}
 
@@ -61,6 +73,7 @@ public class Leer {
 	 * @return El carácter ingresado por el usuario.
 	 */
 	public static char datoChar() {
+		limpiarBuffer();
 		char c = ' ';
 		try {
 			java.io.BufferedInputStream b = new BufferedInputStream(System.in);
@@ -79,7 +92,30 @@ public class Leer {
 	 *         como tal.
 	 */
 	public static long datoLong() {
+		limpiarBuffer();
 		return Long.parseLong(datoString());
 	}
 
+	/**
+	 * Lee un valor booleano desde la consola.
+	 * 
+	 * @return El valor booleano ingresado por el usuario.
+	 */
+	public static boolean datoBoolean() {
+		limpiarBuffer();
+		boolean b = false;
+		try {
+			String sdato = datoString().toLowerCase();
+			if (sdato.equals("true") || sdato.equals("false")) {
+				b = Boolean.parseBoolean(sdato);
+			} else {
+				System.out.println("Entrada no válida. Por favor, ingrese 'true' o 'false'.");
+				b = datoBoolean(); // Recurre hasta obtener una entrada válida
+			}
+		} catch (Exception e) {
+			System.out.println("Error al leer el booleano");
+			e.printStackTrace();
+		}
+		return b;
+	}
 }

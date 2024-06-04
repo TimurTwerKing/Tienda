@@ -26,8 +26,14 @@ public class GestionProducto {
 	 * Constructor de la clase. Inicializa la lista de productos del catálogo.
 	 */
 	public GestionProducto(Connection conn) {
-		this.catalogo = new ArrayList<>(); 
+		this.catalogo = new ArrayList<>();
 		this.conn = conn;
+		// Cargar productos desde la base de datos
+		try {
+			cargarProductos();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -38,6 +44,53 @@ public class GestionProducto {
 	}
 
 	/**
+	 * Actualiza el producto en la base de datos después de la venta.
+	 * 
+	 * @param conn            La conexión a la base de datos.
+	 * @param productoEnCesta El producto vendido.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public void actualizarProductoEnBaseDeDatos(Connection conn, Producto productoEnCesta) throws SQLException {
+		Producto producto = buscarProductoPorIdCatalogo(productoEnCesta.getId());
+		if (producto != null) {
+			int cantidadVendida = productoEnCesta.getCantidad();
+			int nuevaCantidad = producto.getCantidad() - cantidadVendida;
+
+			// Verificar que la nueva cantidad no sea negativa
+			if (nuevaCantidad < 0) {
+				throw new IllegalArgumentException("La cantidad vendida excede el stock disponible.");
+			}
+
+			String updateQuery = "UPDATE Producto SET cantidad = ? WHERE id = ?";
+			try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+				pstmt.setInt(1, nuevaCantidad);
+				pstmt.setInt(2, producto.getId());
+				pstmt.executeUpdate();
+			}
+		}
+	}
+
+	/**
+	 * Actualiza el producto en el catálogo después de la venta.
+	 * 
+	 * @param productoEnCesta El producto vendido.
+	 */
+	public void actualizarProductoEnCatalogo(Producto productoEnCesta) {
+		Producto producto = buscarProductoPorIdCatalogo(productoEnCesta.getId());
+		if (producto != null) {
+			int cantidadVendida = productoEnCesta.getCantidad();
+			int nuevaCantidad = producto.getCantidad() - cantidadVendida;
+
+			// Verificar que la nueva cantidad no sea negativa
+			if (nuevaCantidad < 0) {
+				throw new IllegalArgumentException("La cantidad vendida excede el stock disponible.");
+			}
+
+			producto.setCantidad(nuevaCantidad);
+		}
+	}
+
+	/**
 	 * Carga los productos desde la base de datos al catálogo.
 	 *
 	 * @return Lista de productos cargados.
@@ -45,7 +98,7 @@ public class GestionProducto {
 	 */
 	public List<Producto> cargarProductos() throws SQLException {
 		String consulta = "SELECT * FROM Producto";
-		try (PreparedStatement pstmt = conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
+		try (PreparedStatement pstmt = this.conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
 				Producto producto = crearProductoDesdeResultSet(rs);
 				this.catalogo.add(producto);
@@ -61,7 +114,7 @@ public class GestionProducto {
 	 */
 	public String mostrarProductosCatalogo() {
 		StringBuilder resultado = new StringBuilder();
-		for (Producto producto : catalogo) {
+		for (Producto producto : this.catalogo) {
 			resultado.append("ID: ").append(producto.getId()).append("\n");
 			resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
 			resultado.append("Precio: ").append(producto.getPrecioUnidad()).append(" euros\n");
@@ -118,7 +171,7 @@ public class GestionProducto {
 	private String obtenerAtributoEspecifico(ResultSet rs, int idCategoria) throws SQLException {
 		String consultaDetalle = "SELECT valor_detalle FROM Detalles_Producto WHERE id_producto = ?";
 		String atributoEspecifico = null;
-		try (PreparedStatement pstmtDetalle = conn.prepareStatement(consultaDetalle)) {
+		try (PreparedStatement pstmtDetalle = this.conn.prepareStatement(consultaDetalle)) {
 			pstmtDetalle.setInt(1, rs.getInt("id"));
 			try (ResultSet rsDetalle = pstmtDetalle.executeQuery()) {
 				if (rsDetalle.next()) {
@@ -169,7 +222,7 @@ public class GestionProducto {
 	public void agregarProducto(String nombre, float precio, int cantidad, boolean stock, String genero,
 			int idCategoria) {
 		Producto producto = new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria);
-		catalogo.add(producto);
+		this.catalogo.add(producto);
 
 		try {
 			agregarProductoABaseDeDatos(producto);
@@ -184,7 +237,7 @@ public class GestionProducto {
 	 * @param producto de la clase producto
 	 */
 	public void agregarProducto(Producto producto) {
-		catalogo.add(producto);
+		this.catalogo.add(producto);
 		try {
 			agregarProductoABaseDeDatos(producto);
 		} catch (SQLException e) {
@@ -199,7 +252,7 @@ public class GestionProducto {
 	 * @param producto de la clase producto
 	 */
 	public void agregarProductoTest(Producto producto) {
-		catalogo.add(producto);
+		this.catalogo.add(producto);
 	}
 
 	/**
@@ -211,7 +264,7 @@ public class GestionProducto {
 	private void agregarProductoABaseDeDatos(Producto producto) throws SQLException {
 		String sql = "INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria) VALUES (?, ?, ?, ?, ?, ?)";
 
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 			pstmt.setString(1, producto.getNombre());
 			pstmt.setFloat(2, producto.getPrecioUnidad());
 			pstmt.setInt(3, producto.getCantidad());
@@ -230,7 +283,7 @@ public class GestionProducto {
 	public void borrarProducto(int id) {
 		Producto producto = buscarProductoPorIdCatalogo(id);
 		if (producto != null) {
-			catalogo.remove(producto);
+			this.catalogo.remove(producto);
 			try {
 				borrarProductoDeBaseDeDatos(id);
 			} catch (SQLException e) {
@@ -251,7 +304,7 @@ public class GestionProducto {
 	private void borrarProductoDeBaseDeDatos(int id) throws SQLException {
 		String sql = "DELETE FROM Producto WHERE id = ?";
 
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			pstmt.executeUpdate();
 		}
@@ -264,20 +317,20 @@ public class GestionProducto {
 	 * @return El producto encontrado, o null si no se encuentra.
 	 */
 	public Producto buscarProductoPorIdCatalogo(int id) {
-		for (Producto producto : catalogo) {
+		for (Producto producto : this.catalogo) {
 			if (producto.getId() == id) {
 				return producto;
-			} 
+			}
 		}
 		return null;
 	}
 
 	public List<Producto> getCatalogo() {
-		return catalogo;
+		return this.catalogo;
 	}
 
 	public List<Producto> setCatalogo(List<Producto> catalogo) {
 		return this.catalogo = catalogo;
 	}
-	
+
 }

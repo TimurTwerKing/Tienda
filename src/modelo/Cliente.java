@@ -1,6 +1,6 @@
 package modelo;
 
-import java.util.Scanner;
+
 
 /**
  * Clase Cliente: Contiene información y métodos para gestionar clientes.

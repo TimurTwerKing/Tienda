@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Scanner;
 import menu.Menu;
 import modelo.Cliente;
-import util.Conexion;
 import util.Fichero;
+import util.Leer;
 import data.Tiket;
 
 /**
@@ -18,19 +18,20 @@ import data.Tiket;
 public class OrquestradorMenu {
 	private Connection conn;
 	private Scanner sc;
-	
+
 	public OrquestradorMenu(Connection conn, Scanner sc) {
 		this.sc = sc;
 		this.conn = conn;
 	}
-	
+
 	public void manejarMenuUsuario(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket)
+			throws SQLException {
 		// Menú para usuarios
 		boolean volverUsuario = false;
 		while (!volverUsuario) {
 			Menu.mostrarMenuUsuario();
-			int opcionUsuario = sc.nextInt();
+			int opcionUsuario = Leer.datoInt();
 
 			switch (opcionUsuario) {
 			case 1: // Login de usuario
@@ -52,14 +53,12 @@ public class OrquestradorMenu {
 				// CLIENTE PARA SU USO
 
 				// TODO: Implementar el login de usuario con la base de datos
-				this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-						tiket);
+				this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 				break;
 			case 2:
 				// Registro de usuario
 				// gestionCliente.crearCliente(sc);
-				this.manejarMenuRegistrar(gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-						tiket);
+				this.manejarMenuRegistrar(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 				break;
 			case 3:
 				volverUsuario = true;
@@ -70,26 +69,24 @@ public class OrquestradorMenu {
 		}
 	}
 
-	public void manejarMenuAdministrador(GestionProducto gestionProductos,
-			GestionCliente gestionCliente, GestionAlbaran gestionAlbaran) {
+	public void manejarMenuAdministrador(GestionProducto gestionProductos, GestionCliente gestionCliente,
+			GestionAlbaran gestionAlbaran) {
 		// Menú para administradores
 		boolean volverAdmin = false;
 		while (!volverAdmin) {
 			Menu.mostrarMenuAdministrador();
-			int opcionAdmin = sc.nextInt();
+			int opcionAdmin = Leer.datoInt();
 
 			switch (opcionAdmin) {
 			case 1:
 				// Agregar productos
 				Menu.mensajeAgregarProducto();
-				sc.nextLine(); // Limpiar el buffer
-				String nombre = sc.nextLine();
-				float precio = sc.nextFloat();
-				int cantidad = sc.nextInt();
-				boolean stock = sc.nextBoolean();
-				sc.nextLine(); // Limpiar el buffer
-				String genero = sc.nextLine();
-				int idCategoria = sc.nextInt();
+				String nombre = Leer.datoString();
+				float precio = Leer.datoFloat();
+				int cantidad = Leer.datoInt();
+				boolean stock = Leer.datoBoolean();
+				String genero = Leer.datoString();
+				int idCategoria = Leer.datoInt();
 
 				gestionProductos.agregarProducto(nombre, precio, cantidad, stock, genero, idCategoria);
 				break;
@@ -98,7 +95,7 @@ public class OrquestradorMenu {
 				System.out.println("Productos en el catálogo:");
 				System.out.println(gestionProductos.mostrarProductosCatalogo());
 				System.out.println("Ingrese el ID del producto a borrar:");
-				int idProducto = sc.nextInt();
+				int idProducto = Leer.datoInt();
 				gestionProductos.borrarProducto(idProducto);
 				break;
 			case 3:
@@ -106,16 +103,15 @@ public class OrquestradorMenu {
 				System.out.println("Clientes en el sistema:");
 				System.out.println(gestionCliente.mostrarClientes());
 				System.out.println("Ingrese el ID del cliente a eliminar:");
-				int idCliente = sc.nextInt();
+				int idCliente = Leer.datoInt();
 				gestionCliente.borrarCliente(idCliente);
 				break;
 			case 4:
 				// Guardar albarán
 				System.out.println("Ingrese el ID del proveedor:");
-				int idProveedor = sc.nextInt();
-				sc.nextLine(); // Limpiar el buffer
+				int idProveedor = Leer.datoInt();
 				System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
-				String fechaEntrega = sc.nextLine();
+				String fechaEntrega = Leer.datoString();
 
 				try {
 					gestionAlbaran.guardarAlbaranEnBaseDeDatos(idProveedor, fechaEntrega, conn);
@@ -134,18 +130,17 @@ public class OrquestradorMenu {
 	}
 
 	public void menuUsuarioLogueado(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket)
-			throws SQLException {
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuPrincipalUsuario();
-			int opcion = sc.nextInt();
+			int opcion = Leer.datoInt();
 
 			switch (opcion) {
 			case 1: // Agregar productos a la cesta
 				System.out.println(gestionProductos.mostrarProductosCatalogo());
-				gestionPedido.generarPedido(this.sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket,
-						this.conn);
+				gestionPedido.generarPedido(this.sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
+						tiket, this.conn);
 				break;
 			case 2: // Ver cesta
 				this.mostrarCesta(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
@@ -159,9 +154,8 @@ public class OrquestradorMenu {
 		}
 	}
 
-	private void mostrarCesta(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket)
-			throws SQLException {
+	private void mostrarCesta(GestionProducto gestionProductos, GestionPedido gestionPedido, GestionPago gestionPago,
+			Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			if (gestionPedido.cestaVacia()) {
@@ -170,17 +164,17 @@ public class OrquestradorMenu {
 			} else {
 				System.out.println(gestionPedido.mostrarProductosCesta());
 				Menu.mostrarMenuCesta();
-				int opcion = sc.nextInt();
+				int opcion = Leer.datoInt();
 
 				switch (opcion) {
 				case 1: // Realizar la compra
-					gestionPedido.realizarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-							tiket, conn);
+					gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
+							tiket, this.conn);
 					volver = true;
 					break;
 				case 2: // Borrar producto
 					System.out.println("Escriba el ID del producto que desea eliminar: ");
-					int idParaEliminar = sc.nextInt();
+					int idParaEliminar = Leer.datoInt();
 					gestionPedido.borrarProductoPorIdCesta(idParaEliminar);
 					break;
 				case 3: // Volver
@@ -194,12 +188,11 @@ public class OrquestradorMenu {
 	}
 
 	public void manejarMenuRegistrar(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket)
-			throws SQLException {
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuRegistrar();
-			int opcion = sc.nextInt();
+			int opcion = Leer.datoInt();
 
 			switch (opcion) {
 			case 1: // Comprar
@@ -217,17 +210,17 @@ public class OrquestradorMenu {
 		}
 	}
 
-	private void realizarCompraRegistrada(GestionProducto gestionProductos,
-			GestionPedido gestionPedido, GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+	private void realizarCompraRegistrada(GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuComprar_Pagar();
 			System.out.println(gestionProductos.mostrarProductosCatalogo());
-			int opcion = sc.nextInt();
+			int opcion = Leer.datoInt();
 
 			switch (opcion) {
 			case 1: // Pagar
-				gestionPedido.realizarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket,
+				gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket,
 						conn);
 				volver = true;
 				break;

@@ -36,6 +36,122 @@ public class GestionPedido {
 	}
 
 	/**
+	 * Guarda los detalles del pedido en la base de datos.
+	 * 
+	 * @param idPedido  El ID del pedido.
+	 * @param productos La lista de productos en el pedido.
+	 * @param conn      La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void guardarDetallePedido(int idPedido, List<Producto> productos, Connection conn) throws SQLException {
+		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalle)) {
+			for (Producto producto : productos) {
+				pstmtDetalle.setInt(1, idPedido);
+				pstmtDetalle.setInt(2, producto.getId());
+				pstmtDetalle.setInt(3, producto.getCantidad());
+				pstmtDetalle.addBatch();
+			}
+			pstmtDetalle.executeBatch();
+		}
+	}
+
+	/**
+	 * Vende los artículos de la cesta y actualiza la base de datos.
+	 * 
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public static void venderArticulos(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
+			throws SQLException {
+
+		// Guardar el pedido en la base de datos y obtener el ID del pedido
+		int idPedido = gestionPedido.guardarPedidoEnBaseDeDatos(cliente, gestionPedido.getCesta(), conn);
+
+		// Guardar el detalle del pedido en la base de datos
+		gestionPedido.guardarDetallePedido(idPedido, gestionPedido.getCesta(), conn);
+
+		// Guardar el ticket en la base de datos
+		tiket.guardarTicketEnBaseDeDatos(idPedido, tiket.getNumeroTiket(), tiket.getTotal(), conn);
+
+		// Actualizar los productos en la base de datos y en el catálogo
+		for (Producto productoEnCesta : gestionPedido.getCesta()) {
+			gestionProductos.actualizarProductoEnBaseDeDatos(conn, productoEnCesta);
+			gestionProductos.actualizarProductoEnCatalogo(productoEnCesta);
+		}
+
+		// Limpiar la cesta después de la venta
+		gestionPedido.getCesta().clear();
+	}
+
+	/**
+	 * Realiza un pedido agregando productos a la cesta y manejando el pago.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente que realiza el pedido.
+	 * @param fichero          La instancia de Fichero para guardar el ticket.
+	 * @param sc               El objeto Scanner para leer la entrada del usuario.
+	 * @param tiket            La instancia de Tiket para generar el ticket.
+	 * @throws SQLException
+	 */
+	public void generarPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
+			throws SQLException {
+		boolean continuarCompra = true;
+		while (continuarCompra) {
+			System.out.println("Escriba ID del producto: ");
+			int productoID = sc.nextInt();
+			System.out.println("Escriba la cantidad del producto seleccionado: ");
+			int cantidadProducto = sc.nextInt();
+
+			agregarCesta(gestionProductos, productoID, cantidadProducto);
+			Menu.seguirComprando_Pagar();
+			int opcionPagar = sc.nextInt();
+			if (opcionPagar == 1) { // PAGAR
+				gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
+				// Volver al menú de compra
+				continuarCompra = false;
+			} else if (opcionPagar == 2) { // SEGUIR COMPRANDO
+				continuarCompra = true;
+			} else if (opcionPagar == 3) { // ATRAS
+				continuarCompra = false;
+			}
+		}
+	}
+
+	/**
+	 * Realiza la compra del pedido realizado previamente y guarda datos en BD
+	 * (pedido y tiket).
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente que realiza el pedido.
+	 * @param fichero          La instancia de Fichero para guardar el ticket.
+	 * @param sc               El objeto Scanner para leer la entrada del usuario.
+	 * @param tiket            La instancia de Tiket para generar el ticket.
+	 * @throws SQLException
+	 */
+	public void gestionarPagoPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
+			throws SQLException {
+		String ticket = tiket.crearTicket(cesta, gestionProductos);
+		System.out.println(ticket);
+		gestionPago.metodoDePago(cliente, sc);
+
+		GestionPedido.venderArticulos(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
+		guardarPedidoEnBaseDeDatos(cliente, this.cesta, conn);
+
+		Menu.deseaTiket();
+		int opcionTiket = sc.nextInt();
+		if (opcionTiket == 1) {
+			fichero.escribirFichero(ticket);
+		}
+		Menu.Mensaje_Fin_Compra();
+
+	}
+
+	/**
 	 * Guarda el pedido en la base de datos.
 	 * 
 	 * @param cliente   El cliente que realiza el pedido.
@@ -66,213 +182,6 @@ public class GestionPedido {
 			}
 		}
 	}
-
-	/**
-	 * Guarda los detalles del pedido en la base de datos.
-	 * 
-	 * @param idPedido  El ID del pedido.
-	 * @param productos La lista de productos en el pedido.
-	 * @param conn      La conexión a la base de datos.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	private void guardarDetallePedido(int idPedido, List<Producto> productos, Connection conn) throws SQLException {
-		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
-		try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalle)) {
-			for (Producto producto : productos) {
-				pstmtDetalle.setInt(1, idPedido);
-				pstmtDetalle.setInt(2, producto.getId());
-				pstmtDetalle.setInt(3, producto.getCantidad());
-				pstmtDetalle.addBatch();
-			}
-			pstmtDetalle.executeBatch();
-		}
-	}
-
-	/**
-	 * Vende los artículos de la cesta y actualiza la base de datos.
-	 * 
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	public void venderArticulos(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-			throws SQLException {
-
-		try {
-			int idPedido = gestionPedido.guardarPedidoEnBaseDeDatos(cliente, gestionPedido.getCesta(), conn);
-			gestionPedido.guardarDetallePedido(idPedido, cesta, conn);
-			tiket.guardarTicketEnBaseDeDatos(idPedido, tiket.getNumeroTiket(), tiket.getTotal(), conn);
-
-			gestionPedido.getCesta().clear();
-		} finally {
-			if (conn != null) {
-				conn.close(); // Cerrar la conexión porque hemos terminado
-			}
-		}
-	}
-
-	/**
-	 * Realiza un pedido agregando productos a la cesta y manejando el pago.
-	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionPago      La instancia de GestionPago.
-	 * @param cliente          El cliente que realiza el pedido.
-	 * @param fichero          La instancia de Fichero para guardar el ticket.
-	 * @param sc               El objeto Scanner para leer la entrada del usuario.
-	 * @param tiket            La instancia de Tiket para generar el ticket.
-	 * @throws SQLException
-	 */
-	public void generarPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-			throws SQLException {
-		boolean continuarCompra = true;
-		while (continuarCompra) {
-			System.out.println("Escriba ID del producto: ");
-			int productoID = sc.nextInt();
-			System.out.println("Escriba la cantidad del producto seleccionado: ");
-			int cantidadProducto = sc.nextInt();
-
-			agregarCesta(gestionProductos, productoID, cantidadProducto);
-			Menu.seguirComprando_Pagar();
-			int opcionPagar = sc.nextInt();
-			if (opcionPagar == 1) { // PAGAR
-				realizarPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
-				// Volver al menú de compra
-				continuarCompra = false;
-			} else if (opcionPagar == 2) { // SEGUIR COMPRANDO
-				continuarCompra = true;
-			} else if (opcionPagar == 3) { // ATRAS
-				continuarCompra = false;
-			}
-		}
-	}
-
-	/**
-	 * Realiza la compra del pedido realizado previamente y guarda datos en BD
-	 * (pedido y tiket).
-	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionPago      La instancia de GestionPago.
-	 * @param cliente          El cliente que realiza el pedido.
-	 * @param fichero          La instancia de Fichero para guardar el ticket.
-	 * @param sc               El objeto Scanner para leer la entrada del usuario.
-	 * @param tiket            La instancia de Tiket para generar el ticket.
-	 * @throws SQLException
-	 */
-	public void realizarPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-			throws SQLException {
-		String ticket = tiket.crearTicket(cesta, gestionProductos);
-		System.out.println(ticket);
-		gestionPago.metodoDePago(cliente, sc);
-
-		gestionPedido.venderArticulos(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
-//			guardarPedidoEnBaseDeDatos(cliente.getCodigo(), cesta, conn);
-//			guardarTiketEnBaseDeDatos(tiket, cliente.getCodigo(), conn);
-
-		Menu.deseaTiket();
-		int opcionTiket = sc.nextInt();
-		if (opcionTiket == 1) {
-			fichero.escribirFichero(ticket); 
-		}
-		Menu.Mensaje_Fin_Compra();
-		// Menú para usuarios
-		//GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
-		//		fichero, tiket, conn);
-	}
-
-//	/**
-//	 * Guarda el pedido en la base de datos.
-//	 * 
-//	 * @param cliente   El cliente que realiza el pedido.
-//	 * @param productos La lista de productos en el pedido.
-//	 * @param conn      La conexión a la base de datos.
-//	 * @return El ID del pedido generado.
-//	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-//	 */
-//	public int guardarPedidoEnBaseDeDatos(Cliente cliente, List<Producto> productos, Connection conn)
-//			throws SQLException {
-//		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
-//		try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
-//			pstmtPedido.setInt(1, cliente.getId());
-//			pstmtPedido.executeUpdate();
-//
-//			try (ResultSet generatedKeys = pstmtPedido.getGeneratedKeys()) {
-//				if (generatedKeys.next()) {
-//					int idPedido = generatedKeys.getInt(1);
-//					guardarDetallePedido(idPedido, productos, conn);
-//					return idPedido;
-//				} else {
-//					throw new SQLException("No se pudo obtener el ID del pedido.");
-//				}
-//			}
-//		}
-//	}
-
-//	public void guardarPedidoEnBaseDeDatos(int idCliente, List<Producto> cesta, Connection conn) throws SQLException {
-//		if (!verificarClienteExiste(idCliente, conn)) {
-//			throw new SQLException("El cliente con ID " + idCliente + " no existe.");
-//		}
-//
-//		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
-//		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
-//
-//		try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, PreparedStatement.RETURN_GENERATED_KEYS);
-//				PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalle)) {
-//
-//			// Insertar pedido
-//			pstmtPedido.setInt(1, idCliente);
-//			pstmtPedido.executeUpdate();
-//
-//			// Obtener el ID del pedido generado
-//			int idPedido;
-//			try (var rs = pstmtPedido.getGeneratedKeys()) {
-//				if (rs.next()) {
-//					idPedido = rs.getInt(1);
-//				} else {
-//					throw new SQLException("Error al obtener el ID del pedido.");
-//				}
-//			}
-//
-//			// Insertar detalles del pedido
-//			for (Producto producto : cesta) {
-//				pstmtDetalle.setInt(1, idPedido);
-//				pstmtDetalle.setInt(2, producto.getId());
-//				pstmtDetalle.setInt(3, producto.getCantidad());
-//				pstmtDetalle.addBatch();
-//			}
-//			pstmtDetalle.executeBatch();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			throw e;
-//		}
-//	}
-
-//	private void guardarTiketEnBaseDeDatos(Tiket tiket, int idPedido, Connection conn) throws SQLException {
-//		String sql = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
-//
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, idPedido);
-//			pstmt.setString(2, tiket.getNumeroTiket());
-//			pstmt.setFloat(3, tiket.getTotal());
-//			pstmt.executeUpdate();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			throw e;
-//		}
-//	}
-//
-//	private boolean verificarClienteExiste(int idCliente, Connection conn) throws SQLException {
-//		String sql = "SELECT COUNT(*) FROM Cliente WHERE idCliente = ?";
-//		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//			pstmt.setInt(1, idCliente);
-//			try (ResultSet rs = pstmt.executeQuery()) {
-//				if (rs.next()) {
-//					return rs.getInt(1) > 0;
-//				}
-//			}
-//		}
-//		return false;
-//	}
 
 	/**
 	 * Agrega un producto a la cesta de compra.
@@ -392,4 +301,18 @@ public class GestionPedido {
 	public List<Producto> getCesta() {
 		return cesta;
 	}
+
+//
+//private boolean verificarClienteExiste(int idCliente, Connection conn) throws SQLException {
+//	String sql = "SELECT COUNT(*) FROM Cliente WHERE idCliente = ?";
+//	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//		pstmt.setInt(1, idCliente);
+//		try (ResultSet rs = pstmt.executeQuery()) {
+//			if (rs.next()) {
+//				return rs.getInt(1) > 0;
+//			}
+//		}
+//	}
+//	return false;
+//}
 }

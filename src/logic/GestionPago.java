@@ -158,40 +158,6 @@ public class GestionPago {
 //		}
 //	}
 
-//	/**
-//	 * Actualiza el producto en la base de datos después de la venta.
-//	 * 
-//	 * @param conn            La conexión a la base de datos.
-//	 * @param productoEnCesta El producto vendido.
-//	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-//	 */
-//	private void actualizarProductoEnBaseDeDatos(Connection conn, Producto productoEnCesta) throws SQLException {
-//		Producto producto = gestionProducto.buscarProductoPorIdCatalogo(productoEnCesta.getId());
-//		if (producto != null) {
-//			int cantidadVendida = productoEnCesta.getCantidad();
-//			int nuevaCantidad = producto.getCantidad() - cantidadVendida;
-//
-//			String updateQuery = "UPDATE Pago SET estado = 'completado' WHERE id_cliente = ?";
-//			try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
-//				pstmt.setInt(1, nuevaCantidad);
-//				pstmt.setInt(2, producto.getId());
-//				pstmt.executeUpdate();
-//			}
-//		}
-//	}
-//
-//	/**
-//	 * Actualiza el producto en el catálogo después de la venta.
-//	 * 
-//	 * @param productoEnCesta El producto vendido.
-//	 */
-//	private void actualizarProductoEnCatalogo(Producto productoEnCesta) {
-//		Producto producto = gestionProducto.buscarProductoPorIdCatalogo(productoEnCesta.getId());
-//		if (producto != null) {
-//			int cantidadVendida = productoEnCesta.getCantidad();
-//			int nuevaCantidad = producto.getCantidad() - cantidadVendida;
-//			producto.setCantidad(nuevaCantidad);
-//		}
-//	}
+
 
 }
