@@ -44,7 +44,7 @@ public class GestionPago {
 				break;
 			case 2:
 				// Volver al menú anterior
-				aux = false;
+				aux = false; 
 				break;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");

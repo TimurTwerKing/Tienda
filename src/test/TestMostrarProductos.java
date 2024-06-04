@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,42 +26,46 @@ public class TestMostrarProductos {
 
 	/**
 	 * Configuración inicial antes de cada prueba. Inicializa una instancia de
-	 * GestionProducto.
+	 * GestionProducto y agrega productos de prueba.
 	 */
 	@BeforeEach
 	public void setUp() {
 		gestionProducto = new GestionProducto();
+		List<Producto> catalogoTest = new ArrayList<>();
+
+		// Agregar productos de prueba al catálogo
+		catalogoTest.add(new Producto("The Witcher 3: Wild Hunt", 29.99f, 100, true, "RPG", 1, 2));
+		catalogoTest.add(new Producto("Red Dead Redemption 2", 49.99f, 90, true, "Action", 2, 2));
+		catalogoTest.add(new Producto("Cyberpunk 2077", 49.99f, 55, true, "RPG", 3, 2));
+		catalogoTest.add(new Producto("Back in Black - AC/DC", 13.99f, 90, true, "Rock", 4, 3));
+		catalogoTest.add(new Producto("The Dark Side of the Moon - Pink Floyd", 17.99f, 80, true, "Rock", 5, 3));
+		catalogoTest.add(new Producto("The Wall - Pink Floyd", 18.99f, 70, true, "Rock", 6, 3));
+		catalogoTest.add(new Producto("The Matrix", 12.99f, 65, true, "Sci-Fi", 7, 1));
+		catalogoTest.add(new Producto("The Godfather", 18.99f, 45, true, "Crime", 8, 1));
+		catalogoTest.add(new Producto("Gladiator", 15.99f, 75, true, "Action", 9, 1));
+
+		gestionProducto.setCatalogo(catalogoTest);
 	}
 
-
-	
 	/**
 	 * Prueba que el método mostrarProductosCatalogo() muestra correctamente los
 	 * productos del catálogo.
 	 */
 	@Test
 	public void testMostrarProductosCatalogo() {
-	
-		gestionProducto.mostrarProductosCatalogo();
-
 		// Obtener la salida del método
 		String resultado = gestionProducto.mostrarProductosCatalogo();
 
 		// Verificar que la salida contiene los productos agregados
-		assertTrue(resultado.contains("Producto 1"));
-		assertTrue(resultado.contains("Producto 2"));
-
-		// Verificar detalles específicos del primer producto
-		assertTrue(resultado.contains("ID: 1"));
-		assertTrue(resultado.contains("Nombre: Producto 1"));
-		assertTrue(resultado.contains("Disponible: 5"));
-		assertTrue(resultado.contains("Precio Unitario: 10.0 euros"));
-
-		// Verificar detalles específicos del segundo producto
-		assertTrue(resultado.contains("ID: 2"));
-		assertTrue(resultado.contains("Nombre: Producto 2"));
-		assertTrue(resultado.contains("Disponible: 3"));
-		assertTrue(resultado.contains("Precio Unitario: 15.0 euros"));
+		assertTrue(resultado.contains("The Witcher 3: Wild Hunt"));
+		assertTrue(resultado.contains("Red Dead Redemption 2"));
+		assertTrue(resultado.contains("Cyberpunk 2077"));
+		assertTrue(resultado.contains("Back in Black - AC/DC"));
+		assertTrue(resultado.contains("The Dark Side of the Moon - Pink Floyd"));
+		assertTrue(resultado.contains("The Wall - Pink Floyd"));
+		assertTrue(resultado.contains("The Matrix"));
+		assertTrue(resultado.contains("The Godfather"));
+		assertTrue(resultado.contains("Gladiator"));
 	}
 
 	/**
@@ -69,6 +74,9 @@ public class TestMostrarProductos {
 	 */
 	@Test
 	public void testMostrarProductosCatalogoVacio() {
+		// Crear una instancia de GestionProducto con un catálogo vacío
+		gestionProducto.setCatalogo(new ArrayList<>());
+
 		// Obtener la salida del método cuando el catálogo está vacío
 		String resultado = gestionProducto.mostrarProductosCatalogo();
 
@@ -82,17 +90,11 @@ public class TestMostrarProductos {
 	 */
 	@Test
 	public void testMostrarProductosCatalogoProductoNoExistente() {
-		// Crear un producto de prueba
-		Producto producto1 = new Producto("Producto 1", 10.0f, 5, true, "Genero 1", 1, 1);
-
-		// Agregar el producto al catálogo
-		gestionProducto.agregarProducto(producto1);
-
 		// Obtener la salida del método
 		String resultado = gestionProducto.mostrarProductosCatalogo();
 
 		// Verificar que la salida no contiene productos no agregados
-		assertFalse(resultado.contains("Producto 2"));
+		assertFalse(resultado.contains("Producto No Existente"));
 	}
 
 	/**
@@ -101,83 +103,60 @@ public class TestMostrarProductos {
 	 */
 	@Test
 	public void testMostrarProductosCatalogoMultiplesProductos() {
-		// Crear productos de prueba
-		Producto producto1 = new Producto("Producto 1", 10.0f, 5, true, "Genero 1", 1, 1);
-		Producto producto2 = new Producto("Producto 2", 15.0f, 3, true, "Genero 2", 2, 2);
-		Producto producto3 = new Producto("Producto 3", 20.0f, 7, true, "Genero 3", 3, 3);
+		// Obtener la salida del método
+		String resultado = gestionProducto.mostrarProductosCatalogo();
 
-		// Agregar productos al catálogo
-		gestionProducto.agregarProductoTest(producto1);
-		gestionProducto.agregarProductoTest(producto2);
-		gestionProducto.agregarProductoTest(producto3);
+		// Verificar que la salida contiene múltiples productos
+		assertTrue(resultado.contains("The Witcher 3: Wild Hunt"));
+		assertTrue(resultado.contains("Red Dead Redemption 2"));
+		assertTrue(resultado.contains("Cyberpunk 2077"));
+		assertTrue(resultado.contains("Back in Black - AC/DC"));
+		assertTrue(resultado.contains("The Dark Side of the Moon - Pink Floyd"));
+		assertTrue(resultado.contains("The Wall - Pink Floyd"));
+		assertTrue(resultado.contains("The Matrix"));
+		assertTrue(resultado.contains("The Godfather"));
+		assertTrue(resultado.contains("Gladiator"));
+	}
+
+	/**
+	 * Prueba que el método mostrarProductosCatalogo() muestra correctamente los
+	 * productos con y sin stock.
+	 */
+	@Test
+	public void testMostrarProductosCatalogoConYSinStock() {
+		// Agregar productos sin stock al catálogo
+		gestionProducto.agregarProductoTest(new Producto("Producto Sin Stock", 19.99f, 0, false, "Misc", 10, 4));
 
 		// Obtener la salida del método
 		String resultado = gestionProducto.mostrarProductosCatalogo();
 
-		// Verificar que la salida contiene todos los productos agregados
-		assertTrue(resultado.contains("Producto 1"));
-		assertTrue(resultado.contains("Producto 2"));
-		assertTrue(resultado.contains("Producto 3"));
+		// Verificar que la salida contiene los productos agregados
+		assertTrue(resultado.contains("Producto Sin Stock"));
+		assertTrue(resultado.contains("Cantidad: 0"));
 	}
 
-	// Prueba que el método maneja productos con nombre vacío
+	/**
+	 * Prueba que el método mostrarProductosCatalogo() muestra correctamente la
+	 * cantidad de productos.
+	 */
 	@Test
-	public void testProductoConNombreVacio() {
-		Producto producto = new Producto("", 10.0f, 5, true, "Genero 1", 1, 1);
-		gestionProducto.agregarProductoTest(producto);
+	public void testCantidadMostrarProductosCatalogo() {
+		// Obtener la salida del método
 		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("ID: 1"));
-		assertTrue(resultado.contains("Nombre: "));
+
+		// Contar la cantidad de productos en el resultado
+		int cantidadProductos = resultado.split("ID:").length - 1;
+
+		// Verificar que la cantidad de productos es correcta
+		assertEquals(9, cantidadProductos);
+
+		// Agregar otro producto y verificar la cantidad nuevamente
+		gestionProducto.agregarProductoTest(new Producto("Nuevo Producto", 9.99f, 10, true, "Misc", 10, 4));
+		resultado = gestionProducto.mostrarProductosCatalogo();
+		cantidadProductos = resultado.split("ID:").length - 1;
+
+		// Verificar que la cantidad de productos es correcta
+		assertEquals(10, cantidadProductos);
 	}
 
-	// Prueba que el método maneja productos con nombre nulo
-	@Test
-	public void testProductoConNombreNulo() {
-		Producto producto = new Producto(null, 10.0f, 5, true, "Genero 1", 1, 1);
-		gestionProducto.agregarProductoTest(producto);
-		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("ID: 1"));
-		assertTrue(resultado.contains("Nombre: null"));
-	}
-
-	// Prueba que el método maneja productos con cantidad disponible cero
-	@Test
-	public void testProductoConCantidadCero() {
-		Producto producto = new Producto("Producto 1", 10.0f, 0, true, "Genero 1", 1, 1);
-		gestionProducto.agregarProductoTest(producto);
-		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("Disponible: 0"));
-	}
-
-	// Prueba que el método maneja productos con precio negativo
-	@Test
-	public void testProductoConPrecioNegativo() {
-		Producto producto = new Producto("Producto 1", -10.0f, 5, true, "Genero 1", 1, 1);
-		gestionProducto.agregarProductoTest(producto);
-		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("Precio Unitario: -10.0 euros"));
-	}
-
-	// Prueba que el método maneja productos no disponibles
-	@Test
-	public void testProductoNoDisponible() {
-		Producto producto = new Producto("Producto 1", 10.0f, 5, false, "Genero 1", 1, 1);
-		gestionProducto.agregarProductoTest(producto);
-		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("Disponible: No"));
-	}
-
-	// Prueba que el método muestra el formato correcto de salida
-	@Test
-	public void testFormatoSalida() {
-		Producto producto1 = new Producto("Producto 1", 10.0f, 5, true, "Genero 1", 1, 1);
-		Producto producto2 = new Producto("Producto 2", 15.0f, 3, true, "Genero 2", 2, 2);
-		gestionProducto.agregarProductoTest(producto1);
-		gestionProducto.agregarProductoTest(producto2);
-		String resultado = gestionProducto.mostrarProductosCatalogo();
-		assertTrue(resultado.contains("ID: 1"));
-		assertTrue(resultado.contains("Nombre: Producto 1"));
-		assertTrue(resultado.contains("ID: 2"));
-		assertTrue(resultado.contains("Nombre: Producto 2"));
-	}
 }

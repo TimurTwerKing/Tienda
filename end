@@ -1,0 +1,267 @@
+[33mcommit 02b167c9e44cc8b885aaa06e7f26637596ffb69d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu May 23 14:48:14 2024 +0200
+
+    beta
+
+[33mcommit 2675c117031a95f5c228ffaa8a8a96b96e482755[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu May 23 02:55:47 2024 +0200
+
+    implementacion de pedido y tiket en la base de datos ( TODO: implementar con carga de clientes real)
+
+[33mcommit da548ac82387466690b652dda1678bee4a3cb2f8[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu May 23 02:55:08 2024 +0200
+
+    implementacion de pedido y tiket en la base de datos ( TODO: implementar con carga de clientes real)
+
+[33mcommit 41ddbba376890a9b59e22488ad427ae9a37c82ed[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed May 22 23:25:26 2024 +0200
+
+    prueba implementacion tiket y pedido en base de datos
+
+[33mcommit d1b5eed0edc40757f89af5ed1b3c171bd2e56112[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed May 22 03:40:56 2024 +0200
+
+    menu mas interactivo y funcional
+
+[33mcommit adf1a20f0e4d6554211137516d60cac2b4d7ce6f[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Tue May 21 13:58:33 2024 +0200
+
+    arreglo de tiket, implementacion del menu mas complejo
+
+[33mcommit ad3417a003c00609e140d2d7e32b712e9dd4ed57[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sun May 19 23:48:25 2024 +0200
+
+    Reestructuracion del main
+
+[33mcommit 0c588297e3726ea10187e9164246b6948b6abd75[m
+Merge: 55b031e adc5848
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sun May 19 20:47:14 2024 +0200
+
+    v1.0
+
+[33mcommit 55b031e97303dcb4600aa3530b3f9572e55f2452[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sun May 19 20:44:29 2024 +0200
+
+    v1
+
+[33mcommit adc58482d03bf04d67f852ea3d9fe05c7e2e4361[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sun May 19 20:35:38 2024 +0200
+
+    Reestructuracion de las clases y actualizacion de productos en BD
+
+[33mcommit 33bcb7cae2d92e44f3ea24c300e344773eaa80ff[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sun May 19 20:34:40 2024 +0200
+
+    Reestructuracion de las clases y actualizacion de productos en BD
+
+[33mcommit 6b324bfb940d886b8f2dc529de48ffafc746b2a2[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Tue May 14 23:55:47 2024 +0200
+
+    Dia del juicio final
+
+[33mcommit f95bd31465b484ef30b853f814fdc82032a8d38d[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Tue May 14 21:53:02 2024 +0200
+
+    Mejora del menu y optimizacion de la logica
+
+[33mcommit 37701543b847a9976dbcf297adb12cb458ffd97b[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Tue May 14 04:46:00 2024 +0200
+
+    Gestion de Productos adaptada a la base de datos
+
+[33mcommit 3c394e02a41fa3ea70da5c5ddedaa33d5c5cb6fa[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu Mar 21 16:22:07 2024 +0100
+
+    clase2
+
+[33mcommit db45fad635812b51eccf3841fc815a71ac1f2dda[m
+Merge: c70032d 20d88ad
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 20 13:52:36 2024 +0100
+
+    Merge branch 'develop' of https://github.com/TimurTwerKing/Tienda into develop
+
+[33mcommit c70032d6da0fda6825c4e0733693dab653aa52b7[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 20 13:52:22 2024 +0100
+
+    1
+
+[33mcommit 20d88ad42accee8f8995cfcf89a9e40995c998b8[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Tue Mar 19 19:43:48 2024 +0100
+
+    1
+
+[33mcommit 87c92e9f7cf39ba89b0e8261c3248b6a1f176bbb[m
+Merge: 06cbb2c 3ac4727
+Author: Timur <Timurnator_@outlook.com>
+Date:   Mon Mar 18 21:36:01 2024 +0100
+
+    Merge branch 'develop' of https://github.com/TimurTwerKing/Tienda into develop
+
+[33mcommit 06cbb2c5d74d6be47f8c413dd2972138df976506[m
+Merge: d2313e3 00cfe3f
+Author: Timur <Timurnator_@outlook.com>
+Date:   Mon Mar 18 21:35:33 2024 +0100
+
+    casa
+
+[33mcommit 3ac4727969b38eda19a5567bcf621ddaec1f5735[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Mon Mar 18 20:02:24 2024 +0100
+
+    implementacion de tiket
+
+[33mcommit d2313e30fd4896ffb5fd31b9f6852973ff70e396[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Sun Mar 17 21:08:26 2024 +0100
+
+    domingo
+
+[33mcommit cb76189d93f059c2bcc87603234debf7125b8b98[m
+Merge: 8fc0374 7fc1f8e
+Author: Timur <Timurnator_@outlook.com>
+Date:   Sat Mar 16 15:12:09 2024 +0100
+
+    Merge branch 'develop' of https://github.com/TimurTwerKing/Tienda into develop
+
+[33mcommit 8fc0374cb99f7785e9f9d07feaa6e76b41d89f59[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Sat Mar 16 15:11:59 2024 +0100
+
+    casa
+
+[33mcommit 7fc1f8e00f94a883ce06f0c5f7b773f80cd03f04[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Sat Mar 16 15:11:13 2024 +0100
+
+    casa
+
+[33mcommit 394d3e65b4c089220d0edfa25bdb089050dce5b2[m
+Merge: b843138 60b9fbc
+Author: Timur <Timurnator_@outlook.com>
+Date:   Thu Mar 14 11:59:10 2024 +0100
+
+    Merge branch 'develop' of https://github.com/TimurTwerKing/Tienda into develop
+
+[33mcommit 60b9fbc7bb8e98d3f5379c908a6ac40c705fb8f3[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 13 20:30:34 2024 +0100
+
+    clase
+
+[33mcommit b8431380945db5a662e03dc86b8849a09a01a558[m
+Merge: f40eec8 923928d
+Author: Timur <Timurnator_@outlook.com>
+Date:   Wed Mar 13 13:59:32 2024 +0100
+
+    asd
+
+[33mcommit f40eec8bfcda22277a9d991f1b24e3250cfd6617[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Wed Mar 13 13:58:40 2024 +0100
+
+    m
+
+[33mcommit 923928d63d9edda271ba2cdb138756d651d152b4[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 13 13:54:17 2024 +0100
+
+    prueba casera
+
+[33mcommit e26bcb94e1390b4b628a4ad6fc835a6bb58c6897[m
+Merge: ceaf847 38bdad1
+Author: Timur <Timurnator_@outlook.com>
+Date:   Thu Mar 7 13:07:56 2024 +0100
+
+    kuku
+
+[33mcommit 00cfe3f49d22aa6713fbfa96d21da70ed8e24203[m[33m ([m[1;33mtag: [m[1;33mv1.0[m[33m)[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu Mar 7 13:03:00 2024 +0100
+
+    git ignore
+
+[33mcommit ceaf8472fa7673c3635d5172815c9b6c0564a76e[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Thu Mar 7 12:56:00 2024 +0100
+
+    puta
+
+[33mcommit 38bdad16940900e187b3f023efb8a25dd2e03e39[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Thu Mar 7 12:54:00 2024 +0100
+
+    implementacion productos a GestionProductos
+
+[33mcommit d2bcafead6a5143ddbf352a09a71915b985f2454[m
+Merge: c429743 0dfe4e5
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 6 17:55:38 2024 +0100
+
+    new
+
+[33mcommit c429743ccf9ea13409a847b29cd9dc0a5a103a2f[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 6 17:42:53 2024 +0100
+
+    Resolved merge conflict by incorporating changes from origin/master
+
+[33mcommit 0dfe4e56d13bc047709a0c383d5990735c5387e4[m
+Merge: 1dc5d2b 947283d
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 6 17:33:39 2024 +0100
+
+    Resolved merge conflict by incorporating changes from origin/master
+
+[33mcommit 1dc5d2bca3b6d1bed3596c8583efdaa0ddad3ce6[m
+Author: Timur Bogach <Timurnator_@outlook.com>
+Date:   Wed Mar 6 17:25:28 2024 +0100
+
+    local
+
+[33mcommit 947283dc05b51c4492b490e2d97135ef3dd3b6c8[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Wed Mar 6 14:36:39 2024 +0100
+
+    para la clase
+
+[33mcommit f22f149c12248fd3a7a2fe0ec9bba6b7facff3f0[m[33m ([m[1;32mtester[m[33m)[m
+Author: Timur <Timurnator_@outlook.com>
+Date:   Wed Feb 28 15:14:04 2024 +0100
+
+    v0.3
+
+[33mcommit 79d910695f56586204ac25def096c4a161f83f0c[m
+Author: Timurnator_ <153856831+TimurTwerKing@users.noreply.github.com>
+Date:   Sun Feb 11 22:51:20 2024 +0100
+
+    v0.2
+
+[33mcommit 2a34bdc944cb66f5085cc2c7cd6172ba49f3ae35[m
+Author: Timurnator_ <153856831+TimurTwerKing@users.noreply.github.com>
+Date:   Sun Feb 11 22:37:01 2024 +0100
+
+    v0.1
+
+[33mcommit 656d5b40b5725527cbd05f50bebb2a9b65c96efb[m
+Author: Timurnator_ <153856831+TimurTwerKing@users.noreply.github.com>
+Date:   Sun Feb 11 22:34:12 2024 +0100
+
+    v0.0

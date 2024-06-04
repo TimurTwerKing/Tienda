@@ -32,7 +32,7 @@ public class Leer {
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
-		return sdato;
+		return sdato; 
 	}
 
 	/**

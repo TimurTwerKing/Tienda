@@ -172,9 +172,12 @@ public class GestionPedido {
 		Menu.deseaTiket();
 		int opcionTiket = sc.nextInt();
 		if (opcionTiket == 1) {
-			fichero.escribirFichero(ticket);
+			fichero.escribirFichero(ticket); 
 		}
 		Menu.Mensaje_Fin_Compra();
+		// Menú para usuarios
+		//GestionMenu.menuUsuarioLogueado(sc, gestionProductos, gestionPedido, gestionPago, cliente,
+		//		fichero, tiket, conn);
 	}
 
 //	/**

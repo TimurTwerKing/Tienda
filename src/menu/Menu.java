@@ -17,7 +17,7 @@ public class Menu {
     }
 
     public static void Mensaje_Fin_Compra() {
-        System.out.println("¡Gracias por su compra! ¡Hasta luego!");
+        System.out.println("¡Gracias por su compra! ¡Hasta luego!\n");
     }
 
     public static void mostrarMenuPrincipal() {
@@ -65,7 +65,7 @@ public class Menu {
 
     public static void mostrarMenuCesta() {
         System.out.println("Seleccione una opción:");
-        System.out.println("1. Realizar la compra");
+        System.out.println("1. Realizar la compra"); 
         System.out.println("2. Borrar producto");
         System.out.println("3. Volver");
     }

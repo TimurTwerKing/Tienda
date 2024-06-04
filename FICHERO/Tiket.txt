@@ -1,19 +1,19 @@
 
-Ticket Número: TKT1716468397700
-Fecha: Thu May 23 14:46:37 CEST 2024
+Ticket Número: TKT1717524903885
+Fecha: Tue Jun 04 20:15:03 CEST 2024
 
 Artículos:
-ID: 1
-Nombre: The Shawshank Redemption
-Cantidad: 1
-Precio Unitario: 16.99 euros
-Total: 16.99 euros
-
 ID: 30
 Nombre: 21 - Adele
-Cantidad: 4
+Cantidad: 2
 Precio Unitario: 14.99 euros
-Total: 59.96 euros
+Total: 29.98 euros
 
-Total a pagar: 76.95 euros
+ID: 20
+Nombre: Horizon Zero Dawn
+Cantidad: 2
+Precio Unitario: 29.99 euros
+Total: 59.98 euros
+
+Total a pagar: 89.96 euros
 

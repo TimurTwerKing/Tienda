@@ -26,7 +26,7 @@ public class GestionProducto {
 	 * Constructor de la clase. Inicializa la lista de productos del catálogo.
 	 */
 	public GestionProducto(Connection conn) {
-		this.catalogo = new ArrayList<>();
+		this.catalogo = new ArrayList<>(); 
 		this.conn = conn;
 	}
 
@@ -52,6 +52,22 @@ public class GestionProducto {
 			}
 		}
 		return this.catalogo;
+	}
+
+	/**
+	 * Muestra los productos del catálogo en un formato legible.
+	 * 
+	 * @return Una cadena con los detalles de los productos en el catálogo.
+	 */
+	public String mostrarProductosCatalogo() {
+		StringBuilder resultado = new StringBuilder();
+		for (Producto producto : catalogo) {
+			resultado.append("ID: ").append(producto.getId()).append("\n");
+			resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
+			resultado.append("Precio: ").append(producto.getPrecioUnidad()).append(" euros\n");
+			resultado.append("Cantidad: ").append(producto.getCantidad()).append("\n\n");
+		}
+		return resultado.toString();
 	}
 
 	/**
@@ -141,21 +157,6 @@ public class GestionProducto {
 	}
 
 	/**
-	 * Muestra los productos del catálogo en un formato legible.
-	 * 
-	 * @return Una cadena con los detalles de los productos en el catálogo.
-	 */
-	public String mostrarProductosCatalogo() {
-		StringBuilder resultado = new StringBuilder();
-		for (Producto producto : catalogo) {
-			resultado.append("ID: ").append(producto.getId()).append("\n").append("Nombre: ")
-					.append(producto.getNombre()).append("\n").append("Precio: ").append(producto.getPrecioUnidad())
-					.append(" euros\n").append("Cantidad: ").append(producto.getCantidad()).append("\n\n");
-		}
-		return resultado.toString();
-	}
-
-	/**
 	 * Agrega un producto al catálogo.
 	 * 
 	 * @param nombre      El nombre del producto.
@@ -200,7 +201,7 @@ public class GestionProducto {
 	public void agregarProductoTest(Producto producto) {
 		catalogo.add(producto);
 	}
- 
+
 	/**
 	 * Agrega un producto a la base de datos.
 	 * 
@@ -266,8 +267,17 @@ public class GestionProducto {
 		for (Producto producto : catalogo) {
 			if (producto.getId() == id) {
 				return producto;
-			}
+			} 
 		}
 		return null;
 	}
+
+	public List<Producto> getCatalogo() {
+		return catalogo;
+	}
+
+	public List<Producto> setCatalogo(List<Producto> catalogo) {
+		return this.catalogo = catalogo;
+	}
+	
 }
