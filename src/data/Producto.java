@@ -14,6 +14,7 @@ public class Producto {
 	private String genero;
 	private Integer idProducto;
 	private Integer idCategoria;
+	private boolean activo; // Nuevo atributo
 
 	// Constructores
 	public Producto(Producto productoCatalogo) {
@@ -22,6 +23,17 @@ public class Producto {
 	public Producto() {
 	}
 
+	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
+			Integer idCategoria, boolean activo) {
+		this.nombre = nombre;
+		this.precioUnidad = precioUn;
+		this.cantidad = cantidad;
+		this.stock = stock;
+		this.genero = genero;
+		this.idProducto = idProducto;
+		this.idCategoria = idCategoria;
+		this.activo = activo;
+	}
 	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
 			Integer idCategoria) {
 		this.nombre = nombre;
@@ -107,7 +119,13 @@ public class Producto {
 	public void setStock(Boolean stock) {
 		this.stock = stock;
 	}
-	
-	
-	
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
+
 }

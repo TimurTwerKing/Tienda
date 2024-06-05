@@ -131,7 +131,7 @@ public class GestionCliente {
 	 */
 	public List<Cliente> cargarClientes(Connection conn) throws SQLException {
 		List<Cliente> clientes = new ArrayList<>();
-		String sql = "SELECT id, numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones FROM Cliente";
+		String sql = "SELECT id, numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones, activo FROM Cliente";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
@@ -148,6 +148,7 @@ public class GestionCliente {
 				cliente.setTelefono(rs.getString("telefono"));
 				cliente.setMail(rs.getString("mail"));
 				cliente.setObservaciones(rs.getString("observaciones"));
+				cliente.setActivo(rs.getBoolean("activo"));
 				clientes.add(cliente);
 			}
 		}
@@ -229,20 +230,48 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Borra un cliente de la base de datos por su ID.
+	 * Método para dar de baja un cliente.
 	 * 
-	 * @param clienteId El ID del cliente a borrar.
+	 * @param clienteId El ID del cliente a dar de baja.
 	 * @param conn      La conexión a la base de datos.
 	 */
-	public void borrarClienteDeBaseDeDatos(int clienteId, Connection conn) {
-		String sql = "DELETE FROM Cliente WHERE id = ?";
+	public void darDeBajaCliente(int clienteId, Connection conn) {
+		String sql = "UPDATE Cliente SET activo = FALSE WHERE id = ?";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, clienteId);
-			pstmt.executeUpdate();
-			System.out.println("Cliente eliminado exitosamente.");
+			int rowsAffected = pstmt.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Cliente dado de baja exitosamente.");
+			} else {
+				System.out.println("No se encontró el cliente con ID: " + clienteId);
+			}
 		} catch (SQLException e) {
-			System.out.println("No ha sido posible borrar al cliente desde la base de datos.");
+			System.out.println("No ha sido posible dar de baja al cliente.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Método para dar de alta un cliente.
+	 * 
+	 * @param clienteId El ID del cliente a dar de alta.
+	 * @param conn      La conexión a la base de datos.
+	 */
+	public void darDeAltaCliente(int clienteId, Connection conn) {
+		String sql = "UPDATE Cliente SET activo = TRUE WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, clienteId);
+			int filasActualizadas = pstmt.executeUpdate();
+
+			if (filasActualizadas > 0) {
+				System.out.println("El cliente con ID " + clienteId + " ha sido dado de alta exitosamente.");
+			} else {
+				System.out.println("No se encontró un cliente con el ID " + clienteId + ".");
+			}
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible dar de alta al cliente en la base de datos.");
 			e.printStackTrace();
 		}
 	}
@@ -262,6 +291,14 @@ public class GestionCliente {
 		return null;
 	}
 
+	/**
+	 * Obtiene el ID de un cliente por su correo electrónico.
+	 * 
+	 * @param mail El correo electrónico del cliente.
+	 * @param conn La conexión a la base de datos.
+	 * @return El ID del cliente.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
 	public int obtenerIDClientePorMail_BD(String mail, Connection conn) throws SQLException {
 		String sql = "SELECT id FROM Cliente WHERE mail = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -276,18 +313,132 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Muestra los clientes en un formato legible.
+	 * Muestra los clientes activos en un formato legible.
 	 * 
-	 * @return Una cadena con los detalles de los clientes.
+	 * @param conn La conexión a la base de datos.
+	 * @return Una cadena con los detalles de los clientes activos.
 	 */
-	public String mostrarClientes() {
+	public String mostrarClientesActivos(Connection conn) {
+		try {
+			this.clientes = cargarClientes(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		StringBuilder resultado = new StringBuilder();
+		boolean hayActivos = false;
 		for (Cliente cliente : this.clientes) {
-			resultado.append("ID: ").append(cliente.getId()).append("\n").append("Número Cliente: ")
-					.append(cliente.getNumeroCliente()).append("\n").append("Nombre: ").append(cliente.getNombre())
-					.append(" ").append(cliente.getApellidos()).append("\n").append("Correo: ")
-					.append(cliente.getMail()).append("\n\n");
+			if (cliente.isActivo()) {
+				resultado.append("ID: ").append(cliente.getId()).append("\n");
+				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n");
+				resultado.append("Activo: Sí\n\n");
+				hayActivos = true;
+			}
+		}
+		if (!hayActivos) {
+			resultado.append("No hay usuarios dados de alta");
 		}
 		return resultado.toString();
+	}
+
+	/**
+	 * Método orquestador para gestionar los clientes inactivos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void darDeAltaCliente(Connection conn) {
+		if (!hayClientesInactivos(conn)) {
+			System.out.println("No hay usuarios dados de baja");
+		} else {
+			System.out.println("Clientes inactivos en el sistema:");
+			System.out.println(mostrarClientesInactivos(conn));
+			System.out.println("Ingrese el ID del cliente que desea dar de alta:");
+			int idClienteInactivo = Leer.datoInt();
+			darDeAltaCliente(idClienteInactivo, conn);
+		}
+	}
+
+	/**
+	 * Método orquestador para gestionar los clientes activos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void darDeBajaCliente(Connection conn) {
+		if (!hayClientesActivos(conn)) {
+			System.out.println("No hay usuarios dados de alta");
+		} else {
+			System.out.println("Clientes activos en el sistema:");
+			System.out.println(mostrarClientesActivos(conn));
+			System.out.println("Ingrese el ID del cliente que desea dar de baja:");
+			int idClienteActivo = Leer.datoInt();
+			darDeBajaCliente(idClienteActivo, conn);
+		}
+	}
+
+	/**
+	 * Muestra los clientes inactivos en un formato legible.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 * @return Una cadena con los detalles de los clientes inactivos.
+	 */
+	public String mostrarClientesInactivos(Connection conn) {
+		try {
+			this.clientes = cargarClientes(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		StringBuilder resultado = new StringBuilder();
+		boolean hayInactivos = false;
+		for (Cliente cliente : this.clientes) {
+			if (!cliente.isActivo()) {
+				resultado.append("ID: ").append(cliente.getId()).append("\n");
+				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n");
+				resultado.append("Activo: No\n\n");
+				hayInactivos = true;
+			}
+		}
+		if (!hayInactivos) {
+			resultado.append("No hay usuarios dados de baja");
+		}
+		return resultado.toString();
+	}
+
+	/**
+	 * Verifica si hay clientes activos en la base de datos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 * @return true si hay clientes activos, false en caso contrario.
+	 */
+	public boolean hayClientesActivos(Connection conn) {
+		try {
+			this.clientes = cargarClientes(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		for (Cliente cliente : this.clientes) {
+			if (cliente.isActivo()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Verifica si hay clientes inactivos en la base de datos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 * @return true si hay clientes inactivos, false en caso contrario.
+	 */
+	public boolean hayClientesInactivos(Connection conn) {
+		try {
+			this.clientes = cargarClientes(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		for (Cliente cliente : this.clientes) {
+			if (!cliente.isActivo()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

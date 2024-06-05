@@ -19,26 +19,28 @@ public class Cliente {
 	private String mail;
 	private String observaciones;
 	private int id; // ID CLIENTE AUTO INCREMENTADO
+	private boolean activo;
 
-	// Constructores
-	public Cliente() {
-	}
-
-	public Cliente(String numerocliente, String nombre, String apellidos, String direccion, String localidad,
-			String provincia, String pais, String codigopostal, String telefono, String mail, String observaciones,
-			Integer id) {
-		this.numeroCliente = numerocliente;
+	public Cliente(String numeroCliente, String nombre, String apellidos, String direccion, String localidad,
+			String provincia, String pais, String codigoPostal, String telefono, String mail, String observaciones,
+			int id, boolean activo) {
+		this.numeroCliente = numeroCliente;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.direccion = direccion;
 		this.localidad = localidad;
 		this.provincia = provincia;
 		this.pais = pais;
-		this.codigoPostal = codigopostal;
+		this.codigoPostal = codigoPostal;
 		this.telefono = telefono;
 		this.mail = mail;
 		this.observaciones = observaciones;
 		this.id = id;
+		this.activo = activo;
+	}
+
+// Constructores
+	public Cliente() {
 	}
 
 	public Cliente(String numerocliente, String nombre, String apellidos, String direccion, String localidad,
@@ -153,6 +155,14 @@ public class Cliente {
 	public void setId(int id) {
 		this.id = id;
 
+	}
+
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
 	}
 
 	// Método para mostrar los datos del cliente

@@ -68,12 +68,10 @@ public class Aplicacion {
 					System.out.println("Opción no válida. Intente de nuevo.");
 				}
 			}
-			// Mostrar mensaje de finalización
 			Menu.Mensaje_Fin();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			// Cerrar la conexión porque hemos terminado
 			if (conn != null) {
 				try {
 					conn.close();

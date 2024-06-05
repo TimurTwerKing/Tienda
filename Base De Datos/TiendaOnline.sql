@@ -36,6 +36,7 @@ CREATE TABLE Producto (
     genero VARCHAR(100),
     id_categoria INT,
     id_albaran INT,
+    activo BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id),
     FOREIGN KEY (id_albaran) REFERENCES Albaran(id)
 );
@@ -62,7 +63,8 @@ CREATE TABLE Cliente (
     codigo_postal VARCHAR(20),
     telefono VARCHAR(20),
     mail VARCHAR(255) UNIQUE,
-    observaciones TEXT
+    observaciones TEXT,
+    activo BOOLEAN DEFAULT TRUE
 );
 
 -- Tabla Pedido con campo para fecha de pedido

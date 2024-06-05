@@ -21,11 +21,29 @@ public class OrquestradorMenu {
 	private Connection conn;
 	private Scanner sc;
 
+	/**
+	 * Constructor de la clase.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 * @param sc   El escáner para la entrada de usuario.
+	 */
 	public OrquestradorMenu(Connection conn, Scanner sc) {
 		this.sc = sc;
 		this.conn = conn;
 	}
 
+	/**
+	 * Maneja el menú para usuarios.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPedido    La instancia de GestionPedido.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param gestionCliente   La instancia de GestionCliente.
+	 * @param cliente          El cliente actual.
+	 * @param fichero          La instancia de Fichero.
+	 * @param tiket            La instancia de Tiket.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
 	public void manejarMenuUsuario(GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket)
 			throws SQLException {
@@ -47,7 +65,7 @@ public class OrquestradorMenu {
 				cliente = gestionCliente.crearCliente(this.conn);
 				if (cliente != null) {
 					gestionCliente.agregarCliente(cliente, this.conn);
-					// Obtener el ID generado automático en BD
+					// Obtener el ID generado automáticamente en la BD
 					cliente.setId(gestionCliente.obtenerIDClientePorMail_BD(cliente.getMail(), conn));
 					if (cliente.getId() > 0) {
 						this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
@@ -65,9 +83,21 @@ public class OrquestradorMenu {
 		}
 	}
 
+	/**
+	 * Maneja el menú para administradores.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionCliente   La instancia de GestionCliente.
+	 * @param gestionAlbaran   La instancia de GestionAlbaran.
+	 * @param conn             La conexión a la base de datos.
+	 */
 	public void manejarMenuAdministrador(GestionProducto gestionProductos, GestionCliente gestionCliente,
 			GestionAlbaran gestionAlbaran, Connection conn) {
-		// Menú para administradores
+		// Dado a la estructura de la BD entidad relacion, no nos interesa borrar los
+		// productos ni los clientes ya que para ello debemos borrar tambien las
+		// referencias de las ventas ya realizadas en otras tablas.
+		// Por ello se ha optado por dar de baja a los clientes y inactivar los
+		// productos.
 		boolean volverAdmin = false;
 		while (!volverAdmin) {
 			Menu.mostrarMenuAdministrador();
@@ -87,33 +117,15 @@ public class OrquestradorMenu {
 				break;
 			case 2:
 				// Borrar productos
-				System.out.println("Productos en el catálogo:");
-				System.out.println(gestionProductos.mostrarProductosCatalogo());
-				System.out.println("Ingrese el ID del producto a borrar:");
-				int idProducto = Leer.datoInt();
-				gestionProductos.borrarProductoDeBaseDeDatos(idProducto);
+				gestionProductos.inactivizarProducto(conn);
 				break;
 			case 3:
-				// Eliminar usuarios
-				System.out.println("Clientes en el sistema:");
-				System.out.println(gestionCliente.mostrarClientes());
-				System.out.println("Ingrese el ID del cliente a eliminar:");
-				int idCliente = Leer.datoInt();
-				gestionCliente.borrarClienteDeBaseDeDatos(idCliente, conn);
+				// Dar de baja usuarios
+				gestionCliente.darDeBajaCliente(conn);
 				break;
 			case 4:
-				// Guardar albarán
-				System.out.println("Ingrese el ID del proveedor:");
-				int idProveedor = Leer.datoInt();
-				System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
-				String fechaEntrega = Leer.datoString();
-
-				try {
-					gestionAlbaran.guardarAlbaranEnBaseDeDatos(idProveedor, fechaEntrega, conn);
-					System.out.println("Albarán guardado exitosamente.");
-				} catch (SQLException e) {
-					System.out.println("Error al guardar el albarán: " + e.getMessage());
-				}
+				// Dar de alta usuarios
+				gestionCliente.darDeAltaCliente(conn);
 				break;
 			case 5:
 				volverAdmin = true;
@@ -124,6 +136,17 @@ public class OrquestradorMenu {
 		}
 	}
 
+	/**
+	 * Muestra el menú para un usuario logueado.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPedido    La instancia de GestionPedido.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente logueado.
+	 * @param fichero          La instancia de Fichero.
+	 * @param tiket            La instancia de Tiket.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
 	public void menuUsuarioLogueado(GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		System.out.println("Bienvenido " + cliente.getNombre());
@@ -150,6 +173,17 @@ public class OrquestradorMenu {
 		}
 	}
 
+	/**
+	 * Muestra la cesta de compras del usuario.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param gestionPedido    La instancia de GestionPedido.
+	 * @param gestionPago      La instancia de GestionPago.
+	 * @param cliente          El cliente actual.
+	 * @param fichero          La instancia de Fichero.
+	 * @param tiket            La instancia de Tiket.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
 	private void mostrarCesta(GestionProducto gestionProductos, GestionPedido gestionPedido, GestionPago gestionPago,
 			Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
 		boolean volver = false;
@@ -182,50 +216,4 @@ public class OrquestradorMenu {
 			}
 		}
 	}
-
-//	public void manejarMenuRegistrar(GestionProducto gestionProductos, GestionPedido gestionPedido,
-//			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
-//		boolean volver = false;
-//		while (!volver) {
-//			Menu.mostrarMenuRegistrar();
-//			int opcion = Leer.datoInt();
-//
-//			switch (opcion) {
-//			case 1: // Comprar
-//				this.realizarCompraRegistrada(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
-//				break;
-//			case 2: // Ver cesta
-//				this.mostrarCesta(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
-//				break;
-//			case 3: // Volver
-//				volver = true;
-//				break;
-//			default:
-//				System.out.println("Opción no válida. Intente de nuevo.");
-//			}
-//		}
-//	}
-//
-//	private void realizarCompraRegistrada(GestionProducto gestionProductos, GestionPedido gestionPedido,
-//			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
-//		boolean volver = false;
-//		while (!volver) {
-//			Menu.mostrarMenuComprar_Pagar();
-//			System.out.println(gestionProductos.mostrarProductosCatalogo());
-//			int opcion = Leer.datoInt();
-//
-//			switch (opcion) {
-//			case 1: // Pagar
-//				gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-//						tiket, conn);
-//				volver = true;
-//				break;
-//			case 2: // Volver
-//				volver = true;
-//				break;
-//			default:
-//				System.out.println("Opción no válida. Intente de nuevo.");
-//			}
-//		}
-//	}
 }

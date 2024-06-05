@@ -56,8 +56,8 @@ public class Menu {
 		System.out.println("Seleccione una opción de administrador:");
 		System.out.println("1. Agregar productos");
 		System.out.println("2. Borrar productos");
-		System.out.println("3. Eliminar usuarios");
-		System.out.println("4. Guardar albarán");
+		System.out.println("3. Dar de baja usuarios");
+		System.out.println("4. Dar de alta usuarios");
 		System.out.println("5. Volver");
 	}
 
