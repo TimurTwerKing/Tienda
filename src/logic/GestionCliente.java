@@ -6,9 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 import modelo.Cliente;
+import util.Leer;
 
 /**
  * Clase para gestionar los clientes.
@@ -24,7 +23,11 @@ public class GestionCliente {
 	 * Constructor de la clase. Inicializa la lista de clientes.
 	 */
 	public GestionCliente(Connection conn) {
-		this.clientes = new ArrayList<>();
+		try {
+			this.clientes = cargarClientes(conn);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -35,32 +38,36 @@ public class GestionCliente {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public void agregarCliente(Cliente cliente, Connection conn) throws SQLException {
-		
-		
-		String sql = "INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		// Verificar si el cliente ya existe por su correo electrónico
+		if (!verificarClienteExisteMail(cliente.getMail(), conn)) {
 
-		try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-			pstmt.setString(1, cliente.getNumeroCliente());
-			pstmt.setString(2, cliente.getNombre());
-			pstmt.setString(3, cliente.getApellidos());
-			pstmt.setString(4, cliente.getDireccion());
-			pstmt.setString(5, cliente.getLocalidad());
-			pstmt.setString(6, cliente.getProvincia());
-			pstmt.setString(7, cliente.getPais());
-			pstmt.setString(8, cliente.getCodigoPostal());
-			pstmt.setString(9, cliente.getTelefono());
-			pstmt.setString(10, cliente.getMail());
-			pstmt.setString(11, cliente.getObservaciones());
+			String sql = "INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			pstmt.executeUpdate();
+			try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+				pstmt.setString(1, cliente.getNumeroCliente());
+				pstmt.setString(2, cliente.getNombre());
+				pstmt.setString(3, cliente.getApellidos());
+				pstmt.setString(4, cliente.getDireccion());
+				pstmt.setString(5, cliente.getLocalidad());
+				pstmt.setString(6, cliente.getProvincia());
+				pstmt.setString(7, cliente.getPais());
+				pstmt.setString(8, cliente.getCodigoPostal());
+				pstmt.setString(9, cliente.getTelefono());
+				pstmt.setString(10, cliente.getMail());
+				pstmt.setString(11, cliente.getObservaciones());
 
-			try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-				if (generatedKeys.next()) {
-					cliente.setId(generatedKeys.getInt(1)); // Set the generated ID to the cliente object
-				} else {
-					throw new SQLException("No se pudo obtener el ID del cliente.");
+				pstmt.executeUpdate();
+
+				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						cliente.setId(generatedKeys.getInt(1)); // Set the generated ID to the cliente object
+					} else {
+						throw new SQLException("No se pudo obtener el ID del cliente.");
+					}
 				}
 			}
+		} else {
+			throw new SQLException("El cliente con correo " + cliente.getMail() + " ya existe.");
 		}
 	}
 
@@ -72,10 +79,31 @@ public class GestionCliente {
 	 * @return true si el cliente existe, false en caso contrario.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public boolean verificarClienteExiste(String mail, Connection conn) throws SQLException {
+	public boolean verificarClienteExisteMail(String mail, Connection conn) throws SQLException {
 		String sql = "SELECT COUNT(*) FROM Cliente WHERE mail = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, mail);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Método para verificar si un cliente existe por su ID.
+	 * 
+	 * @param idCliente El ID del cliente.
+	 * @param conn      La conexión a la base de datos.
+	 * @return true si el cliente existe, false en caso contrario.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public boolean verificarClienteExisteID(int idCliente, Connection conn) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Cliente WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idCliente);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				if (rs.next()) {
 					return rs.getInt(1) > 0;
@@ -94,7 +122,7 @@ public class GestionCliente {
 	 */
 	public List<Cliente> cargarClientes(Connection conn) throws SQLException {
 		List<Cliente> clientes = new ArrayList<>();
-		String sql = "SELECT id, numero_cliente, nombre, apellidos FROM Cliente";
+		String sql = "SELECT id, numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones FROM Cliente";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
@@ -103,23 +131,18 @@ public class GestionCliente {
 				cliente.setNumeroCliente(rs.getString("numero_cliente"));
 				cliente.setNombre(rs.getString("nombre"));
 				cliente.setApellidos(rs.getString("apellidos"));
+				cliente.setDireccion(rs.getString("direccion"));
+				cliente.setLocalidad(rs.getString("localidad"));
+				cliente.setProvincia(rs.getString("provincia"));
+				cliente.setPais(rs.getString("pais"));
+				cliente.setCodigoPostal(rs.getString("codigo_postal"));
+				cliente.setTelefono(rs.getString("telefono"));
+				cliente.setMail(rs.getString("mail"));
+				cliente.setObservaciones(rs.getString("observaciones"));
 				clientes.add(cliente);
 			}
 		}
 		return clientes;
-	}
-
-	public boolean verificarClienteExiste(int idCliente, Connection conn) throws SQLException {
-		String sql = "SELECT COUNT(*) FROM Cliente WHERE id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, idCliente);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt(1) > 0;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -129,7 +152,7 @@ public class GestionCliente {
 	 * @return El cliente elegido.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public Cliente elegirCliente(Scanner sc, Connection conn) throws SQLException {
+	public Cliente elegirCliente(Connection conn) throws SQLException {
 		List<Cliente> clientes = cargarClientes(conn);
 
 		System.out.println("Seleccione un cliente:");
@@ -139,8 +162,7 @@ public class GestionCliente {
 					+ cliente.getApellidos());
 		}
 
-		int opcion = sc.nextInt();
-		sc.nextLine(); // Limpiar el buffer
+		int opcion = Leer.datoInt();
 
 		if (opcion > 0 && opcion <= clientes.size()) {
 			return clientes.get(opcion - 1);
@@ -151,59 +173,50 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Agrega un cliente a la lista.
+	 * Método para crear un cliente nuevo.
 	 * 
-	 * @param cliente El cliente a agregar.
+	 * @param conn La conexión a la base de datos.
+	 * @return El cliente creado.
 	 */
-	public boolean agregarCliente(Cliente cliente) {
-		try {
-			this.clientes.add(cliente);
-			System.out.println("Cliente agregado exitosamente.");
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public Cliente crearCliente(Scanner sc) {
+	public Cliente crearCliente(Connection conn) {
 		try {
 			System.out.println("Ingrese el número de cliente:");
-			String numerocliente = sc.nextLine();
+			String numerocliente = Leer.datoString();
 			System.out.println("Ingrese el nombre:");
-			String nombre = sc.nextLine();
+			String nombre = Leer.datoString();
 			System.out.println("Ingrese los apellidos:");
-			String apellidos = sc.nextLine();
+			String apellidos = Leer.datoString();
 			System.out.println("Ingrese la dirección:");
-			String direccion = sc.nextLine();
+			String direccion = Leer.datoString();
 			System.out.println("Ingrese la localidad:");
-			String localidad = sc.nextLine();
+			String localidad = Leer.datoString();
 			System.out.println("Ingrese la provincia:");
-			String provincia = sc.nextLine();
+			String provincia = Leer.datoString();
 			System.out.println("Ingrese el país:");
-			String pais = sc.nextLine();
+			String pais = Leer.datoString();
 			System.out.println("Ingrese el código postal:");
-			String codigopostal = sc.nextLine();
+			String codigopostal = Leer.datoString();
 			System.out.println("Ingrese el teléfono:");
-			String telefono = sc.nextLine();
+			String telefono = Leer.datoString();
 			System.out.println("Ingrese el correo electrónico:");
-			String mail = sc.nextLine();
+			String mail = Leer.datoString();
 			System.out.println("Ingrese las observaciones:");
-			String observaciones = sc.nextLine();
+			String observaciones = Leer.datoString();
+
+			// Verificar si el cliente ya existe por su correo electrónico
+			if (verificarClienteExisteMail(mail, conn)) {
+				System.out.println("El cliente con correo " + mail + " ya existe.");
+				return null;
+			}
 
 			Cliente cliente = new Cliente(numerocliente, nombre, apellidos, direccion, localidad, provincia, pais,
 					codigopostal, telefono, mail, observaciones);
 			return cliente;
 		} catch (Exception e) {
-			e.getStackTrace();
+			e.printStackTrace();
 			System.out.println("Error al agregar el cliente.");
 			return null;
 		}
-//		boolean resultado = agregarCliente(cliente);
-//		if (resultado) {
-//			System.out.println("Cliente agregado con éxito.");
-//		} else {
-//			System.out.println("Error al agregar el cliente.");
-//		}
 	}
 
 	/**
@@ -212,7 +225,7 @@ public class GestionCliente {
 	 * @param clienteId El ID del cliente a borrar.
 	 */
 	public void borrarCliente(int clienteId) {
-		Cliente cliente = buscarClientePorId(clienteId);
+		Cliente cliente = seleccionarClientePorId(clienteId);
 		if (cliente != null) {
 			clientes.remove(cliente);
 			System.out.println("Cliente eliminado exitosamente.");
@@ -227,13 +240,26 @@ public class GestionCliente {
 	 * @param clienteId El ID del cliente a buscar.
 	 * @return El cliente encontrado, o null si no se encuentra.
 	 */
-	public Cliente buscarClientePorId(int clienteId) {
-		for (Cliente cliente : clientes) {
-			if (Integer.parseInt(cliente.getNumeroCliente()) == clienteId) {
+	public Cliente seleccionarClientePorId(int clienteId) {
+		for (Cliente cliente : this.clientes) {
+			if (cliente.getId() == clienteId) {
 				return cliente;
 			}
 		}
 		return null;
+	}
+
+	public int obtenerIDClientePorMail_BD(String mail, Connection conn) throws SQLException {
+		String sql = "SELECT id FROM Cliente WHERE mail = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, mail);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("id");
+				}
+			}
+		}
+		return 0; // ID no encontrado
 	}
 
 	/**

@@ -27,7 +27,6 @@ public class OrquestradorMenu {
 	public void manejarMenuUsuario(GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket)
 			throws SQLException {
-		// Menú para usuarios
 		boolean volverUsuario = false;
 		while (!volverUsuario) {
 			Menu.mostrarMenuUsuario();
@@ -35,30 +34,25 @@ public class OrquestradorMenu {
 
 			switch (opcionUsuario) {
 			case 1: // Login de usuario
-				// CARGA CLIENTE TODO: implementar seccion para elegir cleintes.
-//				try {
-//					gestionCliente.cargarClientes(conn);
-//				} catch (SQLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				try {
-//					gestionCliente.elegirCliente(sc, conn);
-//				} catch (SQLException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-
-				// Cliente clienteCreado = gestionCliente.crearCliente(sc); //TODO CREACION
-				// CLIENTE PARA SU USO
-
-				// TODO: Implementar el login de usuario con la base de datos
-				this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+				cliente = gestionCliente.elegirCliente(this.conn);
+				if (cliente != null) {
+					this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+				} else {
+					System.out.println("No se seleccionó un cliente válido.");
+				}
 				break;
-			case 2:
-				// Registro de usuario
-				// gestionCliente.crearCliente(sc);
-				this.manejarMenuRegistrar(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+			case 2: // Registro de usuario
+				cliente = gestionCliente.crearCliente(this.conn);
+				if (cliente != null) {
+					gestionCliente.agregarCliente(cliente, this.conn);
+					// Obtener el ID generado automático en BD
+					cliente.setId(gestionCliente.obtenerIDClientePorMail_BD(cliente.getMail(), conn));
+					if (cliente.getId() > 0) {
+						this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+					} else {
+						System.out.println("No se pudo obtener el ID del cliente.");
+					}
+				}
 				break;
 			case 3:
 				volverUsuario = true;
@@ -131,6 +125,7 @@ public class OrquestradorMenu {
 
 	public void menuUsuarioLogueado(GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+		System.out.println("Bienvenido " + cliente.getNombre());
 		boolean volver = false;
 		while (!volver) {
 			Menu.mostrarMenuPrincipalUsuario();
@@ -168,8 +163,8 @@ public class OrquestradorMenu {
 
 				switch (opcion) {
 				case 1: // Realizar la compra
-					gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-							tiket, this.conn);
+					gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente,
+							fichero, tiket, this.conn);
 					volver = true;
 					break;
 				case 2: // Borrar producto
@@ -187,49 +182,49 @@ public class OrquestradorMenu {
 		}
 	}
 
-	public void manejarMenuRegistrar(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
-		boolean volver = false;
-		while (!volver) {
-			Menu.mostrarMenuRegistrar();
-			int opcion = Leer.datoInt();
-
-			switch (opcion) {
-			case 1: // Comprar
-				this.realizarCompraRegistrada(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
-				break;
-			case 2: // Ver cesta
-				this.mostrarCesta(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
-				break;
-			case 3: // Volver
-				volver = true;
-				break;
-			default:
-				System.out.println("Opción no válida. Intente de nuevo.");
-			}
-		}
-	}
-
-	private void realizarCompraRegistrada(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
-		boolean volver = false;
-		while (!volver) {
-			Menu.mostrarMenuComprar_Pagar();
-			System.out.println(gestionProductos.mostrarProductosCatalogo());
-			int opcion = Leer.datoInt();
-
-			switch (opcion) {
-			case 1: // Pagar
-				gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket,
-						conn);
-				volver = true;
-				break;
-			case 2: // Volver
-				volver = true;
-				break;
-			default:
-				System.out.println("Opción no válida. Intente de nuevo.");
-			}
-		}
-	}
+//	public void manejarMenuRegistrar(GestionProducto gestionProductos, GestionPedido gestionPedido,
+//			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+//		boolean volver = false;
+//		while (!volver) {
+//			Menu.mostrarMenuRegistrar();
+//			int opcion = Leer.datoInt();
+//
+//			switch (opcion) {
+//			case 1: // Comprar
+//				this.realizarCompraRegistrada(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+//				break;
+//			case 2: // Ver cesta
+//				this.mostrarCesta(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+//				break;
+//			case 3: // Volver
+//				volver = true;
+//				break;
+//			default:
+//				System.out.println("Opción no válida. Intente de nuevo.");
+//			}
+//		}
+//	}
+//
+//	private void realizarCompraRegistrada(GestionProducto gestionProductos, GestionPedido gestionPedido,
+//			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+//		boolean volver = false;
+//		while (!volver) {
+//			Menu.mostrarMenuComprar_Pagar();
+//			System.out.println(gestionProductos.mostrarProductosCatalogo());
+//			int opcion = Leer.datoInt();
+//
+//			switch (opcion) {
+//			case 1: // Pagar
+//				gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
+//						tiket, conn);
+//				volver = true;
+//				break;
+//			case 2: // Volver
+//				volver = true;
+//				break;
+//			default:
+//				System.out.println("Opción no válida. Intente de nuevo.");
+//			}
+//		}
+//	}
 }

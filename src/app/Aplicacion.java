@@ -36,13 +36,12 @@ public class Aplicacion {
 			GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido, conn);
 			GestionCliente gestionCliente = new GestionCliente(conn);
 			GestionAlbaran gestionAlbaran = new GestionAlbaran();
-			Cliente cliente = new Cliente("C011", "Jhoonny", "Meentero", "Carrera 15 #123", "Ciudad", "Provincia",
-					"España", "28090", "601234567", "jhoonny.meentero@example.com",
-					"Cliente frecuente de productos de tecnología", 11);
+			Cliente cliente = new Cliente();
 
 			Tiket tiket = new Tiket();
 			Fichero fichero = new Fichero();
 
+			Menu.Logo();
 			Menu.Mensaje_Inicial();
 
 			boolean continuar = true;

@@ -1,19 +1,13 @@
 
-Ticket Número: TKT1717524903885
-Fecha: Tue Jun 04 20:15:03 CEST 2024
+Ticket Número: TKT1717554319048
+Fecha: Wed Jun 05 04:25:19 CEST 2024
 
 Artículos:
 ID: 30
 Nombre: 21 - Adele
-Cantidad: 2
+Cantidad: 4
 Precio Unitario: 14.99 euros
-Total: 29.98 euros
+Total: 59.96 euros
 
-ID: 20
-Nombre: Horizon Zero Dawn
-Cantidad: 2
-Precio Unitario: 29.99 euros
-Total: 59.98 euros
-
-Total a pagar: 89.96 euros
+Total a pagar: 59.96 euros
 

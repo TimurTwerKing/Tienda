@@ -1,6 +1,5 @@
 package util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,12 +32,11 @@ public class Leer {
 	 * @return El texto ingresado por el usuario.
 	 */
 	public static String datoString() {
-		limpiarBuffer();
-		String sdato = " ";
+		String sdato = "";
 		try {
 			InputStreamReader isr = new InputStreamReader(System.in);
 			BufferedReader flujoE = new BufferedReader(isr);
-			sdato = flujoE.readLine();
+			sdato = flujoE.readLine().trim();
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
 		}
@@ -48,23 +46,35 @@ public class Leer {
 	/**
 	 * Lee un entero desde la consola.
 	 *
-	 * @return El entero ingresado por el usuario y de no ser asi lo devuelve como
-	 *         tal.
+	 * @return El entero ingresado por el usuario, o vuelve a pedirlo si no es un
+	 *         entero válido.
 	 */
 	public static int datoInt() {
-		limpiarBuffer();
-		return Integer.parseInt(datoString());
+		while (true) {
+			String input = datoString();
+			try {
+				return Integer.parseInt(input);
+			} catch (NumberFormatException e) {
+				System.out.println("Entrada no válida. Por favor, ingrese un número entero.");
+			}
+		}
 	}
 
 	/**
-	 * Lee un número de punto flotante desde la consola y de no ser asi lo devuelve
-	 * como tal.
+	 * Lee un número de punto flotante desde la consola.
 	 *
-	 * @return El número de punto flotante ingresado por el usuario.
+	 * @return El número de punto flotante ingresado por el usuario, o vuelve a
+	 *         pedirlo si no es válido.
 	 */
 	public static float datoFloat() {
-		limpiarBuffer();
-		return Float.parseFloat(datoString());
+		while (true) {
+			String input = datoString();
+			try {
+				return Float.parseFloat(input);
+			} catch (NumberFormatException e) {
+				System.out.println("Entrada no válida. Por favor, ingrese un número decimal.");
+			}
+		}
 	}
 
 	/**
@@ -73,49 +83,47 @@ public class Leer {
 	 * @return El carácter ingresado por el usuario.
 	 */
 	public static char datoChar() {
-		limpiarBuffer();
-		char c = ' ';
-		try {
-			java.io.BufferedInputStream b = new BufferedInputStream(System.in);
-			c = (char) b.read();
-		} catch (IOException e) {
-			System.out.println("Error al leer");
-			e.printStackTrace();
+		while (true) {
+			String input = datoString();
+			if (input.length() == 1) {
+				return input.charAt(0);
+			} else {
+				System.out.println("Entrada no válida. Por favor, ingrese un solo carácter.");
+			}
 		}
-		return c;
 	}
 
 	/**
 	 * Lee un número largo desde la consola.
 	 *
-	 * @return El número largo ingresado por el usuario y de no ser asi lo devuelve
-	 *         como tal.
+	 * @return El número largo ingresado por el usuario, o vuelve a pedirlo si no es
+	 *         válido.
 	 */
 	public static long datoLong() {
-		limpiarBuffer();
-		return Long.parseLong(datoString());
+		while (true) {
+			String input = datoString();
+			try {
+				return Long.parseLong(input);
+			} catch (NumberFormatException e) {
+				System.out.println("Entrada no válida. Por favor, ingrese un número largo.");
+			}
+		}
 	}
 
 	/**
 	 * Lee un valor booleano desde la consola.
 	 * 
-	 * @return El valor booleano ingresado por el usuario.
+	 * @return El valor booleano ingresado por el usuario, o vuelve a pedirlo si no
+	 *         es válido.
 	 */
 	public static boolean datoBoolean() {
-		limpiarBuffer();
-		boolean b = false;
-		try {
-			String sdato = datoString().toLowerCase();
-			if (sdato.equals("true") || sdato.equals("false")) {
-				b = Boolean.parseBoolean(sdato);
+		while (true) {
+			String input = datoString().toLowerCase();
+			if (input.equals("true") || input.equals("false")) {
+				return Boolean.parseBoolean(input);
 			} else {
 				System.out.println("Entrada no válida. Por favor, ingrese 'true' o 'false'.");
-				b = datoBoolean(); // Recurre hasta obtener una entrada válida
 			}
-		} catch (Exception e) {
-			System.out.println("Error al leer el booleano");
-			e.printStackTrace();
 		}
-		return b;
 	}
 }

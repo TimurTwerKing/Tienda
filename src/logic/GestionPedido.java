@@ -36,27 +36,6 @@ public class GestionPedido {
 	}
 
 	/**
-	 * Guarda los detalles del pedido en la base de datos.
-	 * 
-	 * @param idPedido  El ID del pedido.
-	 * @param productos La lista de productos en el pedido.
-	 * @param conn      La conexión a la base de datos.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	private void guardarDetallePedido(int idPedido, List<Producto> productos, Connection conn) throws SQLException {
-		String sqlDetalle = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
-		try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalle)) {
-			for (Producto producto : productos) {
-				pstmtDetalle.setInt(1, idPedido);
-				pstmtDetalle.setInt(2, producto.getId());
-				pstmtDetalle.setInt(3, producto.getCantidad());
-				pstmtDetalle.addBatch();
-			}
-			pstmtDetalle.executeBatch();
-		}
-	}
-
-	/**
 	 * Vende los artículos de la cesta y actualiza la base de datos.
 	 * 
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
@@ -161,25 +140,53 @@ public class GestionPedido {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public int guardarPedidoEnBaseDeDatos(Cliente cliente, List<Producto> productos, Connection conn)
-			throws SQLException {
-		if (!gestionCliente.verificarClienteExiste(cliente.getId(), conn)) {
-			throw new SQLException("El cliente con ID " + cliente.getId() + " no existe.");
-		}
+	        throws SQLException {
+	    // Verificar que el cliente exista en la base de datos por ID
+	    if (!gestionCliente.verificarClienteExisteID(cliente.getId(), conn)) {
+	        throw new SQLException("El cliente con ID " + cliente.getId() + " no existe.");
+	    }
 
-		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
-		try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
-			pstmtPedido.setInt(1, cliente.getId());
-			pstmtPedido.executeUpdate();
+	    String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
+	    try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
+	        // Establecer el ID del cliente en la consulta
+	        pstmtPedido.setInt(1, cliente.getId());
+	        // Ejecutar la inserción del pedido
+	        pstmtPedido.executeUpdate();
 
-			try (ResultSet generatedKeys = pstmtPedido.getGeneratedKeys()) {
-				if (generatedKeys.next()) {
-					int idPedido = generatedKeys.getInt(1);
-					guardarDetallePedido(idPedido, productos, conn);
-					return idPedido;
-				} else {
-					throw new SQLException("No se pudo obtener el ID del pedido.");
-				}
+	        // Obtener las claves generadas (ID del pedido)
+	        try (ResultSet generatedKeys = pstmtPedido.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	                // Obtener el ID del pedido generado
+	                int idPedido = generatedKeys.getInt(1);
+	                // Guardar los detalles del pedido
+	                guardarDetallePedido(idPedido, productos, conn);
+	                return idPedido;
+	            } else {
+	                throw new SQLException("No se pudo obtener el ID del pedido.");
+	            }
+	        }
+	    }
+	}
+
+
+	/**
+	 * Guarda los detalles del pedido en la base de datos.
+	 * 
+	 * @param idPedido  El ID del pedido.
+	 * @param productos La lista de productos en el pedido.
+	 * @param conn      La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void guardarDetallePedido(int idPedido, List<Producto> productos, Connection conn) throws SQLException {
+		String sqlDetallePedido = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetallePedido)) {
+			for (Producto producto : productos) {
+				pstmtDetalle.setInt(1, idPedido);
+				pstmtDetalle.setInt(2, producto.getId());
+				pstmtDetalle.setInt(3, producto.getCantidad());
+				pstmtDetalle.addBatch();
 			}
+			pstmtDetalle.executeBatch();
 		}
 	}
 

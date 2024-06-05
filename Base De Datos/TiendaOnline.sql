@@ -113,17 +113,9 @@ INSERT INTO Albaran (id_proveedor, fecha_entrega) VALUES
 
 -- Insertar clientes ficticios
 INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES
-    ('C001', 'Juan', 'Pérez', 'Calle Falsa 123', 'Ciudad', 'Provincia', 'España', '28080', '600123456', 'juan.perez@example.com', 'Cliente preferente'),
-    ('C002', 'María', 'García', 'Avenida Siempre Viva 742', 'Pueblo', 'Provincia', 'España', '28081', '600654321', 'maria.garcia@example.com', 'Requiere factura'),
-    ('C003', 'Carlos', 'Sánchez', 'Plaza Mayor 1', 'Villa', 'Provincia', 'España', '28082', '600987654', 'carlos.sanchez@example.com', 'Compra frecuente de productos de música'),
-    ('C004', 'Ana', 'López', 'Paseo del Prado 45', 'Ciudad', 'Provincia', 'España', '28083', '600321654', 'ana.lopez@example.com', 'Cliente VIP'),
-    ('C005', 'Luis', 'Martínez', 'Calle Gran Vía 22', 'Metropolis', 'Provincia', 'España', '28084', '600456789', 'luis.martinez@example.com', 'Interesado en videojuegos nuevos'),
-    ('C006', 'Isabel', 'Fernández', 'Ronda de Atocha 8', 'Ciudad', 'Provincia', 'España', '28085', '600789123', 'isabel.fernandez@example.com', 'Cliente ocasional'),
-    ('C007', 'Miguel', 'González', 'Camino Real 33', 'Pueblo', 'Provincia', 'España', '28086', '600213546', 'miguel.gonzalez@example.com', 'Prefiere productos en oferta'),
-    ('C008', 'Laura', 'Rodríguez', 'Calle Mayor 10', 'Villa', 'Provincia', 'España', '28087', '600354768', 'laura.rodriguez@example.com', 'Cliente nuevo'),
-    ('C009', 'Javier', 'Hernández', 'Avenida Principal 100', 'Ciudad', 'Provincia', 'España', '28088', '600465879', 'javier.hernandez@example.com', 'Compra en grandes cantidades'),
-    ('C010', 'Sofía', 'Jiménez', 'Callejón del Gato 9', 'Pueblo', 'Provincia', 'España', '28089', '600576890', 'sofia.jimenez@example.com', 'Cliente con recomendaciones'),
-    ('C011', 'Jhoonny', 'Meentero', 'Carrera 15 #123', 'Ciudad', 'Provincia', 'España', '28090', '601234567', 'jhoonny.meentero@example.com', 'Cliente frecuente de productos de tecnología');
+	('C001', 'Pedro', 'Serna', 'El Campico', 'Murcia City', 'Murcia', 'Españistan', '03400', '666777888', 'pedroserna@elcampico.org', 'pro'),
+    ('C002', 'Timur', 'Bogach', 'C/Campoamor n8', 'Orihuela', 'Alicante', 'Mongolia', '03300', '658440125', 'Timurnator_@outlook.com', 'uno mas...'),
+    ('C003', 'Jhoonny', 'Meentero', 'Carrera 15 #123', 'Ciudad', 'Provincia', 'España', '28090', '601234567', 'jhoonny.meentero@example.com', 'Cliente frecuente de productos de tecnología');
 
 -- Insertar productos de Cine
 INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria, id_albaran) VALUES
@@ -165,11 +157,17 @@ INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria, id_
     ('21 - Adele', 14.99, 55, 1, 'Pop', 3, 3);
 
 -- Consultas de prueba
+USE Tienda;
+
 SELECT nombre FROM Producto WHERE id_categoria = 1;
 SELECT * FROM Cliente WHERE nombre = 'Jhoonny';
+SELECT * FROM Cliente;
 SELECT * FROM Tiket;
 select * from Pedido;
 SELECT * FROM detalle_pedido;
+
+DELETE FROM Cliente
+WHERE nombre = '?';
 
 -- Consulta para ver la información conjunta de Pedido, detalle_pedido y Tiket
 SELECT 
