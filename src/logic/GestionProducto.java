@@ -6,10 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import data.Cine;
 import data.Musica;
 import data.Producto;
 import data.Videojuego;
+import util.Leer;
 
 /**
  * Clase para gestionar los productos del catálogo.
@@ -29,11 +31,7 @@ public class GestionProducto {
 		this.catalogo = new ArrayList<>();
 		this.conn = conn;
 		// Cargar productos desde la base de datos
-		try {
-			cargarProductos();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		this.catalogo = cargarProductos();
 	}
 
 	/**
@@ -96,13 +94,16 @@ public class GestionProducto {
 	 * @return Lista de productos cargados.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public List<Producto> cargarProductos() throws SQLException {
+	public List<Producto> cargarProductos() {
 		String consulta = "SELECT * FROM Producto";
 		try (PreparedStatement pstmt = this.conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
 				Producto producto = crearProductoDesdeResultSet(rs);
 				this.catalogo.add(producto);
 			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return this.catalogo;
 	}
@@ -113,6 +114,9 @@ public class GestionProducto {
 	 * @return Una cadena con los detalles de los productos en el catálogo.
 	 */
 	public String mostrarProductosCatalogo() {
+
+		this.catalogo = cargarProductos();
+
 		StringBuilder resultado = new StringBuilder();
 		for (Producto producto : this.catalogo) {
 			resultado.append("ID: ").append(producto.getId()).append("\n");
@@ -224,26 +228,8 @@ public class GestionProducto {
 		Producto producto = new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria);
 		this.catalogo.add(producto);
 
-		try {
-			agregarProductoABaseDeDatos(producto);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+		agregarProductoABaseDeDatos(producto);
 
-	/**
-	 * Agrega un producto al catálogo y Base de Datos.
-	 * 
-	 * @param producto de la clase producto
-	 */
-	public void agregarProducto(Producto producto) {
-		this.catalogo.add(producto);
-		try {
-			agregarProductoABaseDeDatos(producto);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("No ha sido posible registrar el producto en la base de datos.");
-		}
 	}
 
 	/**
@@ -261,7 +247,7 @@ public class GestionProducto {
 	 * @param producto El producto a agregar.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	private void agregarProductoABaseDeDatos(Producto producto) throws SQLException {
+	private void agregarProductoABaseDeDatos(Producto producto) {
 		String sql = "INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria) VALUES (?, ?, ?, ?, ?, ?)";
 
 		try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
@@ -272,27 +258,68 @@ public class GestionProducto {
 			pstmt.setString(5, producto.getGenero());
 			pstmt.setInt(6, producto.getIdCategoria());
 			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible registrar el producto en la base de datos.");
+			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Borra un producto del catálogo y de la base de datos.
+	 * Método para crear un producto.
 	 * 
-	 * @param id El ID del producto a borrar.
+	 * @param sc El objeto Scanner para leer la entrada del usuario.
+	 * @return El producto creado.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void borrarProducto(int id) {
-		Producto producto = buscarProductoPorIdCatalogo(id);
-		if (producto != null) {
-			this.catalogo.remove(producto);
+	public Producto crearProducto() {
+		System.out.println("Ingrese el nombre del producto:");
+		String nombre = Leer.datoString();
+		System.out.println("Ingrese el precio del producto:");
+		float precio = Leer.datoFloat();
+		System.out.println("Ingrese la cantidad del producto:");
+		int cantidad = Leer.datoInt();
+		System.out.println("Hay stock disponible? (true/false):");
+		boolean stock = Leer.datoBoolean();
+		System.out.println("Ingrese el género del producto:");
+		String genero = Leer.datoString();
+
+		int idCategoria;
+		while (true) {
+			System.out.println("Ingrese la ID de la categoría del producto:");
+			idCategoria = Leer.datoInt();
 			try {
-				borrarProductoDeBaseDeDatos(id);
+				if (verificarCategoriaExiste(idCategoria)) {
+					break;
+				} else {
+					System.out.println("ID de categoría no válida. Intente de nuevo.");
+				}
 			} catch (SQLException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Producto eliminado exitosamente.");
-		} else {
-			System.out.println("Producto no encontrado.");
 		}
+
+		return new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria);
+	}
+
+	/**
+	 * Verifica si una categoría existe en la base de datos.
+	 * 
+	 * @param idCategoria El ID de la categoría a verificar.
+	 * @return true si la categoría existe, false en caso contrario.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public boolean verificarCategoriaExiste(int idCategoria) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Categoria WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idCategoria);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -301,12 +328,15 @@ public class GestionProducto {
 	 * @param id El ID del producto a borrar.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	private void borrarProductoDeBaseDeDatos(int id) throws SQLException {
+	public void borrarProductoDeBaseDeDatos(int id) {
 		String sql = "DELETE FROM Producto WHERE id = ?";
 
 		try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible borrar el producto en la base de datos.");
+			e.printStackTrace();
 		}
 	}
 
@@ -317,6 +347,7 @@ public class GestionProducto {
 	 * @return El producto encontrado, o null si no se encuentra.
 	 */
 	public Producto buscarProductoPorIdCatalogo(int id) {
+		this.catalogo = cargarProductos();
 		for (Producto producto : this.catalogo) {
 			if (producto.getId() == id) {
 				return producto;

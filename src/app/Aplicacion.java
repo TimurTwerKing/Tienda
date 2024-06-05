@@ -58,7 +58,7 @@ public class Aplicacion {
 					break;
 				case 2:
 					// Menú para administradores
-					orquestrador.manejarMenuAdministrador(gestionProductos, gestionCliente, gestionAlbaran);
+					orquestrador.manejarMenuAdministrador(gestionProductos, gestionCliente, gestionAlbaran, conn);
 					break;
 				case 3:
 					// Salir de la aplicación

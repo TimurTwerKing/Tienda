@@ -3,11 +3,13 @@ package logic;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
+
+import data.Producto;
+import data.Tiket;
 import menu.Menu;
 import modelo.Cliente;
 import util.Fichero;
 import util.Leer;
-import data.Tiket;
 
 /**
  * Clase para gestionar los menús de la aplicación.
@@ -64,7 +66,7 @@ public class OrquestradorMenu {
 	}
 
 	public void manejarMenuAdministrador(GestionProducto gestionProductos, GestionCliente gestionCliente,
-			GestionAlbaran gestionAlbaran) {
+			GestionAlbaran gestionAlbaran, Connection conn) {
 		// Menú para administradores
 		boolean volverAdmin = false;
 		while (!volverAdmin) {
@@ -74,15 +76,14 @@ public class OrquestradorMenu {
 			switch (opcionAdmin) {
 			case 1:
 				// Agregar productos
-				Menu.mensajeAgregarProducto();
-				String nombre = Leer.datoString();
-				float precio = Leer.datoFloat();
-				int cantidad = Leer.datoInt();
-				boolean stock = Leer.datoBoolean();
-				String genero = Leer.datoString();
-				int idCategoria = Leer.datoInt();
-
-				gestionProductos.agregarProducto(nombre, precio, cantidad, stock, genero, idCategoria);
+				Producto nuevoProducto = gestionProductos.crearProducto();
+				if (nuevoProducto != null) {
+					gestionProductos.agregarProducto(nuevoProducto.getNombre(), nuevoProducto.getPrecioUnidad(),
+							nuevoProducto.getCantidad(), nuevoProducto.hayStock(), nuevoProducto.getGenero(),
+							nuevoProducto.getIdCategoria());
+				} else {
+					System.out.println("No se pudo crear el producto.");
+				}
 				break;
 			case 2:
 				// Borrar productos
@@ -90,7 +91,7 @@ public class OrquestradorMenu {
 				System.out.println(gestionProductos.mostrarProductosCatalogo());
 				System.out.println("Ingrese el ID del producto a borrar:");
 				int idProducto = Leer.datoInt();
-				gestionProductos.borrarProducto(idProducto);
+				gestionProductos.borrarProductoDeBaseDeDatos(idProducto);
 				break;
 			case 3:
 				// Eliminar usuarios
@@ -98,7 +99,7 @@ public class OrquestradorMenu {
 				System.out.println(gestionCliente.mostrarClientes());
 				System.out.println("Ingrese el ID del cliente a eliminar:");
 				int idCliente = Leer.datoInt();
-				gestionCliente.borrarCliente(idCliente);
+				gestionCliente.borrarClienteDeBaseDeDatos(idCliente, conn);
 				break;
 			case 4:
 				// Guardar albarán

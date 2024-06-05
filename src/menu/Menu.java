@@ -15,7 +15,7 @@ public class Menu {
 		System.out.println("*   Videojuegos   Música   Cine    *");
 		System.out.println("************************************");
 		System.out.println("*       [>]  [♫]  [☼]              *");
-		System.out.println("************************************");
+		System.out.println("************************************\n");
 
 	}
 

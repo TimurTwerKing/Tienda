@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import modelo.Cliente;
 import util.Leer;
 
@@ -37,7 +38,7 @@ public class GestionCliente {
 	 * @param conn    La conexión a la base de datos.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void agregarCliente(Cliente cliente, Connection conn) throws SQLException {
+	public void agregarCliente(Cliente cliente, Connection conn) {
 		// Verificar si el cliente ya existe por su correo electrónico
 		if (!verificarClienteExisteMail(cliente.getMail(), conn)) {
 
@@ -65,9 +66,11 @@ public class GestionCliente {
 						throw new SQLException("No se pudo obtener el ID del cliente.");
 					}
 				}
+			} catch (SQLException e) {
+				System.out.println("No ha sido posible cargar los clientes desde la base de datos.");
+				e.printStackTrace();
+				System.out.println("El cliente con correo " + cliente.getMail() + " ya existe.");
 			}
-		} else {
-			throw new SQLException("El cliente con correo " + cliente.getMail() + " ya existe.");
 		}
 	}
 
@@ -79,7 +82,7 @@ public class GestionCliente {
 	 * @return true si el cliente existe, false en caso contrario.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public boolean verificarClienteExisteMail(String mail, Connection conn) throws SQLException {
+	public boolean verificarClienteExisteMail(String mail, Connection conn) {
 		String sql = "SELECT COUNT(*) FROM Cliente WHERE mail = ?";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, mail);
@@ -87,7 +90,13 @@ public class GestionCliente {
 				if (rs.next()) {
 					return rs.getInt(1) > 0;
 				}
+			} catch (SQLException e) {
+				System.out.println("No ha sido posible verificar al cliente en la base de datos.");
+				e.printStackTrace();
 			}
+		} catch (SQLException e1) {
+			System.out.println("No ha sido posible verificar al cliente en la base de datos.");
+			e1.printStackTrace();
 		}
 		return false;
 	}
@@ -158,8 +167,8 @@ public class GestionCliente {
 		System.out.println("Seleccione un cliente:");
 		for (int i = 0; i < clientes.size(); i++) {
 			Cliente cliente = clientes.get(i);
-			System.out.println((i + 1) + ". " + cliente.getNumeroCliente() + " - " + cliente.getNombre() + " "
-					+ cliente.getApellidos());
+			System.out.println((i + 1) + ". ID: " + cliente.getId() + " - " + cliente.getNumeroCliente() + " - "
+					+ cliente.getNombre() + " " + cliente.getApellidos());
 		}
 
 		int opcion = Leer.datoInt();
@@ -220,17 +229,21 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Borra un cliente de la lista por su ID.
+	 * Borra un cliente de la base de datos por su ID.
 	 * 
 	 * @param clienteId El ID del cliente a borrar.
+	 * @param conn      La conexión a la base de datos.
 	 */
-	public void borrarCliente(int clienteId) {
-		Cliente cliente = seleccionarClientePorId(clienteId);
-		if (cliente != null) {
-			clientes.remove(cliente);
+	public void borrarClienteDeBaseDeDatos(int clienteId, Connection conn) {
+		String sql = "DELETE FROM Cliente WHERE id = ?";
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, clienteId);
+			pstmt.executeUpdate();
 			System.out.println("Cliente eliminado exitosamente.");
-		} else {
-			System.out.println("Cliente no encontrado.");
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible borrar al cliente desde la base de datos.");
+			e.printStackTrace();
 		}
 	}
 
@@ -269,9 +282,11 @@ public class GestionCliente {
 	 */
 	public String mostrarClientes() {
 		StringBuilder resultado = new StringBuilder();
-		for (Cliente cliente : clientes) {
-			resultado.append("ID: ").append(cliente.getNumeroCliente()).append("\n").append("Nombre: ")
-					.append(cliente.getNombre()).append("\n\n");
+		for (Cliente cliente : this.clientes) {
+			resultado.append("ID: ").append(cliente.getId()).append("\n").append("Número Cliente: ")
+					.append(cliente.getNumeroCliente()).append("\n").append("Nombre: ").append(cliente.getNombre())
+					.append(" ").append(cliente.getApellidos()).append("\n").append("Correo: ")
+					.append(cliente.getMail()).append("\n\n");
 		}
 		return resultado.toString();
 	}

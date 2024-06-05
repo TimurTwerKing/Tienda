@@ -1,7 +1,5 @@
 package modelo;
 
-
-
 /**
  * Clase Cliente: Contiene información y métodos para gestionar clientes.
  * 
@@ -166,5 +164,4 @@ public class Cliente {
 				+ ", observaciones=" + observaciones + "]";
 	}
 
-	
 }

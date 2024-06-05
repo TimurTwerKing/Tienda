@@ -161,6 +161,7 @@ USE Tienda;
 
 SELECT nombre FROM Producto WHERE id_categoria = 1;
 SELECT * FROM Cliente WHERE nombre = 'Jhoonny';
+SELECT * FROM Producto;
 SELECT * FROM Cliente;
 SELECT * FROM Tiket;
 select * from Pedido;
