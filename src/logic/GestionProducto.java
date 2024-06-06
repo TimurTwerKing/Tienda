@@ -4,13 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import data.Cine;
-import data.Musica;
 import data.Producto;
-import data.Videojuego;
 import util.Leer;
 
 /**
@@ -94,6 +92,7 @@ public class GestionProducto {
 	 * @return Lista de productos cargados.
 	 */
 	public List<Producto> cargarProductos() {
+		this.catalogo.clear(); // Limpiar la lista antes de recargar
 		String consulta = "SELECT * FROM Producto";
 		try (PreparedStatement pstmt = this.conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
@@ -107,19 +106,36 @@ public class GestionProducto {
 	}
 
 	/**
-	 * Muestra los productos del catálogo en un formato legible.
+	 * Muestra los productos activos del catálogo en un formato legible.
 	 * 
-	 * @return Una cadena con los detalles de los productos en el catálogo.
+	 * @return Una cadena con los detalles de los productos activos en el catálogo.
 	 */
-	public String mostrarProductosCatalogo() {
-		this.catalogo = cargarProductos();
-
+	public String mostrarProductosActivos() {
 		StringBuilder resultado = new StringBuilder();
 		for (Producto producto : this.catalogo) {
-			if (producto.isActivo()) { // Solo mostrar productos activos
+			if (producto.isActivo()) {
 				resultado.append("ID: ").append(producto.getId()).append("\n");
 				resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
-				resultado.append("Precio: ").append(producto.getPrecioUnidad()).append(" euros\n");
+				resultado.append("Precio: ").append(producto.getPrecio()).append(" euros\n");
+				resultado.append("Cantidad: ").append(producto.getCantidad()).append("\n\n");
+			}
+		}
+		return resultado.toString();
+	}
+
+	/**
+	 * Muestra los productos inactivos del catálogo en un formato legible.
+	 * 
+	 * @return Una cadena con los detalles de los productos inactivos en el
+	 *         catálogo.
+	 */
+	public String mostrarProductosInactivos() {
+		StringBuilder resultado = new StringBuilder();
+		for (Producto producto : this.catalogo) {
+			if (!producto.isActivo()) {
+				resultado.append("ID: ").append(producto.getId()).append("\n");
+				resultado.append("Nombre: ").append(producto.getNombre()).append("\n");
+				resultado.append("Precio: ").append(producto.getPrecio()).append(" euros\n");
 				resultado.append("Cantidad: ").append(producto.getCantidad()).append("\n\n");
 			}
 		}
@@ -152,67 +168,35 @@ public class GestionProducto {
 		boolean stock = rs.getBoolean("stock");
 		String genero = rs.getString("genero");
 		int idCategoria = rs.getInt("id_categoria");
-		boolean activo = rs.getBoolean("activo"); // Obtener el estado del producto
+		int idAlbaran = rs.getInt("id_albaran");
+		boolean activo = rs.getBoolean("activo");
 
-		String atributoEspecifico = obtenerAtributoEspecifico(rs, idCategoria);
+		// String atributoEspecifico = obtenerAtributoEspecifico(rs, idProducto);
 
-		if (stock) {
-			return crearProductoConStock(idProducto, nombre, precio, cantidad, stock, genero, idCategoria,
-					atributoEspecifico);
-		} else {
-			return new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, activo);
-		}
+		return new Producto(idProducto, nombre, precio, cantidad, stock, genero, idCategoria, idAlbaran, activo);
 	}
 
 	/**
 	 * Obtiene un atributo específico del producto basado en su categoría.
 	 *
-	 * @param rs          El ResultSet de la consulta.
-	 * @param idCategoria La categoría del producto.
+	 * @param rs         El ResultSet de la consulta.
+	 * @param idProducto El ID del producto.
 	 * @return El atributo específico del producto.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	private String obtenerAtributoEspecifico(ResultSet rs, int idCategoria) throws SQLException {
-		String consultaDetalle = "SELECT valor_detalle FROM Detalles_Producto WHERE id_producto = ?";
-		String atributoEspecifico = null;
-		try (PreparedStatement pstmtDetalle = this.conn.prepareStatement(consultaDetalle)) {
-			pstmtDetalle.setInt(1, rs.getInt("id"));
-			try (ResultSet rsDetalle = pstmtDetalle.executeQuery()) {
-				if (rsDetalle.next()) {
-					atributoEspecifico = rsDetalle.getString("valor_detalle");
-				}
-			}
-		}
-		return atributoEspecifico;
-	}
-
-	/**
-	 * Crea un producto con stock basado en su categoría.
-	 *
-	 * @param idProducto         El ID del producto.
-	 * @param nombre             El nombre del producto.
-	 * @param precio             El precio del producto.
-	 * @param cantidad           La cantidad del producto.
-	 * @param stock              El stock del producto.
-	 * @param genero             El género del producto.
-	 * @param idCategoria        La categoría del producto.
-	 * @param atributoEspecifico El atributo específico del producto.
-	 * @param activo             El estado del producto (activo/inactivo).
-	 * @return Un objeto Producto.
-	 */
-	private Producto crearProductoConStock(int idProducto, String nombre, float precio, int cantidad, boolean stock,
-			String genero, int idCategoria, String atributoEspecifico) {
-		switch (idCategoria) {
-		case 1:
-			return new Cine(nombre, precio, cantidad, stock, genero, idProducto, atributoEspecifico, idCategoria);
-		case 2:
-			return new Videojuego(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
-		case 3:
-			return new Musica(nombre, precio, cantidad, stock, genero, idProducto, idCategoria, atributoEspecifico);
-		default:
-			return new Producto(nombre, precio, cantidad, stock, genero, idProducto, idCategoria);
-		}
-	}
+//	private String obtenerAtributoEspecifico(ResultSet rs, int idProducto) throws SQLException {
+//		String consultaDetalle = "SELECT valor_detalle FROM Detalles_Producto WHERE id_producto = ?";
+//		String atributoEspecifico = null;
+//		try (PreparedStatement pstmtDetalle = this.conn.prepareStatement(consultaDetalle)) {
+//			pstmtDetalle.setInt(1, idProducto);
+//			try (ResultSet rsDetalle = pstmtDetalle.executeQuery()) {
+//				if (rsDetalle.next()) {
+//					atributoEspecifico = rsDetalle.getString("valor_detalle");
+//				}
+//			}
+//		}
+//		return atributoEspecifico;
+//	}
 
 	/**
 	 * Agrega un producto al catálogo.
@@ -223,22 +207,14 @@ public class GestionProducto {
 	 * @param stock       El stock del producto.
 	 * @param genero      El género del producto.
 	 * @param idCategoria La categoría del producto.
+	 * @param idAlbaran   El albarán del producto.
 	 */
 	public void agregarProducto(String nombre, float precio, int cantidad, boolean stock, String genero,
-			int idCategoria) {
-		Producto producto = new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria, true);
+			int idCategoria, int idAlbaran) {
+		Producto producto = new Producto(nombre, precio, cantidad, stock, genero, idCategoria, idAlbaran);
 		this.catalogo.add(producto);
 
 		agregarProductoABaseDeDatos(producto);
-	}
-
-	/**
-	 * Agrega un producto de prueba al catálogo.
-	 * 
-	 * @param producto de la clase producto
-	 */
-	public void agregarProductoTest(Producto producto) {
-		this.catalogo.add(producto);
 	}
 
 	/**
@@ -247,16 +223,25 @@ public class GestionProducto {
 	 * @param producto El producto a agregar.
 	 */
 	private void agregarProductoABaseDeDatos(Producto producto) {
-		String sql = "INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria) VALUES (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria, id_albaran) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-		try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = this.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setString(1, producto.getNombre());
-			pstmt.setFloat(2, producto.getPrecioUnidad());
+			pstmt.setFloat(2, producto.getPrecio());
 			pstmt.setInt(3, producto.getCantidad());
 			pstmt.setBoolean(4, producto.getStock());
 			pstmt.setString(5, producto.getGenero());
 			pstmt.setInt(6, producto.getIdCategoria());
+			pstmt.setInt(7, producto.getIdAlbaran());
 			pstmt.executeUpdate();
+
+			try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					producto.setId(generatedKeys.getInt(1));
+				} else {
+					throw new SQLException("No se pudo obtener el ID del producto.");
+				}
+			}
 		} catch (SQLException e) {
 			System.out.println("No ha sido posible registrar el producto en la base de datos.");
 			e.printStackTrace();
@@ -295,7 +280,22 @@ public class GestionProducto {
 			}
 		}
 
-		return new Producto(nombre, precio, cantidad, stock, genero, null, idCategoria, true);
+		int idAlbaran;
+		while (true) {
+			System.out.println("Ingrese la ID del albarán del producto:");
+			idAlbaran = Leer.datoInt();
+			try {
+				if (verificarAlbaranExiste(idAlbaran)) {
+					break;
+				} else {
+					System.out.println("ID de albarán no válida. Intente de nuevo.");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return new Producto(nombre, precio, cantidad, stock, genero, idCategoria, idAlbaran);
 	}
 
 	/**
@@ -319,6 +319,116 @@ public class GestionProducto {
 	}
 
 	/**
+	 * Verifica si un albarán existe en la base de datos.
+	 * 
+	 * @param idAlbaran El ID del albarán a verificar.
+	 * @return true si el albarán existe, false en caso contrario.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public boolean verificarAlbaranExiste(int idAlbaran) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Albaran WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idAlbaran);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Inactiva un producto en el catálogo y en la base de datos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void desactivarProducto(Connection conn) {
+		try {
+			// Cargar productos activos antes de mostrarlos
+			cargarProductos();
+			System.out.println("Productos en el catálogo:");
+			System.out.println(mostrarProductosActivos());
+			System.out.println("Ingrese el ID del producto a marcar como inactivo:");
+			int idProducto = Leer.datoInt();
+			if (!hayProductoRegistrado(idProducto, conn)) {
+				System.out.println("El producto que se desea marcar como inactivo no existe.");
+			} else {
+				// Marcar el producto como inactivo
+				marcarProductoComoInactivo(idProducto, conn);
+				System.out.println("El producto ha sido marcado como inactivo con éxito.");
+				cargarProductos(); // Recargar productos después de la actualización
+			}
+		} catch (SQLException e) {
+			System.out.println("Hay un error al comprobar si el producto existe en la base de datos.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Activa un producto inactivo en el catálogo y en la base de datos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void activarProducto(Connection conn) {
+		try {
+			// Cargar productos inactivos antes de mostrarlos
+			cargarProductos();
+			System.out.println("Productos inactivos en el catálogo:");
+			System.out.println(mostrarProductosInactivos());
+			System.out.println("Ingrese el ID del producto a marcar como activo:");
+			int idProducto = Leer.datoInt();
+			if (!hayProductoRegistrado(idProducto, conn)) {
+				System.out.println("El producto que se desea marcar como activo no existe.");
+			} else {
+				// Marcar el producto como activo
+				marcarProductoComoActivo(idProducto, conn);
+				System.out.println("El producto ha sido marcado como activo con éxito.");
+				cargarProductos(); // Recargar productos después de la actualización
+			}
+		} catch (SQLException e) {
+			System.out.println("Hay un error al comprobar si el producto existe en la base de datos.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Marca un producto como inactivo en la base de datos.
+	 * 
+	 * @param idProducto El ID del producto a marcar como inactivo.
+	 * @param conn       La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void marcarProductoComoInactivo(int idProducto, Connection conn) throws SQLException {
+		String sql = "UPDATE Producto SET activo = FALSE WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idProducto);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible marcar el producto como inactivo en la base de datos.");
+			throw e;
+		}
+	}
+
+	/**
+	 * Marca un producto como activo en la base de datos.
+	 * 
+	 * @param idProducto El ID del producto a marcar como activo.
+	 * @param conn       La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private void marcarProductoComoActivo(int idProducto, Connection conn) throws SQLException {
+		String sql = "UPDATE Producto SET activo = TRUE WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idProducto);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("No ha sido posible marcar el producto como activo en la base de datos.");
+			throw e;
+		}
+	}
+
+	/**
 	 * Borra un producto de la base de datos por su ID.
 	 * 
 	 * @param idProducto El ID del producto a borrar.
@@ -331,6 +441,22 @@ public class GestionProducto {
 			pstmt.setInt(1, idProducto);
 			pstmt.executeUpdate();
 		}
+	}
+
+	/**
+	 * Busca un producto en el catálogo por su ID.
+	 * 
+	 * @param id El ID del producto.
+	 * @return El producto encontrado, o null si no se encuentra.
+	 */
+	public Producto buscarProductoPorIdCatalogo(int id) {
+		this.catalogo = cargarProductos();
+		for (Producto producto : this.catalogo) {
+			if (producto.getId() == id) {
+				return producto;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -355,40 +481,21 @@ public class GestionProducto {
 	}
 
 	/**
-	 * Marca un producto como inactivo.
-	 * 
-	 * @param idProducto El ID del producto a marcar como inactivo.
-	 * @param conn       La conexión a la base de datos.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	private void marcarProductoComoInactivo(int idProducto, Connection conn) throws SQLException {
-		String sql = "UPDATE Producto SET activo = FALSE WHERE id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, idProducto);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println("No ha sido posible marcar el producto como inactivo en la base de datos.");
-			throw e;
-		}
-	}
-
-	/**
-	 * Marca un producto como inactivo interactuando con el usuario.
+	 * Borra un producto del catálogo y de la base de datos.
 	 * 
 	 * @param conn La conexión a la base de datos.
 	 */
-	public void inactivizarProducto(Connection conn) {
+	public void borrarProducto(Connection conn) {
 		try {
 			System.out.println("Productos en el catálogo:");
-			System.out.println(mostrarProductosCatalogo());
-			System.out.println("Ingrese el ID del producto a marcar como inactivo:");
+			System.out.println(mostrarProductosActivos());
+			System.out.println("Ingrese el ID del producto a borrar:");
 			int idProducto = Leer.datoInt();
 			if (!hayProductoRegistrado(idProducto, conn)) {
-				System.out.println("El producto que se desea marcar como inactivo no existe.");
+				System.out.println("El producto que se desea borrar no existe.");
 			} else {
-				// Marcar el producto como inactivo
-				marcarProductoComoInactivo(idProducto, conn);
-				System.out.println("El producto ha sido marcado como inactivo con éxito.");
+				borrarProductoDeBaseDeDatos(idProducto, conn);
+				System.out.println("El producto ha sido eliminado con éxito.");
 			}
 		} catch (SQLException e) {
 			System.out.println("Hay un error al comprobar si el producto existe en la base de datos.");
@@ -396,28 +503,11 @@ public class GestionProducto {
 		}
 	}
 
-	/**
-	 * Busca un producto en el catálogo por su ID.
-	 * 
-	 * @param id El ID del producto.
-	 * @return El producto encontrado, o null si no se encuentra.
-	 */
-	public Producto buscarProductoPorIdCatalogo(int id) {
-		this.catalogo = cargarProductos();
-		for (Producto producto : this.catalogo) {
-			if (producto.getId() == id) {
-				return producto;
-			}
-		}
-		return null;
+	public void setCatalogo(List<Producto> catalogo) {
+		this.catalogo = catalogo;
 	}
 
-	// Getters y setters
 	public List<Producto> getCatalogo() {
-		return this.catalogo;
-	}
-
-	public List<Producto> setCatalogo(List<Producto> catalogo) {
-		return this.catalogo = catalogo;
+		return catalogo;
 	}
 }

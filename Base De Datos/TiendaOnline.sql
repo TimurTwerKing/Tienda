@@ -53,7 +53,6 @@ CREATE TABLE Detalles_Producto (
 -- Tabla Cliente con campo único para correo electrónico
 CREATE TABLE Cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    numero_cliente VARCHAR(50) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     direccion VARCHAR(255),
@@ -114,10 +113,10 @@ INSERT INTO Albaran (id_proveedor, fecha_entrega) VALUES
     (3, '2024-01-25');
 
 -- Insertar clientes ficticios
-INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES
-	('C001', 'Pedro', 'Serna', 'El Campico', 'Murcia City', 'Murcia', 'Españistan', '03400', '666777888', 'pedroserna@elcampico.org', 'pro'),
-    ('C002', 'Timur', 'Bogach', 'C/Campoamor n8', 'Orihuela', 'Alicante', 'Mongolia', '03300', '658440125', 'Timurnator_@outlook.com', 'uno mas...'),
-    ('C003', 'Jhoonny', 'Meentero', 'Carrera 15 #123', 'Ciudad', 'Provincia', 'España', '28090', '601234567', 'jhoonny.meentero@example.com', 'Cliente frecuente de productos de tecnología');
+INSERT INTO Cliente (nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES
+	('Pedro', 'Serna', 'El Campico', 'Murcia City', 'Murcia', 'Españistan', '03400', '666777888', 'pedroserna@elcampico.org', 'pro'),
+    ('Timur', 'Bogach', 'C/Campoamor n8', 'Orihuela', 'Alicante', 'Mongolia', '03300', '658440125', 'Timurnator_@outlook.com', 'uno mas...'),
+    ('Jhoonny', 'Meentero', 'Carrera 15 #123', 'Ciudad', 'Provincia', 'España', '28090', '601234567', 'jhoonny.meentero@example.com', 'Cliente frecuente de productos de tecnología');
 
 -- Insertar productos de Cine
 INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria, id_albaran) VALUES
@@ -164,12 +163,13 @@ USE Tienda;
 SELECT nombre FROM Producto WHERE id_categoria = 1;
 SELECT * FROM Cliente WHERE nombre = 'Jhoonny';
 SELECT * FROM Producto;
+SELECT * FROM Categoria;
 SELECT * FROM Cliente;
 SELECT * FROM Tiket;
 select * from Pedido;
 SELECT * FROM detalle_pedido;
 
-DELETE FROM Cliente
+DELETE FROM Clientecategoria
 WHERE nombre = '?';
 
 -- Consulta para ver la información conjunta de Pedido, detalle_pedido y Tiket

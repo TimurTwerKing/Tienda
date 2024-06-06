@@ -1,13 +1,19 @@
 
-Ticket Número: TKT1717554319048
-Fecha: Wed Jun 05 04:25:19 CEST 2024
+Ticket Número: TKT1717630088669
+Fecha: Thu Jun 06 01:28:08 CEST 2024
 
 Artículos:
 ID: 30
 Nombre: 21 - Adele
-Cantidad: 4
+Cantidad: 1
 Precio Unitario: 14.99 euros
-Total: 59.96 euros
+Total: 14.99 euros
 
-Total a pagar: 59.96 euros
+ID: 26
+Nombre: Abbey Road - The Beatles
+Cantidad: 5
+Precio Unitario: 12.99 euros
+Total: 64.95 euros
+
+Total a pagar: 79.939995 euros
 

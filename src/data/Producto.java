@@ -1,69 +1,62 @@
 package data;
 
 /**
- * Clase Producto: Contiene métodos para la gestión de productos.
+ * Clase Producto: Contiene información y métodos para gestionar productos.
  * 
  * @autor Timur Bogach
- * @date 11 feb 2024
+ * @date 19 may 2024
  */
 public class Producto {
+	private int id; // ID del producto auto-incrementado
 	private String nombre;
-	private Float precioUnidad;
-	private Integer cantidad;
-	private Boolean stock;
+	private float precio;
+	private int cantidad;
+	private boolean stock;
 	private String genero;
-	private Integer idProducto;
-	private Integer idCategoria;
-	private boolean activo; // Nuevo atributo
+	private int idCategoria;
+	private int idAlbaran;
+	private boolean activo;
 
-	// Constructores
-	public Producto(Producto productoCatalogo) {
-	}
-
+	// Constructor vacío
 	public Producto() {
 	}
 
-	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
-			Integer idCategoria, boolean activo) {
+	// Constructor sin ID, utilizado para crear nuevos productos
+	public Producto(String nombre, float precio, int cantidad, boolean stock, String genero, int idCategoria,
+			int idAlbaran) {
 		this.nombre = nombre;
-		this.precioUnidad = precioUn;
+		this.precio = precio;
 		this.cantidad = cantidad;
 		this.stock = stock;
 		this.genero = genero;
-		this.idProducto = idProducto;
 		this.idCategoria = idCategoria;
+		this.idAlbaran = idAlbaran;
+		this.activo = true; // Por defecto, un nuevo producto está activo
+	}
+
+	// Constructor con ID, utilizado para cargar productos desde la base de datos
+	public Producto(int id, String nombre, float precio, int cantidad, boolean stock, String genero, int idCategoria,
+			int idAlbaran, boolean activo) {
+		this.id = id;
+		this.nombre = nombre;
+		this.precio = precio;
+		this.cantidad = cantidad;
+		this.stock = stock;
+		this.genero = genero;
+		this.idCategoria = idCategoria;
+		this.idAlbaran = idAlbaran;
 		this.activo = activo;
-	}
-	public Producto(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
-			Integer idCategoria) {
-		this.nombre = nombre;
-		this.precioUnidad = precioUn;
-		this.cantidad = cantidad;
-		this.stock = stock;
-		this.genero = genero;
-		this.idProducto = idProducto;
-		this.idCategoria = idCategoria;
-	}
-
-	// Métodos
-	public void mostrarDatos() {
-		System.out.println("\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock="
-				+ stock + ", genero=" + genero + "]" + ", id=" + idProducto + "]");
-	}
-
-	public String toString() {
-		return "\t[nombre=" + nombre + ", precioUn=" + precioUnidad + ", cantidad=" + cantidad + ", stock=" + stock
-				+ ", genero=" + genero + "]" + ", id=" + idProducto + "]";
-	}
-
-	public boolean hayStock() {
-		if (getCantidad() > 0) {
-			this.stock = true;
-		}
-		return this.stock;
 	}
 
 	// Getters y Setters
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -72,20 +65,28 @@ public class Producto {
 		this.nombre = nombre;
 	}
 
-	public Float getPrecioUnidad() {
-		return precioUnidad;
+	public float getPrecio() {
+		return precio;
 	}
 
-	public void setPrecioUnidad(Float precioUn) {
-		this.precioUnidad = precioUn;
+	public void setPrecio(float precio) {
+		this.precio = precio;
 	}
 
-	public Integer getCantidad() {
+	public int getCantidad() {
 		return cantidad;
 	}
 
-	public void setCantidad(Integer cantidad) {
+	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
+	}
+
+	public boolean getStock() {
+		return stock;
+	}
+
+	public void setStock(boolean stock) {
+		this.stock = stock;
 	}
 
 	public String getGenero() {
@@ -96,28 +97,20 @@ public class Producto {
 		this.genero = genero;
 	}
 
-	public Boolean getStock() {
-		return stock;
-	}
-
-	public Integer getId() {
-		return idProducto;
-	}
-
-	public void setId(Integer idProducto) {
-		this.idProducto = idProducto;
-	}
-
-	public Integer getIdCategoria() {
+	public int getIdCategoria() {
 		return idCategoria;
 	}
 
-	public void setIdCategoria(Integer idCategoria) {
+	public void setIdCategoria(int idCategoria) {
 		this.idCategoria = idCategoria;
 	}
 
-	public void setStock(Boolean stock) {
-		this.stock = stock;
+	public int getIdAlbaran() {
+		return idAlbaran;
+	}
+
+	public void setIdAlbaran(int idAlbaran) {
+		this.idAlbaran = idAlbaran;
 	}
 
 	public boolean isActivo() {

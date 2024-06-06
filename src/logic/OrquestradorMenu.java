@@ -93,11 +93,6 @@ public class OrquestradorMenu {
 	 */
 	public void manejarMenuAdministrador(GestionProducto gestionProductos, GestionCliente gestionCliente,
 			GestionAlbaran gestionAlbaran, Connection conn) {
-		// Dado a la estructura de la BD entidad relacion, no nos interesa borrar los
-		// productos ni los clientes ya que para ello debemos borrar tambien las
-		// referencias de las ventas ya realizadas en otras tablas.
-		// Por ello se ha optado por dar de baja a los clientes y inactivar los
-		// productos.
 		boolean volverAdmin = false;
 		while (!volverAdmin) {
 			Menu.mostrarMenuAdministrador();
@@ -105,30 +100,120 @@ public class OrquestradorMenu {
 
 			switch (opcionAdmin) {
 			case 1:
-				// Agregar productos
+				manejarSubmenuProductos(gestionProductos, conn);
+				break;
+			case 2:
+				manejarSubmenuUsuarios(gestionCliente, conn);
+				break;
+			case 3:
+				manejarSubmenuAlbaranes(gestionAlbaran, conn);
+				break;
+			case 4:
+				volverAdmin = true;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	/**
+	 * Maneja el submenú de productos.
+	 * 
+	 * @param gestionProductos La instancia de GestionProducto.
+	 * @param conn             La conexión a la base de datos.
+	 */
+	private void manejarSubmenuProductos(GestionProducto gestionProductos, Connection conn) {
+		boolean volverProductos = false;
+		while (!volverProductos) {
+			Menu.mostrarMenuProductos();
+			int opcionProductos = Leer.datoInt();
+
+			switch (opcionProductos) {
+			case 1:// crear producto
 				Producto nuevoProducto = gestionProductos.crearProducto();
 				if (nuevoProducto != null) {
-					gestionProductos.agregarProducto(nuevoProducto.getNombre(), nuevoProducto.getPrecioUnidad(),
-							nuevoProducto.getCantidad(), nuevoProducto.hayStock(), nuevoProducto.getGenero(),
-							nuevoProducto.getIdCategoria());
+					gestionProductos.agregarProducto(nuevoProducto.getNombre(), nuevoProducto.getPrecio(),
+							nuevoProducto.getCantidad(), nuevoProducto.getStock(), nuevoProducto.getGenero(),
+							nuevoProducto.getIdCategoria(), nuevoProducto.getIdAlbaran());
 				} else {
 					System.out.println("No se pudo crear el producto.");
 				}
 				break;
-			case 2:
-				// Borrar productos
-				gestionProductos.inactivizarProducto(conn);
+			case 2:// dar de baja producto
+				gestionProductos.desactivarProducto(conn);
+				break;
+			case 3:// dar de alta producto
+				gestionProductos.activarProducto(conn);
+				break;
+			case 4:// volver
+				volverProductos = true;
+				break;
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	/**
+	 * Maneja el submenú de usuarios.
+	 * 
+	 * @param gestionCliente La instancia de GestionCliente.
+	 * @param conn           La conexión a la base de datos.
+	 */
+	private void manejarSubmenuUsuarios(GestionCliente gestionCliente, Connection conn) {
+		boolean volverUsuarios = false;
+		while (!volverUsuarios) {
+			Menu.mostrarMenuUsuarios();
+			int opcionUsuarios = Leer.datoInt();
+
+			switch (opcionUsuarios) {
+			case 1:// Dar de baja usuarios
+				System.out.println(gestionCliente.mostrarClientesActivos(conn));
+				System.out.println("Escriba el id del cliente que desea dar de baja");
+				int clienteIdActivo = Leer.datoInt();
+				gestionCliente.darDeBajaCliente(clienteIdActivo, conn);
+				break;
+			case 2:// Dar de alta usuarios
+				System.out.println(gestionCliente.mostrarClientesInactivos(conn));
+				System.out.println("Escriba el id del cliente que desea dar de alta");
+				int clienteIdInactivo = Leer.datoInt();
+				gestionCliente.darDeAltaCliente(clienteIdInactivo, conn);
 				break;
 			case 3:
-				// Dar de baja usuarios
-				gestionCliente.darDeBajaCliente(conn);
+				volverUsuarios = true;
 				break;
-			case 4:
-				// Dar de alta usuarios
-				gestionCliente.darDeAltaCliente(conn);
+			default:
+				System.out.println("Opción no válida. Intente de nuevo.");
+			}
+		}
+	}
+
+	/**
+	 * Maneja el submenú de albaranes.
+	 * 
+	 * @param gestionAlbaran La instancia de GestionAlbaran.
+	 * @param conn           La conexión a la base de datos.
+	 */
+	private void manejarSubmenuAlbaranes(GestionAlbaran gestionAlbaran, Connection conn) {
+		boolean volverAlbaranes = false;
+		while (!volverAlbaranes) {
+			Menu.mostrarMenuAlbaranes();
+			int opcionAlbaranes = Leer.datoInt();
+
+			switch (opcionAlbaranes) {
+			case 1://Crear albaran nuevo
+				System.out.println("Ingrese el número de referencia del albarán:");
+				String referencia = Leer.datoString();
+				System.out.println("Ingrese la fecha del albarán (YYYY-MM-DD):");
+				String fecha = Leer.datoString();
+				gestionAlbaran.crearAlbaran(referencia, fecha, conn);
 				break;
-			case 5:
-				volverAdmin = true;
+			case 2:
+				System.out.println(gestionAlbaran.mostrarAlbaranes(conn));
+				break;
+			case 3: 
+				volverAlbaranes = true;
 				break;
 			default:
 				System.out.println("Opción no válida. Intente de nuevo.");
@@ -157,7 +242,7 @@ public class OrquestradorMenu {
 
 			switch (opcion) {
 			case 1: // Agregar productos a la cesta
-				System.out.println(gestionProductos.mostrarProductosCatalogo());
+				System.out.println(gestionProductos.mostrarProductosActivos());
 				gestionPedido.generarPedido(this.sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
 						tiket, this.conn);
 				break;

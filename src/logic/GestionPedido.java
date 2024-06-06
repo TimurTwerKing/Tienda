@@ -140,34 +140,33 @@ public class GestionPedido {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public int guardarPedidoEnBaseDeDatos(Cliente cliente, List<Producto> productos, Connection conn)
-	        throws SQLException {
-	    // Verificar que el cliente exista en la base de datos por ID
-	    if (!gestionCliente.verificarClienteExisteID(cliente.getId(), conn)) {
-	        throw new SQLException("El cliente con ID " + cliente.getId() + " no existe.");
-	    }
+			throws SQLException {
+		// Verificar que el cliente exista en la base de datos por ID
+		if (!gestionCliente.verificarClienteExisteID(cliente.getId(), conn)) {
+			throw new SQLException("El cliente con ID " + cliente.getId() + " no existe.");
+		}
 
-	    String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
-	    try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
-	        // Establecer el ID del cliente en la consulta
-	        pstmtPedido.setInt(1, cliente.getId());
-	        // Ejecutar la inserción del pedido
-	        pstmtPedido.executeUpdate();
+		String sqlPedido = "INSERT INTO Pedido (codigo_cliente) VALUES (?)";
+		try (PreparedStatement pstmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS)) {
+			// Establecer el ID del cliente en la consulta
+			pstmtPedido.setInt(1, cliente.getId());
+			// Ejecutar la inserción del pedido
+			pstmtPedido.executeUpdate();
 
-	        // Obtener las claves generadas (ID del pedido)
-	        try (ResultSet generatedKeys = pstmtPedido.getGeneratedKeys()) {
-	            if (generatedKeys.next()) {
-	                // Obtener el ID del pedido generado
-	                int idPedido = generatedKeys.getInt(1);
-	                // Guardar los detalles del pedido
-	                guardarDetallePedido(idPedido, productos, conn);
-	                return idPedido;
-	            } else {
-	                throw new SQLException("No se pudo obtener el ID del pedido.");
-	            }
-	        }
-	    }
+			// Obtener las claves generadas (ID del pedido)
+			try (ResultSet generatedKeys = pstmtPedido.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					// Obtener el ID del pedido generado
+					int idPedido = generatedKeys.getInt(1);
+					// Guardar los detalles del pedido
+					guardarDetallePedido(idPedido, productos, conn);
+					return idPedido;
+				} else {
+					throw new SQLException("No se pudo obtener el ID del pedido.");
+				}
+			}
+		}
 	}
-
 
 	/**
 	 * Guarda los detalles del pedido en la base de datos.
@@ -181,13 +180,41 @@ public class GestionPedido {
 		String sqlDetallePedido = "INSERT INTO Detalle_Pedido (orden_de_pedido, codigo_producto, cantidad) VALUES (?, ?, ?)";
 		try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetallePedido)) {
 			for (Producto producto : productos) {
-				pstmtDetalle.setInt(1, idPedido);
-				pstmtDetalle.setInt(2, producto.getId());
-				pstmtDetalle.setInt(3, producto.getCantidad());
-				pstmtDetalle.addBatch();
+				if (verificarProductoExiste(producto.getId(), conn)) {
+					pstmtDetalle.setInt(1, idPedido);
+					pstmtDetalle.setInt(2, producto.getId());
+					pstmtDetalle.setInt(3, producto.getCantidad());
+					pstmtDetalle.addBatch();
+				} else {
+					System.out.println("El producto con ID " + producto.getId() + " no existe en la base de datos.");
+				}
 			}
 			pstmtDetalle.executeBatch();
+		} catch (SQLException e) {
+			System.out.println("Error al guardar los detalles del pedido: " + e.getMessage());
+			throw e;
 		}
+	}
+
+	/**
+	 * Verifica si un producto existe en la base de datos por su ID.
+	 * 
+	 * @param idProducto El ID del producto.
+	 * @param conn       La conexión a la base de datos.
+	 * @return true si el producto existe, false en caso contrario.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	private boolean verificarProductoExiste(int idProducto, Connection conn) throws SQLException {
+		String sql = "SELECT COUNT(*) FROM Producto WHERE id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idProducto);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1) > 0;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -237,12 +264,8 @@ public class GestionPedido {
 	 * @return Un objeto Producto.
 	 */
 	private Producto crearProductoParaCesta(Producto producto, int cantidad) {
-		return new Producto(producto.getNombre(), producto.getPrecioUnidad(), cantidad, producto.hayStock(),
-				producto.getGenero(), producto.getId(), producto.getIdCategoria());
-	}
-
-	public boolean cestaVacia() {
-		return cesta.isEmpty();
+		return new Producto(producto.getId(), producto.getNombre(), producto.getPrecio(), cantidad, producto.getStock(),
+				producto.getGenero(), producto.getIdCategoria(), producto.getIdAlbaran(), producto.isActivo());
 	}
 
 	/**
@@ -271,7 +294,7 @@ public class GestionPedido {
 	 * @return El precio total del producto.
 	 */
 	private float calcularPrecioTotalProductoCesta(Producto producto) {
-		return producto.getPrecioUnidad() * producto.getCantidad();
+		return producto.getPrecio() * producto.getCantidad();
 	}
 
 	/**
@@ -283,7 +306,7 @@ public class GestionPedido {
 	 */
 	private String obtenerDetalleProductoEnCesta(Producto producto, float precioTotalProducto) {
 		return "ID: " + producto.getId() + "\n" + "Nombre: " + producto.getNombre() + "\n" + "Cantidad en cesta: "
-				+ producto.getCantidad() + "\n" + "Precio Unitario: " + producto.getPrecioUnidad() + " euros.\n"
+				+ producto.getCantidad() + "\n" + "Precio Unitario: " + producto.getPrecio() + " euros.\n"
 				+ "Precio Total: " + precioTotalProducto + " euros.";
 	}
 
@@ -295,7 +318,7 @@ public class GestionPedido {
 	public double mostrarImporteTotal() {
 		float total = 0.0f;
 		for (Producto producto : cesta) {
-			total += producto.getPrecioUnidad() * producto.getCantidad();
+			total += producto.getPrecio() * producto.getCantidad();
 		}
 		return total;
 	}
@@ -309,17 +332,8 @@ public class GestionPedido {
 		return cesta;
 	}
 
-//
-//private boolean verificarClienteExiste(int idCliente, Connection conn) throws SQLException {
-//	String sql = "SELECT COUNT(*) FROM Cliente WHERE idCliente = ?";
-//	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//		pstmt.setInt(1, idCliente);
-//		try (ResultSet rs = pstmt.executeQuery()) {
-//			if (rs.next()) {
-//				return rs.getInt(1) > 0;
-//			}
-//		}
-//	}
-//	return false;
-//}
+	public boolean cestaVacia() {
+		return cesta.isEmpty();
+	}
+
 }

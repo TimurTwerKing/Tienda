@@ -7,7 +7,6 @@ package modelo;
  * @date 19 may 2024
  */
 public class Cliente {
-	private String numeroCliente;
 	private String nombre;
 	private String apellidos;
 	private String direccion;
@@ -18,13 +17,16 @@ public class Cliente {
 	private String telefono;
 	private String mail;
 	private String observaciones;
-	private int id; // ID CLIENTE AUTO INCREMENTADO
 	private boolean activo;
+	private int id; // ID CLIENTE AUTO INCREMENTADO
 
-	public Cliente(String numeroCliente, String nombre, String apellidos, String direccion, String localidad,
-			String provincia, String pais, String codigoPostal, String telefono, String mail, String observaciones,
-			int id, boolean activo) {
-		this.numeroCliente = numeroCliente;
+	// Constructor vacío
+	public Cliente() {
+	}
+
+	// Constructor sin ID, utilizado para crear nuevos clientes
+	public Cliente(String nombre, String apellidos, String direccion, String localidad, String provincia, String pais,
+			String codigoPostal, String telefono, String mail, String observaciones) {
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.direccion = direccion;
@@ -35,39 +37,27 @@ public class Cliente {
 		this.telefono = telefono;
 		this.mail = mail;
 		this.observaciones = observaciones;
+		this.activo = true; // Por defecto, un nuevo cliente está activo
+	}
+
+	// Constructor con ID, utilizado para cargar clientes desde la base de datos
+	public Cliente(int id, String nombre, String apellidos, String direccion, String localidad, String provincia,
+			String pais, String codigoPostal, String telefono, String mail, String observaciones, boolean activo) {
 		this.id = id;
-		this.activo = activo;
-	}
-
-// Constructores
-	public Cliente() {
-	}
-
-	public Cliente(String numerocliente, String nombre, String apellidos, String direccion, String localidad,
-			String provincia, String pais, String codigopostal, String telefono, String mail, String observaciones) {
-		this.numeroCliente = numerocliente;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.direccion = direccion;
 		this.localidad = localidad;
 		this.provincia = provincia;
 		this.pais = pais;
-		this.codigoPostal = codigopostal;
+		this.codigoPostal = codigoPostal;
 		this.telefono = telefono;
 		this.mail = mail;
 		this.observaciones = observaciones;
+		this.activo = activo;
 	}
 
 	// Getters y Setters
-
-	public String getNumeroCliente() {
-		return numeroCliente;
-	}
-
-	public void setNumeroCliente(String numeroCliente) {
-		this.numeroCliente = numeroCliente;
-	}
-
 	public String getNombre() {
 		return nombre;
 	}
@@ -148,15 +138,6 @@ public class Cliente {
 		this.observaciones = observaciones;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-
-	}
-
 	public boolean isActivo() {
 		return activo;
 	}
@@ -165,13 +146,20 @@ public class Cliente {
 		this.activo = activo;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	// Método para mostrar los datos del cliente
 	@Override
 	public String toString() {
-		return "Cliente [numerocliente=" + numeroCliente + ", nombre=" + nombre + ", apellidos=" + apellidos
-				+ ", direccion=" + direccion + ", localidad=" + localidad + ", provincia=" + provincia + ", pais="
-				+ pais + ", codigopostal=" + codigoPostal + ", telefono=" + telefono + ", mail=" + mail
-				+ ", observaciones=" + observaciones + "]";
+		return "Cliente [nombre=" + nombre + ", apellidos=" + apellidos + ", direccion=" + direccion + ", localidad="
+				+ localidad + ", provincia=" + provincia + ", pais=" + pais + ", codigoPostal=" + codigoPostal
+				+ ", telefono=" + telefono + ", mail=" + mail + ", observaciones=" + observaciones + ", activo="
+				+ activo + ", id=" + id + "]";
 	}
-
 }

@@ -76,8 +76,8 @@ public class Tiket {
 		detalle.append("ID: ").append(producto.getId()).append("\n");
 		detalle.append("Nombre: ").append(producto.getNombre()).append("\n");
 		detalle.append("Cantidad: ").append(producto.getCantidad()).append("\n");
-		detalle.append("Precio Unitario: ").append(producto.getPrecioUnidad()).append(" euros\n");
-		detalle.append("Total: ").append(producto.getPrecioUnidad() * producto.getCantidad()).append(" euros");
+		detalle.append("Precio Unitario: ").append(producto.getPrecio()).append(" euros\n");
+		detalle.append("Total: ").append(producto.getPrecio() * producto.getCantidad()).append(" euros");
 		return detalle.toString();
 	}
 
@@ -90,7 +90,7 @@ public class Tiket {
 	private float calcularImporteTotal(List<Producto> cesta) {
 		float total = 0.0f;
 		for (Producto producto : cesta) {
-			total += producto.getPrecioUnidad() * producto.getCantidad();
+			total += producto.getPrecio() * producto.getCantidad();
 		}
 		return total;
 	}

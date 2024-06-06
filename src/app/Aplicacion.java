@@ -35,7 +35,7 @@ public class Aplicacion {
 			GestionPedido gestionPedido = new GestionPedido(conn);
 			GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido, conn);
 			GestionCliente gestionCliente = new GestionCliente(conn);
-			GestionAlbaran gestionAlbaran = new GestionAlbaran();
+			GestionAlbaran gestionAlbaran = new GestionAlbaran(conn);
 			Cliente cliente = new Cliente();
 
 			Tiket tiket = new Tiket();

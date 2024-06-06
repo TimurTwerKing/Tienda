@@ -16,7 +16,6 @@ public class Menu {
 		System.out.println("************************************");
 		System.out.println("*       [>]  [♫]  [☼]              *");
 		System.out.println("************************************\n");
-
 	}
 
 	public static void Mensaje_Inicial() {
@@ -54,24 +53,32 @@ public class Menu {
 
 	public static void mostrarMenuAdministrador() {
 		System.out.println("Seleccione una opción de administrador:");
-		System.out.println("1. Agregar productos");
-		System.out.println("2. Borrar productos");
-		System.out.println("3. Dar de baja usuarios");
-		System.out.println("4. Dar de alta usuarios");
-		System.out.println("5. Volver");
+		System.out.println("1. Productos");
+		System.out.println("2. Usuarios");
+		System.out.println("3. Albaranes");
+		System.out.println("4. Volver");
 	}
 
-	public static void mostrarMenuRegistrar() {
-		System.out.println("Seleccione una opción:");
-		System.out.println("1. Comprar");
-		System.out.println("2. Ver cesta");
+	public static void mostrarMenuProductos() {
+		System.out.println("Seleccione una opción para productos:");
+		System.out.println("1. Crear producto nuevo");
+		System.out.println("2. Dar de baja productos");
+		System.out.println("3. Dar de alta productos");
+		System.out.println("4. Volver");
+	}
+
+	public static void mostrarMenuUsuarios() {
+		System.out.println("Seleccione una opción para usuarios:");
+		System.out.println("1. Dar de baja usuarios");
+		System.out.println("2. Dar de alta usuarios");
 		System.out.println("3. Volver");
 	}
 
-	public static void mostrarMenuComprar_Pagar() {
-		System.out.println("Seleccione una opción:");
-		System.out.println("1. Pagar");
-		System.out.println("2. Volver");
+	public static void mostrarMenuAlbaranes() {
+		System.out.println("Seleccione una opción para albaranes:");
+		System.out.println("1. Crear albarán");
+		System.out.println("2. Ver albaranes");
+		System.out.println("3. Volver");
 	}
 
 	public static void mostrarMenuCesta() {

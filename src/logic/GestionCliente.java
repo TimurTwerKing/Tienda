@@ -36,26 +36,24 @@ public class GestionCliente {
 	 * 
 	 * @param cliente El cliente a agregar.
 	 * @param conn    La conexión a la base de datos.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public void agregarCliente(Cliente cliente, Connection conn) {
 		// Verificar si el cliente ya existe por su correo electrónico
 		if (!verificarClienteExisteMail(cliente.getMail(), conn)) {
 
-			String sql = "INSERT INTO Cliente (numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO Cliente (nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 			try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-				pstmt.setString(1, cliente.getNumeroCliente());
-				pstmt.setString(2, cliente.getNombre());
-				pstmt.setString(3, cliente.getApellidos());
-				pstmt.setString(4, cliente.getDireccion());
-				pstmt.setString(5, cliente.getLocalidad());
-				pstmt.setString(6, cliente.getProvincia());
-				pstmt.setString(7, cliente.getPais());
-				pstmt.setString(8, cliente.getCodigoPostal());
-				pstmt.setString(9, cliente.getTelefono());
-				pstmt.setString(10, cliente.getMail());
-				pstmt.setString(11, cliente.getObservaciones());
+				pstmt.setString(1, cliente.getNombre());
+				pstmt.setString(2, cliente.getApellidos());
+				pstmt.setString(3, cliente.getDireccion());
+				pstmt.setString(4, cliente.getLocalidad());
+				pstmt.setString(5, cliente.getProvincia());
+				pstmt.setString(6, cliente.getPais());
+				pstmt.setString(7, cliente.getCodigoPostal());
+				pstmt.setString(8, cliente.getTelefono());
+				pstmt.setString(9, cliente.getMail());
+				pstmt.setString(10, cliente.getObservaciones());
 
 				pstmt.executeUpdate();
 
@@ -80,7 +78,6 @@ public class GestionCliente {
 	 * @param mail El correo electrónico del cliente.
 	 * @param conn La conexión a la base de datos.
 	 * @return true si el cliente existe, false en caso contrario.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public boolean verificarClienteExisteMail(String mail, Connection conn) {
 		String sql = "SELECT COUNT(*) FROM Cliente WHERE mail = ?";
@@ -131,24 +128,14 @@ public class GestionCliente {
 	 */
 	public List<Cliente> cargarClientes(Connection conn) throws SQLException {
 		List<Cliente> clientes = new ArrayList<>();
-		String sql = "SELECT id, numero_cliente, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones, activo FROM Cliente";
+		String sql = "SELECT id, nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones, activo FROM Cliente";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
-				Cliente cliente = new Cliente();
-				cliente.setId(rs.getInt("id"));
-				cliente.setNumeroCliente(rs.getString("numero_cliente"));
-				cliente.setNombre(rs.getString("nombre"));
-				cliente.setApellidos(rs.getString("apellidos"));
-				cliente.setDireccion(rs.getString("direccion"));
-				cliente.setLocalidad(rs.getString("localidad"));
-				cliente.setProvincia(rs.getString("provincia"));
-				cliente.setPais(rs.getString("pais"));
-				cliente.setCodigoPostal(rs.getString("codigo_postal"));
-				cliente.setTelefono(rs.getString("telefono"));
-				cliente.setMail(rs.getString("mail"));
-				cliente.setObservaciones(rs.getString("observaciones"));
-				cliente.setActivo(rs.getBoolean("activo"));
+				Cliente cliente = new Cliente(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellidos"),
+						rs.getString("direccion"), rs.getString("localidad"), rs.getString("provincia"),
+						rs.getString("pais"), rs.getString("codigo_postal"), rs.getString("telefono"),
+						rs.getString("mail"), rs.getString("observaciones"), rs.getBoolean("activo"));
 				clientes.add(cliente);
 			}
 		}
@@ -168,8 +155,8 @@ public class GestionCliente {
 		System.out.println("Seleccione un cliente:");
 		for (int i = 0; i < clientes.size(); i++) {
 			Cliente cliente = clientes.get(i);
-			System.out.println((i + 1) + ". ID: " + cliente.getId() + " - " + cliente.getNumeroCliente() + " - "
-					+ cliente.getNombre() + " " + cliente.getApellidos());
+			System.out.println(
+					(i + 1) + ". ID: " + cliente.getId() + " - " + cliente.getNombre() + " " + cliente.getApellidos());
 		}
 
 		int opcion = Leer.datoInt();
@@ -190,8 +177,6 @@ public class GestionCliente {
 	 */
 	public Cliente crearCliente(Connection conn) {
 		try {
-			System.out.println("Ingrese el número de cliente:");
-			String numerocliente = Leer.datoString();
 			System.out.println("Ingrese el nombre:");
 			String nombre = Leer.datoString();
 			System.out.println("Ingrese los apellidos:");
@@ -219,9 +204,8 @@ public class GestionCliente {
 				return null;
 			}
 
-			Cliente cliente = new Cliente(numerocliente, nombre, apellidos, direccion, localidad, provincia, pais,
-					codigopostal, telefono, mail, observaciones);
-			return cliente;
+			return new Cliente(nombre, apellidos, direccion, localidad, provincia, pais, codigopostal, telefono, mail,
+					observaciones);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error al agregar el cliente.");
@@ -230,9 +214,9 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Método para dar de baja un cliente.
+	 * Marca un cliente como inactivo en la base de datos.
 	 * 
-	 * @param clienteId El ID del cliente a dar de baja.
+	 * @param clienteId El ID del cliente a marcar como inactivo.
 	 * @param conn      La conexión a la base de datos.
 	 */
 	public void darDeBajaCliente(int clienteId, Connection conn) {
@@ -253,13 +237,13 @@ public class GestionCliente {
 	}
 
 	/**
-	 * Método para dar de alta un cliente.
+	 * Marca un cliente como activo en la base de datos.
 	 * 
-	 * @param clienteId El ID del cliente a dar de alta.
+	 * @param clienteId El ID del cliente a marcar como activo.
 	 * @param conn      La conexión a la base de datos.
 	 */
 	public void darDeAltaCliente(int clienteId, Connection conn) {
-		String sql = "UPDATE Cliente SET activo = TRUE WHERE id = ?";
+		String sql = "UPDATE Cliente SET activo = true WHERE id = ?";
 
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, clienteId);
@@ -274,42 +258,6 @@ public class GestionCliente {
 			System.out.println("No ha sido posible dar de alta al cliente en la base de datos.");
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Busca un cliente por su ID.
-	 * 
-	 * @param clienteId El ID del cliente a buscar.
-	 * @return El cliente encontrado, o null si no se encuentra.
-	 */
-	public Cliente seleccionarClientePorId(int clienteId) {
-		for (Cliente cliente : this.clientes) {
-			if (cliente.getId() == clienteId) {
-				return cliente;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Obtiene el ID de un cliente por su correo electrónico.
-	 * 
-	 * @param mail El correo electrónico del cliente.
-	 * @param conn La conexión a la base de datos.
-	 * @return El ID del cliente.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	public int obtenerIDClientePorMail_BD(String mail, Connection conn) throws SQLException {
-		String sql = "SELECT id FROM Cliente WHERE mail = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, mail);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("id");
-				}
-			}
-		}
-		return 0; // ID no encontrado
 	}
 
 	/**
@@ -338,40 +286,6 @@ public class GestionCliente {
 			resultado.append("No hay usuarios dados de alta");
 		}
 		return resultado.toString();
-	}
-
-	/**
-	 * Método orquestador para gestionar los clientes inactivos.
-	 * 
-	 * @param conn La conexión a la base de datos.
-	 */
-	public void darDeAltaCliente(Connection conn) {
-		if (!hayClientesInactivos(conn)) {
-			System.out.println("No hay usuarios dados de baja");
-		} else {
-			System.out.println("Clientes inactivos en el sistema:");
-			System.out.println(mostrarClientesInactivos(conn));
-			System.out.println("Ingrese el ID del cliente que desea dar de alta:");
-			int idClienteInactivo = Leer.datoInt();
-			darDeAltaCliente(idClienteInactivo, conn);
-		}
-	}
-
-	/**
-	 * Método orquestador para gestionar los clientes activos.
-	 * 
-	 * @param conn La conexión a la base de datos.
-	 */
-	public void darDeBajaCliente(Connection conn) {
-		if (!hayClientesActivos(conn)) {
-			System.out.println("No hay usuarios dados de alta");
-		} else {
-			System.out.println("Clientes activos en el sistema:");
-			System.out.println(mostrarClientesActivos(conn));
-			System.out.println("Ingrese el ID del cliente que desea dar de baja:");
-			int idClienteActivo = Leer.datoInt();
-			darDeBajaCliente(idClienteActivo, conn);
-		}
 	}
 
 	/**
@@ -440,5 +354,75 @@ public class GestionCliente {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Orquesta el proceso para gestionar clientes inactivos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void orquestadorClientesInactivos(Connection conn) {
+		if (!hayClientesActivos(conn)) {
+			System.out.println("No hay usuarios dados de alta.");
+		} else {
+			System.out.println("Clientes en el sistema:");
+			System.out.println(mostrarClientesActivos(conn));
+			System.out.println("Ingrese el ID del cliente que desea dar de baja:");
+			int idCliente = Leer.datoInt();
+			darDeBajaCliente(idCliente, conn);
+		}
+	}
+
+	/**
+	 * Orquesta el proceso para gestionar clientes activos.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 */
+	public void orquestadorClientesActivos(Connection conn) {
+		if (!hayClientesInactivos(conn)) {
+			System.out.println("No hay usuarios dados de baja.");
+		} else {
+			System.out.println("Clientes en el sistema:");
+			System.out.println(mostrarClientesInactivos(conn));
+			System.out.println("Ingrese el ID del cliente que desea dar de alta:");
+			int idCliente = Leer.datoInt();
+			darDeAltaCliente(idCliente, conn);
+		}
+	}
+
+	/**
+	 * Busca un cliente por su ID.
+	 * 
+	 * @param clienteId El ID del cliente a buscar.
+	 * @return El cliente encontrado, o null si no se encuentra.
+	 */
+	public Cliente seleccionarClientePorId(int clienteId) {
+		for (Cliente cliente : this.clientes) {
+			if (cliente.getId() == clienteId) {
+				return cliente;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Obtiene el ID de un cliente por su correo electrónico.
+	 * 
+	 * @param mail El correo electrónico del cliente.
+	 * @param conn La conexión a la base de datos.
+	 * @return El ID del cliente.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
+	 */
+	public int obtenerIDClientePorMail_BD(String mail, Connection conn) throws SQLException {
+		String sql = "SELECT id FROM Cliente WHERE mail = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, mail);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("id");
+				}
+			}
+		}
+		return 0; // ID no encontrado
 	}
 }

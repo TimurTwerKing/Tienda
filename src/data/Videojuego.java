@@ -10,18 +10,9 @@ package data;
 public class Videojuego extends Producto {
 	private String desarrollador;
 
-	public Videojuego(Producto productoCatalogo) {
-		super(productoCatalogo);
-	}
-
 	public Videojuego(String nombre, Float precioUn, Integer cantidad, Boolean stock, String genero, Integer idProducto,
 			Integer idCategoria, String desarrollador) {
 		super(nombre, precioUn, cantidad, stock, genero, idProducto, idCategoria);
-		this.desarrollador = desarrollador;
-	}
-
-	public Videojuego(Producto productoCatalogo, String desarrollador) {
-		super(productoCatalogo);
 		this.desarrollador = desarrollador;
 	}
 
