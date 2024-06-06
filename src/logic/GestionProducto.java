@@ -62,6 +62,9 @@ public class GestionProducto {
 				pstmt.setInt(1, nuevaCantidad);
 				pstmt.setInt(2, producto.getId());
 				pstmt.executeUpdate();
+
+				// Actualizar el catálogo en memoria
+				producto.setCantidad(nuevaCantidad);
 			}
 		}
 	}
@@ -175,28 +178,6 @@ public class GestionProducto {
 
 		return new Producto(idProducto, nombre, precio, cantidad, stock, genero, idCategoria, idAlbaran, activo);
 	}
-
-	/**
-	 * Obtiene un atributo específico del producto basado en su categoría.
-	 *
-	 * @param rs         El ResultSet de la consulta.
-	 * @param idProducto El ID del producto.
-	 * @return El atributo específico del producto.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-//	private String obtenerAtributoEspecifico(ResultSet rs, int idProducto) throws SQLException {
-//		String consultaDetalle = "SELECT valor_detalle FROM Detalles_Producto WHERE id_producto = ?";
-//		String atributoEspecifico = null;
-//		try (PreparedStatement pstmtDetalle = this.conn.prepareStatement(consultaDetalle)) {
-//			pstmtDetalle.setInt(1, idProducto);
-//			try (ResultSet rsDetalle = pstmtDetalle.executeQuery()) {
-//				if (rsDetalle.next()) {
-//					atributoEspecifico = rsDetalle.getString("valor_detalle");
-//				}
-//			}
-//		}
-//		return atributoEspecifico;
-//	}
 
 	/**
 	 * Agrega un producto al catálogo.

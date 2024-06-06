@@ -53,11 +53,13 @@ public class GestionPedido {
 		// Guardar el ticket en la base de datos
 		tiket.guardarTicketEnBaseDeDatos(idPedido, tiket.getNumeroTiket(), tiket.getTotal(), conn);
 
-		// Actualizar los productos en la base de datos y en el catálogo
+		// Actualizar los productos en la base de datos
 		for (Producto productoEnCesta : gestionPedido.getCesta()) {
 			gestionProductos.actualizarProductoEnBaseDeDatos(conn, productoEnCesta);
-			gestionProductos.actualizarProductoEnCatalogo(productoEnCesta);
 		}
+
+		// Recargar productos para actualizar el catálogo en memoria
+		gestionProductos.cargarProductos();
 
 		// Limpiar la cesta después de la venta
 		gestionPedido.getCesta().clear();
@@ -112,22 +114,20 @@ public class GestionPedido {
 	 * @throws SQLException
 	 */
 	public void gestionarPagoPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-			throws SQLException {
-		String ticket = tiket.crearTicket(cesta, gestionProductos);
-		System.out.println(ticket);
-		gestionPago.metodoDePago(cliente, sc);
+	        GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
+	        throws SQLException {
+	    String ticket = tiket.crearTicket(this.cesta, gestionProductos);
+	    System.out.println(ticket);
+	    gestionPago.metodoDePago(cliente, sc);
 
-		GestionPedido.venderArticulos(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
-		guardarPedidoEnBaseDeDatos(cliente, this.cesta, conn);
+	    GestionPedido.venderArticulos(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
 
-		Menu.deseaTiket();
-		int opcionTiket = sc.nextInt();
-		if (opcionTiket == 1) {
-			fichero.escribirFichero(ticket);
-		}
-		Menu.Mensaje_Fin_Compra();
-
+	    Menu.deseaTiket();
+	    int opcionTiket = sc.nextInt();
+	    if (opcionTiket == 1) {
+	        fichero.escribirFichero(ticket);
+	    }
+	    Menu.Mensaje_Fin_Compra();
 	}
 
 	/**
@@ -225,16 +225,26 @@ public class GestionPedido {
 	 * @param cantidad         La cantidad del producto a agregar.
 	 */
 	public void agregarCesta(GestionProducto gestionProductos, int productoId, int cantidad) {
-		Producto producto = gestionProductos.buscarProductoPorIdCatalogo(productoId);
-		if (producto != null) {
-			if (gestionProductos.haySuficienteStock(producto, cantidad)) {
-				cesta.add(crearProductoParaCesta(producto, cantidad));
-			} else {
-				System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
-			}
-		} else {
-			System.out.println("Producto no encontrado en el catálogo.");
-		}
+	    Producto producto = gestionProductos.buscarProductoPorIdCatalogo(productoId);
+	    if (producto != null) {
+	        if (gestionProductos.haySuficienteStock(producto, cantidad)) {
+	            boolean productoEnCesta = false;
+	            for (Producto p : this.cesta) {
+	                if (p.getId() == producto.getId()) {
+	                    p.setCantidad(p.getCantidad() + cantidad);
+	                    productoEnCesta = true;
+	                    break;
+	                }
+	            }
+	            if (!productoEnCesta) {
+	            	this.cesta.add(crearProductoParaCesta(producto, cantidad));
+	            }
+	        } else {
+	            System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
+	        }
+	    } else {
+	        System.out.println("Producto no encontrado en el catálogo.");
+	    }
 	}
 
 	/**
@@ -244,7 +254,7 @@ public class GestionPedido {
 	 */
 	public void borrarProductoPorIdCesta(int id) {
 		// Utilizamos un Iterator para evitar ConcurrentModificationException
-		Iterator<Producto> iterator = cesta.iterator();
+		Iterator<Producto> iterator = this.cesta.iterator();
 		while (iterator.hasNext()) {
 			Producto producto = iterator.next();
 			if (producto.getId() == id) {
@@ -277,7 +287,7 @@ public class GestionPedido {
 		StringBuilder resultado = new StringBuilder();
 		float precioTotal = 0;
 
-		for (Producto producto : cesta) {
+		for (Producto producto : this.cesta) {
 			float precioTotalProducto = calcularPrecioTotalProductoCesta(producto);
 			precioTotal += precioTotalProducto;
 			resultado.append(obtenerDetalleProductoEnCesta(producto, precioTotalProducto)).append("\n\n");
@@ -317,7 +327,7 @@ public class GestionPedido {
 	 */
 	public double mostrarImporteTotal() {
 		float total = 0.0f;
-		for (Producto producto : cesta) {
+		for (Producto producto : this.cesta) {
 			total += producto.getPrecio() * producto.getCantidad();
 		}
 		return total;
@@ -329,11 +339,11 @@ public class GestionPedido {
 	 * @return La lista de productos en la cesta.
 	 */
 	public List<Producto> getCesta() {
-		return cesta;
+		return this.cesta;
 	}
 
 	public boolean cestaVacia() {
-		return cesta.isEmpty();
+		return this.cesta.isEmpty();
 	}
 
 }

@@ -64,9 +64,6 @@ public class OrquestradorMenu {
 			case 2: // Registro de usuario
 				cliente = gestionCliente.crearCliente(this.conn);
 				if (cliente != null) {
-					gestionCliente.agregarCliente(cliente, this.conn);
-					// Obtener el ID generado automáticamente en la BD
-					cliente.setId(gestionCliente.obtenerIDClientePorMail_BD(cliente.getMail(), conn));
 					if (cliente.getId() > 0) {
 						this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
 					} else {
@@ -130,7 +127,7 @@ public class OrquestradorMenu {
 			int opcionProductos = Leer.datoInt();
 
 			switch (opcionProductos) {
-			case 1:// crear producto
+			case 1: // Crear producto
 				Producto nuevoProducto = gestionProductos.crearProducto();
 				if (nuevoProducto != null) {
 					gestionProductos.agregarProducto(nuevoProducto.getNombre(), nuevoProducto.getPrecio(),
@@ -140,13 +137,13 @@ public class OrquestradorMenu {
 					System.out.println("No se pudo crear el producto.");
 				}
 				break;
-			case 2:// dar de baja producto
+			case 2: // Dar de baja productos
 				gestionProductos.desactivarProducto(conn);
 				break;
-			case 3:// dar de alta producto
+			case 3: // Dar de alta productos
 				gestionProductos.activarProducto(conn);
 				break;
-			case 4:// volver
+			case 4:
 				volverProductos = true;
 				break;
 			default:
@@ -168,13 +165,13 @@ public class OrquestradorMenu {
 			int opcionUsuarios = Leer.datoInt();
 
 			switch (opcionUsuarios) {
-			case 1:// Dar de baja usuarios
+			case 1: // Dar de baja usuarios
 				System.out.println(gestionCliente.mostrarClientesActivos(conn));
 				System.out.println("Escriba el id del cliente que desea dar de baja");
 				int clienteIdActivo = Leer.datoInt();
 				gestionCliente.darDeBajaCliente(clienteIdActivo, conn);
 				break;
-			case 2:// Dar de alta usuarios
+			case 2: // Dar de alta usuarios
 				System.out.println(gestionCliente.mostrarClientesInactivos(conn));
 				System.out.println("Escriba el id del cliente que desea dar de alta");
 				int clienteIdInactivo = Leer.datoInt();
@@ -202,17 +199,17 @@ public class OrquestradorMenu {
 			int opcionAlbaranes = Leer.datoInt();
 
 			switch (opcionAlbaranes) {
-			case 1://Crear albaran nuevo
-				System.out.println("Ingrese el número de referencia del albarán:");
-				String referencia = Leer.datoString();
-				System.out.println("Ingrese la fecha del albarán (YYYY-MM-DD):");
-				String fecha = Leer.datoString();
-				gestionAlbaran.crearAlbaran(referencia, fecha, conn);
+			case 1: // Crear albarán
+				System.out.println("Ingrese el ID del proveedor: \n1. Cine\n2. Videojuego\n3. Música");
+				int idProveedor = Leer.datoInt();
+				System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
+				String fechaEntrega = Leer.datoFechaString();
+				gestionAlbaran.crearAlbaran(idProveedor, fechaEntrega);
 				break;
-			case 2:
-				System.out.println(gestionAlbaran.mostrarAlbaranes(conn));
+			case 2: // Ver albaranes
+				System.out.println(gestionAlbaran.mostrarAlbaranes());
 				break;
-			case 3: 
+			case 3:
 				volverAlbaranes = true;
 				break;
 			default:

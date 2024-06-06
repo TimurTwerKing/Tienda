@@ -160,6 +160,7 @@ INSERT INTO Producto (nombre, precio, cantidad, stock, genero, id_categoria, id_
 -- Consultas de prueba
 USE Tienda;
 
+DESCRIBE Cliente;
 SELECT nombre FROM Producto WHERE id_categoria = 1;
 SELECT * FROM Cliente WHERE nombre = 'Jhoonny';
 SELECT * FROM Producto;

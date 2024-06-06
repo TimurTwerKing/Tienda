@@ -1,5 +1,6 @@
 package logic;
 
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,13 +38,12 @@ public class GestionCliente {
 	 * @param cliente El cliente a agregar.
 	 * @param conn    La conexión a la base de datos.
 	 */
-	public void agregarCliente(Cliente cliente, Connection conn) {
+	public void agregarClienteBaseDeDatos(Cliente cliente, Connection conn) {
 		// Verificar si el cliente ya existe por su correo electrónico
 		if (!verificarClienteExisteMail(cliente.getMail(), conn)) {
+			String sql = "INSERT INTO Cliente (nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			String sql = "INSERT INTO Cliente (nombre, apellidos, direccion, localidad, provincia, pais, codigo_postal, telefono, mail, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-			try (PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+			try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 				pstmt.setString(1, cliente.getNombre());
 				pstmt.setString(2, cliente.getApellidos());
 				pstmt.setString(3, cliente.getDireccion());
@@ -54,21 +54,74 @@ public class GestionCliente {
 				pstmt.setString(8, cliente.getTelefono());
 				pstmt.setString(9, cliente.getMail());
 				pstmt.setString(10, cliente.getObservaciones());
+				pstmt.setBoolean(11, cliente.isActivo()); // Asegurar que el campo activo se maneje correctamente
 
 				pstmt.executeUpdate();
 
 				try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 					if (generatedKeys.next()) {
-						cliente.setId(generatedKeys.getInt(1)); // Set the generated ID to the cliente object
+						cliente.setId(generatedKeys.getInt(1)); // Obtenemos el ID generado
 					} else {
 						throw new SQLException("No se pudo obtener el ID del cliente.");
 					}
 				}
 			} catch (SQLException e) {
-				System.out.println("No ha sido posible cargar los clientes desde la base de datos.");
+				System.out.println("No ha sido posible registrar el cliente en la base de datos.");
 				e.printStackTrace();
-				System.out.println("El cliente con correo " + cliente.getMail() + " ya existe.");
 			}
+		} else {
+			System.out.println("El cliente con correo " + cliente.getMail() + " ya existe.");
+		}
+	}
+
+	/**
+	 * Método para crear un cliente nuevo.
+	 * 
+	 * @param conn La conexión a la base de datos.
+	 * @return El cliente creado.
+	 */
+	public Cliente crearCliente(Connection conn) {
+		try {
+			System.out.println("Ingrese el nombre:");
+			String nombre = Leer.datoString();
+			System.out.println("Ingrese los apellidos:");
+			String apellidos = Leer.datoString();
+			System.out.println("Ingrese la dirección:");
+			String direccion = Leer.datoString();
+			System.out.println("Ingrese la localidad:");
+			String localidad = Leer.datoString();
+			System.out.println("Ingrese la provincia:");
+			String provincia = Leer.datoString();
+			System.out.println("Ingrese el país:");
+			String pais = Leer.datoString();
+			System.out.println("Ingrese el código postal:");
+			String codigopostal = Leer.datoString();
+			System.out.println("Ingrese el teléfono:");
+			String telefono = Leer.datoString();
+			System.out.println("Ingrese el correo electrónico:");
+			String mail = Leer.datoString();
+			System.out.println("Ingrese las observaciones:");
+			String observaciones = Leer.datoString();
+
+			// Verificar si el cliente ya existe por su correo electrónico
+			if (verificarClienteExisteMail(mail, conn)) {
+				System.out.println("El cliente con correo " + mail + " ya existe.");
+				return null;
+			}
+
+			// Crear un nuevo objeto Cliente sin ID y activo
+			Cliente nuevoCliente = new Cliente(nombre, apellidos, direccion, localidad, provincia, pais, codigopostal,
+					telefono, mail, observaciones);
+
+			// Agregar el cliente a la base de datos y obtener el ID generado
+			agregarClienteBaseDeDatos(nuevoCliente, conn);
+
+			// Devolver el objeto Cliente con el ID y el estado activo
+			return nuevoCliente;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error al agregar el cliente.");
+			return null;
 		}
 	}
 
@@ -165,50 +218,6 @@ public class GestionCliente {
 			return clientes.get(opcion - 1);
 		} else {
 			System.out.println("Opción no válida.");
-			return null;
-		}
-	}
-
-	/**
-	 * Método para crear un cliente nuevo.
-	 * 
-	 * @param conn La conexión a la base de datos.
-	 * @return El cliente creado.
-	 */
-	public Cliente crearCliente(Connection conn) {
-		try {
-			System.out.println("Ingrese el nombre:");
-			String nombre = Leer.datoString();
-			System.out.println("Ingrese los apellidos:");
-			String apellidos = Leer.datoString();
-			System.out.println("Ingrese la dirección:");
-			String direccion = Leer.datoString();
-			System.out.println("Ingrese la localidad:");
-			String localidad = Leer.datoString();
-			System.out.println("Ingrese la provincia:");
-			String provincia = Leer.datoString();
-			System.out.println("Ingrese el país:");
-			String pais = Leer.datoString();
-			System.out.println("Ingrese el código postal:");
-			String codigopostal = Leer.datoString();
-			System.out.println("Ingrese el teléfono:");
-			String telefono = Leer.datoString();
-			System.out.println("Ingrese el correo electrónico:");
-			String mail = Leer.datoString();
-			System.out.println("Ingrese las observaciones:");
-			String observaciones = Leer.datoString();
-
-			// Verificar si el cliente ya existe por su correo electrónico
-			if (verificarClienteExisteMail(mail, conn)) {
-				System.out.println("El cliente con correo " + mail + " ya existe.");
-				return null;
-			}
-
-			return new Cliente(nombre, apellidos, direccion, localidad, provincia, pais, codigopostal, telefono, mail,
-					observaciones);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error al agregar el cliente.");
 			return null;
 		}
 	}

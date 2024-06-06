@@ -1,6 +1,7 @@
 package logic;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +10,12 @@ import java.util.List;
 
 import modelo.Albaran;
 
+/**
+ * Clase para gestionar los albaranes.
+ * 
+ * @autor Timur Bogach
+ * @date 19 may 2024
+ */
 public class GestionAlbaran {
 	private Connection conn;
 
@@ -37,6 +44,46 @@ public class GestionAlbaran {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Crea un albarán a partir de los datos proporcionados y lo agrega a la base de
+	 * datos.
+	 *
+	 * @param idProveedor La ID del proveedor.
+	 * @param fecha       La fecha de entrega del albarán.
+	 */
+	public void crearAlbaran(int idProveedor, String fecha) {
+		String sql = "INSERT INTO Albaran (id_proveedor, fecha_entrega) VALUES (?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, idProveedor);
+			pstmt.setDate(2, Date.valueOf(fecha));
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("El albarán no se ha podido crear.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Muestra todos los albaranes en un formato legible.
+	 * 
+	 * @return Una cadena con los detalles de los albaranes.
+	 */
+	public String mostrarAlbaranes() {
+		StringBuilder resultado = new StringBuilder();
+		String sql = "SELECT * FROM Albaran";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				resultado.append("ID: ").append(rs.getInt("id")).append("\n");
+				resultado.append("ID Proveedor: ").append(rs.getInt("id_proveedor")).append("\n");
+				resultado.append("Fecha Entrega: ").append(rs.getDate("fecha_entrega")).append("\n\n");
+			}
+		} catch (SQLException e) {
+			System.out.println("El albarán no se ha podido mostrar.");
+			e.printStackTrace();
+		}
+		return resultado.toString();
 	}
 
 	/**
@@ -105,48 +152,5 @@ public class GestionAlbaran {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Crea un albarán a partir de los datos proporcionados y lo agrega a la base de
-	 * datos.
-	 *
-	 * @param referencia La referencia del albarán.
-	 * @param fecha      La fecha de entrega del albarán.
-	 * @param conn       La conexión a la base de datos.
-	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
-	 */
-	public void crearAlbaran(String referencia, String fecha, Connection conn) {
-		String sql = "INSERT INTO Albaran (referencia, fecha) VALUES (?, ?)";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, referencia);
-			pstmt.setString(2, fecha);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println("El albaran no se ha podido crear");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Muestra todos los albaranes en un formato legible.
-	 * 
-	 * @param conn La conexión a la base de datos.
-	 * @return Una cadena con los detalles de los albaranes.
-	 */
-	public String mostrarAlbaranes(Connection conn) {
-		StringBuilder resultado = new StringBuilder();
-		String sql = "SELECT * FROM Albaran";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-			while (rs.next()) {
-				resultado.append("ID: ").append(rs.getInt("id")).append("\n");
-				resultado.append("ID Proveedor: ").append(rs.getInt("id_proveedor")).append("\n");
-				resultado.append("Fecha Entrega: ").append(rs.getDate("fecha_entrega")).append("\n\n");
-			}
-		} catch (SQLException e) {
-			System.out.println("El albarán no se ha podido mostrar.");
-			e.printStackTrace();
-		}
-		return resultado.toString();
 	}
 }

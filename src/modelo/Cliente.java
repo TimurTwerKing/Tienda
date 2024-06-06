@@ -154,12 +154,5 @@ public class Cliente {
 		this.id = id;
 	}
 
-	// Método para mostrar los datos del cliente
-	@Override
-	public String toString() {
-		return "Cliente [nombre=" + nombre + ", apellidos=" + apellidos + ", direccion=" + direccion + ", localidad="
-				+ localidad + ", provincia=" + provincia + ", pais=" + pais + ", codigoPostal=" + codigoPostal
-				+ ", telefono=" + telefono + ", mail=" + mail + ", observaciones=" + observaciones + ", activo="
-				+ activo + ", id=" + id + "]";
-	}
+
 }

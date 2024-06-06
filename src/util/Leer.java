@@ -3,6 +3,8 @@ package util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Clase Leer: Contiene métodos para la lectura de datos desde la consola.
@@ -23,6 +25,40 @@ public class Leer {
 			}
 		} catch (IOException e) {
 			System.out.println("Error al limpiar el buffer: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Lee una fecha del usuario en el formato YYYY-MM-DD y la valida.
+	 * 
+	 * @return La fecha leída como cadena.
+	 */
+	public static String datoFechaString() {
+		while (true) {
+			String fecha = datoString();
+			if (validarFecha(fecha)) {
+				return fecha;
+			} else {
+				System.out.println("Formato de fecha incorrecto. Intente de nuevo.");
+				System.out.println("Ingrese la fecha (YYYY-MM-DD):");
+			}
+		}
+	}
+
+	/**
+	 * Valida que una cadena tenga el formato de fecha YYYY-MM-DD.
+	 * 
+	 * @param fecha La cadena a validar.
+	 * @return true si la fecha es válida, false en caso contrario.
+	 */
+	private static boolean validarFecha(String fecha) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		sdf.setLenient(false);
+		try {
+			sdf.parse(fecha);
+			return true;
+		} catch (ParseException e) {
+			return false;
 		}
 	}
 
@@ -126,4 +162,5 @@ public class Leer {
 			}
 		}
 	}
+
 }
