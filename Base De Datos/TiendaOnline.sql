@@ -66,6 +66,8 @@ CREATE TABLE Cliente (
     activo BOOLEAN DEFAULT TRUE
 );
 
+-- DROP TABLE IF EXISTS Cliente;
+
 -- Tabla Pedido con campo para fecha de pedido
 CREATE TABLE Pedido (
     orden_de_pedido INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,7 +91,6 @@ CREATE TABLE Tiket (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_pedido INT,
     numero_tiket VARCHAR(20),
-    fecha_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10, 2),
     FOREIGN KEY (id_pedido) REFERENCES Pedido(orden_de_pedido)
 );
@@ -162,57 +163,11 @@ USE Tienda;
 
 DESCRIBE Cliente;
 SELECT nombre FROM Producto WHERE id_categoria = 1;
-SELECT * FROM Cliente WHERE nombre = 'Jhoonny';
+SELECT * FROM Cliente WHERE nombre = '';
 SELECT * FROM Producto;
 SELECT * FROM Categoria;
+SELECT * FROM Albaran; 
 SELECT * FROM Cliente;
 SELECT * FROM Tiket;
-select * from Pedido;
+select * from Pedido; 
 SELECT * FROM detalle_pedido;
-
-DELETE FROM Clientecategoria
-WHERE nombre = '?';
-
--- Consulta para ver la información conjunta de Pedido, detalle_pedido y Tiket
-SELECT 
-    p.orden_de_pedido AS idPedido,
-    p.codigo_cliente,
-    p.fecha_pedido,
-    dp.id AS idDetallePedido,
-    dp.codigo_producto,
-    dp.cantidad,
-    t.id AS idTiket,
-    t.numero_tiket,
-    t.fecha_compra,
-    t.total
-FROM 
-    Pedido p
-JOIN 
-    detalle_pedido dp ON p.orden_de_pedido = dp.orden_de_pedido
-JOIN 
-    Tiket t ON p.orden_de_pedido = t.id_pedido;
-    
-
-SELECT 
-    p.orden_de_pedido AS idPedido,
-    p.codigo_cliente,
-    p.fecha_pedido,
-    dp.id AS idDetallePedido,
-    dp.codigo_producto,
-    dp.cantidad,
-    t.id AS idTiket,
-    t.numero_tiket,
-    t.fecha_compra,
-    t.total
-FROM 
-    Pedido p
-JOIN 
-    Tiket t ON p.orden_de_pedido = t.id_pedido
-LEFT JOIN 
-    (SELECT 
-         dp.orden_de_pedido,
-         dp.id,
-         dp.codigo_producto,
-         dp.cantidad
-     FROM 
-         detalle_pedido dp) dp ON p.orden_de_pedido = dp.orden_de_pedido;

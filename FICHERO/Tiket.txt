@@ -1,13 +1,25 @@
 
-Ticket Número: TKT1717640497210
-Fecha: Thu Jun 06 04:21:37 CEST 2024
+Ticket Número: TKT1717722037859
+Fecha: Fri Jun 07 03:00:37 CEST 2024
 
 Artículos:
-ID: 37
-Nombre: pepsi
-Cantidad: 2
-Precio Unitario: 12.0 euros
-Total: 24.0 euros
+ID: 30
+Nombre: 21 - Adele
+Cantidad: 10
+Precio Unitario: 14.99 euros
+Total: 149.9 euros
 
-Total a pagar: 24.0 euros
+ID: 29
+Nombre: Sgt. Pepper's Lonely Hearts Club Band - The Beatles
+Cantidad: 5
+Precio Unitario: 16.99 euros
+Total: 84.95 euros
+
+ID: 25
+Nombre: Rumours - Fleetwood Mac
+Cantidad: 5
+Precio Unitario: 15.99 euros
+Total: 79.95 euros
+
+Total a pagar: 314.8 euros
 

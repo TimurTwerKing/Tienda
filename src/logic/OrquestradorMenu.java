@@ -2,7 +2,6 @@ package logic;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 import data.Producto;
 import data.Tiket;
@@ -19,34 +18,37 @@ import util.Leer;
  */
 public class OrquestradorMenu {
 	private Connection conn;
-	private Scanner sc;
+	private GestionProducto gestionProductos;
+	private GestionCliente gestionCliente;
+	private GestionPedido gestionPedido;
+	private GestionPago gestionPago;
+	private GestionAlbaran gestionAlbaran;
+	private Tiket tiket;
+	private Fichero fichero;
 
 	/**
 	 * Constructor de la clase.
 	 * 
 	 * @param conn La conexión a la base de datos.
-	 * @param sc   El escáner para la entrada de usuario.
 	 */
-	public OrquestradorMenu(Connection conn, Scanner sc) {
-		this.sc = sc;
+	public OrquestradorMenu(Connection conn) {
 		this.conn = conn;
+		// Inicialización de las clases de gestión
+		this.gestionProductos = new GestionProducto(conn); // USUARIO/ADMIN
+		this.gestionCliente = new GestionCliente(conn); // USUARIO/ADMIN
+		this.gestionPedido = new GestionPedido(conn); // USUARIO
+		this.gestionPago = new GestionPago(gestionProductos, gestionPedido, conn); // USUARIO
+		this.gestionAlbaran = new GestionAlbaran(conn); // ADMIN
+		this.tiket = new Tiket(); // USUARIO
+		this.fichero = new Fichero(); // USUARIO
 	}
 
 	/**
 	 * Maneja el menú para usuarios.
 	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionPedido    La instancia de GestionPedido.
-	 * @param gestionPago      La instancia de GestionPago.
-	 * @param gestionCliente   La instancia de GestionCliente.
-	 * @param cliente          El cliente actual.
-	 * @param fichero          La instancia de Fichero.
-	 * @param tiket            La instancia de Tiket.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void manejarMenuUsuario(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, GestionCliente gestionCliente, Cliente cliente, Fichero fichero, Tiket tiket)
-			throws SQLException {
+	public void manejarMenuUsuario() throws SQLException {
 		boolean volverUsuario = false;
 		while (!volverUsuario) {
 			Menu.mostrarMenuUsuario();
@@ -54,9 +56,9 @@ public class OrquestradorMenu {
 
 			switch (opcionUsuario) {
 			case 1: // Login de usuario
-				cliente = gestionCliente.elegirCliente(this.conn);
+				Cliente cliente = gestionCliente.elegirCliente(this.conn);
 				if (cliente != null) {
-					this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+					this.menuUsuarioLogueado(cliente);
 				} else {
 					System.out.println("No se seleccionó un cliente válido.");
 				}
@@ -65,7 +67,7 @@ public class OrquestradorMenu {
 				cliente = gestionCliente.crearCliente(this.conn);
 				if (cliente != null) {
 					if (cliente.getId() > 0) {
-						this.menuUsuarioLogueado(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+						this.menuUsuarioLogueado(cliente);
 					} else {
 						System.out.println("No se pudo obtener el ID del cliente.");
 					}
@@ -82,14 +84,8 @@ public class OrquestradorMenu {
 
 	/**
 	 * Maneja el menú para administradores.
-	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionCliente   La instancia de GestionCliente.
-	 * @param gestionAlbaran   La instancia de GestionAlbaran.
-	 * @param conn             La conexión a la base de datos.
 	 */
-	public void manejarMenuAdministrador(GestionProducto gestionProductos, GestionCliente gestionCliente,
-			GestionAlbaran gestionAlbaran, Connection conn) {
+	public void manejarMenuAdministrador() {
 		boolean volverAdmin = false;
 		while (!volverAdmin) {
 			Menu.mostrarMenuAdministrador();
@@ -97,13 +93,13 @@ public class OrquestradorMenu {
 
 			switch (opcionAdmin) {
 			case 1:
-				manejarSubmenuProductos(gestionProductos, conn);
+				manejarSubmenuProductos();
 				break;
 			case 2:
-				manejarSubmenuUsuarios(gestionCliente, conn);
+				manejarSubmenuUsuarios();
 				break;
 			case 3:
-				manejarSubmenuAlbaranes(gestionAlbaran, conn);
+				manejarSubmenuAlbaranes();
 				break;
 			case 4:
 				volverAdmin = true;
@@ -116,11 +112,8 @@ public class OrquestradorMenu {
 
 	/**
 	 * Maneja el submenú de productos.
-	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param conn             La conexión a la base de datos.
 	 */
-	private void manejarSubmenuProductos(GestionProducto gestionProductos, Connection conn) {
+	private void manejarSubmenuProductos() {
 		boolean volverProductos = false;
 		while (!volverProductos) {
 			Menu.mostrarMenuProductos();
@@ -154,11 +147,8 @@ public class OrquestradorMenu {
 
 	/**
 	 * Maneja el submenú de usuarios.
-	 * 
-	 * @param gestionCliente La instancia de GestionCliente.
-	 * @param conn           La conexión a la base de datos.
 	 */
-	private void manejarSubmenuUsuarios(GestionCliente gestionCliente, Connection conn) {
+	private void manejarSubmenuUsuarios() {
 		boolean volverUsuarios = false;
 		while (!volverUsuarios) {
 			Menu.mostrarMenuUsuarios();
@@ -188,11 +178,8 @@ public class OrquestradorMenu {
 
 	/**
 	 * Maneja el submenú de albaranes.
-	 * 
-	 * @param gestionAlbaran La instancia de GestionAlbaran.
-	 * @param conn           La conexión a la base de datos.
 	 */
-	private void manejarSubmenuAlbaranes(GestionAlbaran gestionAlbaran, Connection conn) {
+	private void manejarSubmenuAlbaranes() {
 		boolean volverAlbaranes = false;
 		while (!volverAlbaranes) {
 			Menu.mostrarMenuAlbaranes();
@@ -200,11 +187,7 @@ public class OrquestradorMenu {
 
 			switch (opcionAlbaranes) {
 			case 1: // Crear albarán
-				System.out.println("Ingrese el ID del proveedor: \n1. Cine\n2. Videojuego\n3. Música");
-				int idProveedor = Leer.datoInt();
-				System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
-				String fechaEntrega = Leer.datoFechaString();
-				gestionAlbaran.crearAlbaran(idProveedor, fechaEntrega);
+				gestionAlbaran.crearAlbaran();
 				break;
 			case 2: // Ver albaranes
 				System.out.println(gestionAlbaran.mostrarAlbaranes());
@@ -221,16 +204,10 @@ public class OrquestradorMenu {
 	/**
 	 * Muestra el menú para un usuario logueado.
 	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionPedido    La instancia de GestionPedido.
-	 * @param gestionPago      La instancia de GestionPago.
-	 * @param cliente          El cliente logueado.
-	 * @param fichero          La instancia de Fichero.
-	 * @param tiket            La instancia de Tiket.
+	 * @param cliente El cliente logueado.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void menuUsuarioLogueado(GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+	public void menuUsuarioLogueado(Cliente cliente) throws SQLException {
 		System.out.println("Bienvenido " + cliente.getNombre());
 		boolean volver = false;
 		while (!volver) {
@@ -240,11 +217,10 @@ public class OrquestradorMenu {
 			switch (opcion) {
 			case 1: // Agregar productos a la cesta
 				System.out.println(gestionProductos.mostrarProductosActivos());
-				gestionPedido.generarPedido(this.sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero,
-						tiket, this.conn);
+				gestionPedido.generarPedido(gestionProductos, gestionPago, cliente, fichero, tiket, this.conn);
 				break;
 			case 2: // Ver cesta
-				this.mostrarCesta(gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket);
+				this.mostrarCesta(cliente);
 				break;
 			case 3: // Volver
 				volver = true;
@@ -258,16 +234,10 @@ public class OrquestradorMenu {
 	/**
 	 * Muestra la cesta de compras del usuario.
 	 * 
-	 * @param gestionProductos La instancia de GestionProducto.
-	 * @param gestionPedido    La instancia de GestionPedido.
-	 * @param gestionPago      La instancia de GestionPago.
-	 * @param cliente          El cliente actual.
-	 * @param fichero          La instancia de Fichero.
-	 * @param tiket            La instancia de Tiket.
+	 * @param cliente El cliente actual.
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	private void mostrarCesta(GestionProducto gestionProductos, GestionPedido gestionPedido, GestionPago gestionPago,
-			Cliente cliente, Fichero fichero, Tiket tiket) throws SQLException {
+	private void mostrarCesta(Cliente cliente) throws SQLException {
 		boolean volver = false;
 		while (!volver) {
 			if (gestionPedido.cestaVacia()) {
@@ -280,8 +250,8 @@ public class OrquestradorMenu {
 
 				switch (opcion) {
 				case 1: // Realizar la compra
-					gestionPedido.gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente,
-							fichero, tiket, this.conn);
+					gestionPedido.gestionarPagoPedido(gestionProductos, gestionPago, cliente, fichero, tiket,
+							this.conn);
 					volver = true;
 					break;
 				case 2: // Borrar producto

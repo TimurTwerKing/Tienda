@@ -20,6 +20,23 @@ public class Tiket {
 	private float total;
 
 	/**
+	 * Constructor con parámetros.
+	 * 
+	 * @param numeroTiket El número del ticket.
+	 * @param total       El total de la compra.
+	 */
+	public Tiket(String numeroTiket, float total) {
+		this.numeroTiket = numeroTiket;
+		this.total = total;
+	}
+
+	/**
+	 * Constructor vacío.
+	 */
+	public Tiket() {
+	}
+
+	/**
 	 * Guarda el ticket en la base de datos.
 	 * 
 	 * @param idPedido    El ID del pedido relacionado con el ticket.
@@ -29,14 +46,14 @@ public class Tiket {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public void guardarTicketEnBaseDeDatos(int idPedido, String numeroTiket, double total, Connection conn)
-	        throws SQLException {
-	    String sqlTicket = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
-	    try (PreparedStatement pstmtTicket = conn.prepareStatement(sqlTicket)) {
-	        pstmtTicket.setInt(1, idPedido);
-	        pstmtTicket.setString(2, numeroTiket);
-	        pstmtTicket.setBigDecimal(3, new java.math.BigDecimal(total));
-	        pstmtTicket.executeUpdate();
-	    }
+			throws SQLException {
+		String sqlTicket = "INSERT INTO Tiket (id_pedido, numero_tiket, total) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmtTicket = conn.prepareStatement(sqlTicket)) {
+			pstmtTicket.setInt(1, idPedido);
+			pstmtTicket.setString(2, numeroTiket);
+			pstmtTicket.setBigDecimal(3, new java.math.BigDecimal(total));
+			pstmtTicket.executeUpdate();
+		}
 	}
 
 	/**
@@ -95,14 +112,6 @@ public class Tiket {
 		return total;
 	}
 
-	public Tiket(String numeroTiket, float total) {
-		this.numeroTiket = numeroTiket;
-		this.total = total;
-	}
-
-	public Tiket() {
-	}
-
 	/**
 	 * Genera un número de ticket único.
 	 *
@@ -112,11 +121,47 @@ public class Tiket {
 		return "TKT" + System.currentTimeMillis();
 	}
 
+	// Getters y Setters con comentarios
+
+	/**
+	 * Obtiene el número del ticket.
+	 * 
+	 * @return El número del ticket.
+	 */
 	public String getNumeroTiket() {
 		return numeroTiket;
 	}
 
+	/**
+	 * Establece el número del ticket.
+	 * 
+	 * @param numeroTiket El número del ticket.
+	 */
+	public void setNumeroTiket(String numeroTiket) {
+		if (numeroTiket == null || numeroTiket.isEmpty()) {
+			throw new IllegalArgumentException("El número del ticket no puede estar vacío.");
+		}
+		this.numeroTiket = numeroTiket;
+	}
+
+	/**
+	 * Obtiene el total del ticket.
+	 * 
+	 * @return El total del ticket.
+	 */
 	public float getTotal() {
 		return total;
+	}
+
+	/**
+	 * Establece el total del ticket.
+	 * 
+	 * @param total El total del ticket.
+	 */
+	public void setTotal(float total) {
+		if (total < 0) {
+			throw new IllegalArgumentException("El total no puede ser negativo.");
+		}
+		this.total = total;
 	}
 }

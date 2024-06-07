@@ -8,13 +8,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
 import data.Producto;
 import data.Tiket;
 import menu.Menu;
 import modelo.Cliente;
 import util.Fichero;
+import util.Leer;
 
 /**
  * Clase para gestionar los pedidos y la cesta de compra.
@@ -29,6 +29,8 @@ public class GestionPedido {
 
 	/**
 	 * Constructor de la clase.
+	 * 
+	 * @param conn La conexión a la base de datos.
 	 */
 	public GestionPedido(Connection conn) {
 		this.cesta = new ArrayList<>();
@@ -40,7 +42,7 @@ public class GestionPedido {
 	 * 
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public static void venderArticulos(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
+	public static void venderArticulos(GestionProducto gestionProductos, GestionPedido gestionPedido,
 			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
 			throws SQLException {
 
@@ -72,26 +74,24 @@ public class GestionPedido {
 	 * @param gestionPago      La instancia de GestionPago.
 	 * @param cliente          El cliente que realiza el pedido.
 	 * @param fichero          La instancia de Fichero para guardar el ticket.
-	 * @param sc               El objeto Scanner para leer la entrada del usuario.
 	 * @param tiket            La instancia de Tiket para generar el ticket.
-	 * @throws SQLException
+	 * @param conn             La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void generarPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-			GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-			throws SQLException {
+	public void generarPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
+			Fichero fichero, Tiket tiket, Connection conn) throws SQLException {
 		boolean continuarCompra = true;
 		while (continuarCompra) {
 			System.out.println("Escriba ID del producto: ");
-			int productoID = sc.nextInt();
+			int productoID = Leer.datoInt();
 			System.out.println("Escriba la cantidad del producto seleccionado: ");
-			int cantidadProducto = sc.nextInt();
+			int cantidadProducto = Leer.datoInt();
 
 			agregarCesta(gestionProductos, productoID, cantidadProducto);
 			Menu.seguirComprando_Pagar();
-			int opcionPagar = sc.nextInt();
+			int opcionPagar = Leer.datoInt();
 			if (opcionPagar == 1) { // PAGAR
-				gestionarPagoPedido(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
-				// Volver al menú de compra
+				gestionarPagoPedido(gestionProductos, gestionPago, cliente, fichero, tiket, conn);
 				continuarCompra = false;
 			} else if (opcionPagar == 2) { // SEGUIR COMPRANDO
 				continuarCompra = true;
@@ -109,25 +109,24 @@ public class GestionPedido {
 	 * @param gestionPago      La instancia de GestionPago.
 	 * @param cliente          El cliente que realiza el pedido.
 	 * @param fichero          La instancia de Fichero para guardar el ticket.
-	 * @param sc               El objeto Scanner para leer la entrada del usuario.
 	 * @param tiket            La instancia de Tiket para generar el ticket.
-	 * @throws SQLException
+	 * @param conn             La conexión a la base de datos.
+	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
-	public void gestionarPagoPedido(Scanner sc, GestionProducto gestionProductos, GestionPedido gestionPedido,
-	        GestionPago gestionPago, Cliente cliente, Fichero fichero, Tiket tiket, Connection conn)
-	        throws SQLException {
-	    String ticket = tiket.crearTicket(this.cesta, gestionProductos);
-	    System.out.println(ticket);
-	    gestionPago.metodoDePago(cliente, sc);
+	public void gestionarPagoPedido(GestionProducto gestionProductos, GestionPago gestionPago, Cliente cliente,
+			Fichero fichero, Tiket tiket, Connection conn) throws SQLException {
+		String ticket = tiket.crearTicket(this.cesta, gestionProductos);
+		System.out.println(ticket);
+		gestionPago.metodoDePago(cliente);
 
-	    GestionPedido.venderArticulos(sc, gestionProductos, gestionPedido, gestionPago, cliente, fichero, tiket, conn);
+		GestionPedido.venderArticulos(gestionProductos, this, gestionPago, cliente, fichero, tiket, conn);
 
-	    Menu.deseaTiket();
-	    int opcionTiket = sc.nextInt();
-	    if (opcionTiket == 1) {
-	        fichero.escribirFichero(ticket);
-	    }
-	    Menu.Mensaje_Fin_Compra();
+		Menu.deseaTiket();
+		int opcionTiket = Leer.datoInt();
+		if (opcionTiket == 1) {
+			fichero.escribirFichero(ticket);
+		}
+		Menu.Mensaje_Fin_Compra();
 	}
 
 	/**
@@ -225,26 +224,26 @@ public class GestionPedido {
 	 * @param cantidad         La cantidad del producto a agregar.
 	 */
 	public void agregarCesta(GestionProducto gestionProductos, int productoId, int cantidad) {
-	    Producto producto = gestionProductos.buscarProductoPorIdCatalogo(productoId);
-	    if (producto != null) {
-	        if (gestionProductos.haySuficienteStock(producto, cantidad)) {
-	            boolean productoEnCesta = false;
-	            for (Producto p : this.cesta) {
-	                if (p.getId() == producto.getId()) {
-	                    p.setCantidad(p.getCantidad() + cantidad);
-	                    productoEnCesta = true;
-	                    break;
-	                }
-	            }
-	            if (!productoEnCesta) {
-	            	this.cesta.add(crearProductoParaCesta(producto, cantidad));
-	            }
-	        } else {
-	            System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
-	        }
-	    } else {
-	        System.out.println("Producto no encontrado en el catálogo.");
-	    }
+		Producto producto = gestionProductos.buscarProductoPorIdCatalogo(productoId);
+		if (producto != null) {
+			if (gestionProductos.haySuficienteStock(producto, cantidad)) {
+				boolean productoEnCesta = false;
+				for (Producto p : this.cesta) {
+					if (p.getId() == producto.getId()) {
+						p.setCantidad(p.getCantidad() + cantidad);
+						productoEnCesta = true;
+						break;
+					}
+				}
+				if (!productoEnCesta) {
+					this.cesta.add(crearProductoParaCesta(producto, cantidad));
+				}
+			} else {
+				System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
+			}
+		} else {
+			System.out.println("Producto no encontrado en el catálogo.");
+		}
 	}
 
 	/**
@@ -342,8 +341,12 @@ public class GestionPedido {
 		return this.cesta;
 	}
 
+	/**
+	 * Verifica si la cesta está vacía.
+	 * 
+	 * @return true si la cesta está vacía, false en caso contrario.
+	 */
 	public boolean cestaVacia() {
 		return this.cesta.isEmpty();
 	}
-
 }

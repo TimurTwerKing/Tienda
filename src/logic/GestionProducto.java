@@ -24,12 +24,14 @@ public class GestionProducto {
 
 	/**
 	 * Constructor de la clase. Inicializa la lista de productos del catálogo.
+	 * 
+	 * @param conn La conexión a la base de datos.
 	 */
 	public GestionProducto(Connection conn) {
 		this.catalogo = new ArrayList<>();
 		this.conn = conn;
 		// Cargar productos desde la base de datos
-		this.catalogo = cargarProductos();
+		cargarProductos();
 	}
 
 	/**
@@ -94,7 +96,7 @@ public class GestionProducto {
 	 *
 	 * @return Lista de productos cargados.
 	 */
-	public List<Producto> cargarProductos() {
+	public void cargarProductos() {
 		this.catalogo.clear(); // Limpiar la lista antes de recargar
 		String consulta = "SELECT * FROM Producto";
 		try (PreparedStatement pstmt = this.conn.prepareStatement(consulta); ResultSet rs = pstmt.executeQuery()) {
@@ -105,7 +107,6 @@ public class GestionProducto {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return this.catalogo;
 	}
 
 	/**
@@ -174,8 +175,6 @@ public class GestionProducto {
 		int idAlbaran = rs.getInt("id_albaran");
 		boolean activo = rs.getBoolean("activo");
 
-		// String atributoEspecifico = obtenerAtributoEspecifico(rs, idProducto);
-
 		return new Producto(idProducto, nombre, precio, cantidad, stock, genero, idCategoria, idAlbaran, activo);
 	}
 
@@ -236,15 +235,15 @@ public class GestionProducto {
 	 */
 	public Producto crearProducto() {
 		System.out.println("Ingrese el nombre del producto:");
-		String nombre = Leer.datoString();
+		String nombre = Leer.leerStringNoVacio();
 		System.out.println("Ingrese el precio del producto:");
-		float precio = Leer.datoFloat();
+		float precio = (float) Leer.leerDoubleDosDecimales();
 		System.out.println("Ingrese la cantidad del producto:");
 		int cantidad = Leer.datoInt();
 		System.out.println("Hay stock disponible? (true/false):");
 		boolean stock = Leer.datoBoolean();
 		System.out.println("Ingrese el género del producto:");
-		String genero = Leer.datoString();
+		String genero = Leer.leerStringNoVacio();
 
 		int idCategoria;
 		while (true) {
@@ -431,7 +430,7 @@ public class GestionProducto {
 	 * @return El producto encontrado, o null si no se encuentra.
 	 */
 	public Producto buscarProductoPorIdCatalogo(int id) {
-		this.catalogo = cargarProductos();
+		cargarProductos();
 		for (Producto producto : this.catalogo) {
 			if (producto.getId() == id) {
 				return producto;
@@ -484,10 +483,20 @@ public class GestionProducto {
 		}
 	}
 
+	/**
+	 * Establece el catálogo de productos.
+	 * 
+	 * @param catalogo La lista de productos a establecer.
+	 */
 	public void setCatalogo(List<Producto> catalogo) {
 		this.catalogo = catalogo;
 	}
 
+	/**
+	 * Obtiene el catálogo de productos.
+	 * 
+	 * @return La lista de productos en el catálogo.
+	 */
 	public List<Producto> getCatalogo() {
 		return catalogo;
 	}

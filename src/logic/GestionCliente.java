@@ -23,6 +23,8 @@ public class GestionCliente {
 
 	/**
 	 * Constructor de la clase. Inicializa la lista de clientes.
+	 * 
+	 * @param conn La conexión a la base de datos.
 	 */
 	public GestionCliente(Connection conn) {
 		try {
@@ -54,7 +56,7 @@ public class GestionCliente {
 				pstmt.setString(8, cliente.getTelefono());
 				pstmt.setString(9, cliente.getMail());
 				pstmt.setString(10, cliente.getObservaciones());
-				pstmt.setBoolean(11, cliente.isActivo()); // Asegurar que el campo activo se maneje correctamente
+				pstmt.setBoolean(11, cliente.isActivo());
 
 				pstmt.executeUpdate();
 
@@ -82,26 +84,55 @@ public class GestionCliente {
 	 */
 	public Cliente crearCliente(Connection conn) {
 		try {
-			System.out.println("Ingrese el nombre:");
-			String nombre = Leer.datoString();
-			System.out.println("Ingrese los apellidos:");
-			String apellidos = Leer.datoString();
-			System.out.println("Ingrese la dirección:");
+			System.out.println("Ingrese el nombre (o '0' para volver):");
+			String nombre = Leer.leerStringNoVacio();
+			if (nombre.equals("0"))
+				return null;
+
+			System.out.println("Ingrese los apellidos (o '0' para volver):");
+			String apellidos = Leer.leerStringNoVacio();
+			if (apellidos.equals("0"))
+				return null;
+
+			System.out.println("Ingrese la dirección (o '0' para volver):");
 			String direccion = Leer.datoString();
-			System.out.println("Ingrese la localidad:");
+			if (direccion.equals("0"))
+				return null;
+
+			System.out.println("Ingrese la localidad (o '0' para volver):");
 			String localidad = Leer.datoString();
-			System.out.println("Ingrese la provincia:");
+			if (localidad.equals("0"))
+				return null;
+
+			System.out.println("Ingrese la provincia (o '0' para volver):");
 			String provincia = Leer.datoString();
-			System.out.println("Ingrese el país:");
+			if (provincia.equals("0"))
+				return null;
+
+			System.out.println("Ingrese el país (o '0' para volver):");
 			String pais = Leer.datoString();
-			System.out.println("Ingrese el código postal:");
+			if (pais.equals("0"))
+				return null;
+
+			System.out.println("Ingrese el código postal (o '0' para volver):");
 			String codigopostal = Leer.datoString();
-			System.out.println("Ingrese el teléfono:");
-			String telefono = Leer.datoString();
-			System.out.println("Ingrese el correo electrónico:");
-			String mail = Leer.datoString();
-			System.out.println("Ingrese las observaciones:");
+			if (codigopostal.equals("0"))
+				return null;
+
+			System.out.println("Ingrese el teléfono (o '0' para volver):");
+			String telefono = Leer.leerNumTelefono();
+			if (telefono.equals("0"))
+				return null;
+
+			System.out.println("Ingrese el correo electrónico (o '0' para volver):");
+			String mail = Leer.validarEntradaMail();
+			if (mail.equals("0"))
+				return null;
+
+			System.out.println("Ingrese las observaciones (o '0' para volver):");
 			String observaciones = Leer.datoString();
+			if (observaciones.equals("0"))
+				return null;
 
 			// Verificar si el cliente ya existe por su correo electrónico
 			if (verificarClienteExisteMail(mail, conn)) {
@@ -203,18 +234,15 @@ public class GestionCliente {
 	 * @throws SQLException Si ocurre un error de acceso a la base de datos.
 	 */
 	public Cliente elegirCliente(Connection conn) throws SQLException {
+		// Refrescar clientes desde la base de datos
 		List<Cliente> clientes = cargarClientes(conn);
-
+		System.out.println(mostrarClientesActivos(conn));
 		System.out.println("Seleccione un cliente:");
-		for (int i = 0; i < clientes.size(); i++) {
-			Cliente cliente = clientes.get(i);
-			System.out.println(
-					(i + 1) + ". ID: " + cliente.getId() + " - " + cliente.getNombre() + " " + cliente.getApellidos());
-		}
+		int opcion = Leer.datoInt(); // Opción ingresada es el ID del cliente
 
-		int opcion = Leer.datoInt();
-
+		// Verificar que la opción seleccionada sea válida
 		if (opcion > 0 && opcion <= clientes.size()) {
+			// Devolver el cliente seleccionado (restando 1 para obtener el índice correcto)
 			return clientes.get(opcion - 1);
 		} else {
 			System.out.println("Opción no válida.");
@@ -286,8 +314,7 @@ public class GestionCliente {
 		for (Cliente cliente : this.clientes) {
 			if (cliente.isActivo()) {
 				resultado.append("ID: ").append(cliente.getId()).append("\n");
-				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n");
-				resultado.append("Activo: Sí\n\n");
+				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n\n");
 				hayActivos = true;
 			}
 		}
@@ -314,8 +341,7 @@ public class GestionCliente {
 		for (Cliente cliente : this.clientes) {
 			if (!cliente.isActivo()) {
 				resultado.append("ID: ").append(cliente.getId()).append("\n");
-				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n");
-				resultado.append("Activo: No\n\n");
+				resultado.append("Nombre: ").append(cliente.getNombre()).append("\n\n");
 				hayInactivos = true;
 			}
 		}

@@ -37,9 +37,8 @@ public class Fichero {
 			e.printStackTrace();
 		} finally {
 			try {
-				// Nuevamente aprovechamos el finally para
-				// asegurarnos que se cierra el fichero.
-				if (null != fichero) {
+				// Asegurarse de cerrar el fichero en el bloque finally.
+				if (fichero != null) {
 					System.out.println("La escritura en el fichero se ha completado con éxito.");
 					fichero.close();
 				}
@@ -82,21 +81,19 @@ public class Fichero {
 	 */
 	public String leerRuta(String ruta) throws IOException {
 		String rutaAux = "";
-		// Creamos un FileReader especificando la ruta
-		// en la que se encuentra nuestro archivo de configuración
+		// Crear un FileReader especificando la ruta del archivo de configuración
 		FileReader file = new FileReader(ruta);
 
-		// Creamos el Objeto Scanner a partir del FileReader creado
+		// Crear un Scanner a partir del FileReader
 		Scanner scanner = new Scanner(file);
 
-		// Este bucle nos va a permitir recorrer nuestro fichero
-		// hasta el final
+		// Recorrer el fichero hasta el final
 		while (scanner.hasNextLine()) {
-			// Obtenemos la siguiente línea del fichero
+			// Obtener la siguiente línea del fichero
 			rutaAux = scanner.nextLine();
 		}
 
-		// Cerramos scanner y fichero
+		// Cerrar scanner y fichero
 		scanner.close();
 		file.close();
 		return rutaAux;

@@ -2,18 +2,10 @@ package app;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Scanner;
-import data.Tiket;
-import logic.GestionAlbaran;
-import logic.GestionCliente;
+
 import logic.OrquestradorMenu;
-import logic.GestionPago;
-import logic.GestionPedido;
-import logic.GestionProducto;
 import menu.Menu;
-import modelo.Cliente;
 import util.Conexion;
-import util.Fichero;
 import util.Leer;
 
 /**
@@ -23,51 +15,45 @@ import util.Leer;
  * @date 19 may 2024
  */
 public class Aplicacion {
-	public static void main(String[] args) throws SQLException {
+
+	public static void main(String[] args) {
 		Connection conn = null;
-		Scanner sc = new Scanner(System.in);
 		try {
+			// Conectar a la base de datos
 			conn = Conexion.conectar();
-			OrquestradorMenu orquestrador = new OrquestradorMenu(conn, sc);
+			OrquestradorMenu orquestrador = new OrquestradorMenu(conn);
 
-			// Inicialización de las clases de gestión
-			GestionProducto gestionProductos = new GestionProducto(conn);
-			GestionPedido gestionPedido = new GestionPedido(conn);
-			GestionPago gestionPago = new GestionPago(gestionProductos, gestionPedido, conn);
-			GestionCliente gestionCliente = new GestionCliente(conn);
-			GestionAlbaran gestionAlbaran = new GestionAlbaran(conn);
-			Cliente cliente = new Cliente();
-
-			Tiket tiket = new Tiket();
-			Fichero fichero = new Fichero();
-
+			// Mostrar el logo y mensaje inicial
 			Menu.Logo();
 			Menu.Mensaje_Inicial();
 
 			boolean continuar = true;
 			while (continuar) {
+				// Mostrar el menú principal
 				Menu.mostrarMenuPrincipal();
 
+				// Leer opción del usuario con validación
 				int opcionPrincipal = Leer.datoInt();
 
 				switch (opcionPrincipal) {
 				case 1:
 					// Menú para usuarios
-					orquestrador.manejarMenuUsuario(gestionProductos, gestionPedido, gestionPago, gestionCliente,
-							cliente, fichero, tiket);
+					orquestrador.manejarMenuUsuario();
 					break;
 				case 2:
 					// Menú para administradores
-					orquestrador.manejarMenuAdministrador(gestionProductos, gestionCliente, gestionAlbaran, conn);
+					orquestrador.manejarMenuAdministrador();
 					break;
 				case 3:
 					// Salir de la aplicación
 					continuar = false;
 					break;
 				default:
+					// Opción no válida
 					System.out.println("Opción no válida. Intente de nuevo.");
 				}
 			}
+			// Mostrar mensaje de fin
 			Menu.Mensaje_Fin();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -79,7 +65,6 @@ public class Aplicacion {
 					e.printStackTrace();
 				}
 			}
-			sc.close();
 		}
 	}
 }

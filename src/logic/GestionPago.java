@@ -2,9 +2,9 @@ package logic;
 
 import java.sql.Connection;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 import modelo.Cliente;
+import util.Leer;
 
 /**
  * Clase para gestionar el pago de los productos en la cesta.
@@ -19,27 +19,27 @@ public class GestionPago {
 	 * 
 	 * @param gestionProducto La instancia de GestionProducto.
 	 * @param gestionPedido   La instancia de GestionPedido.
+	 * @param conn            La conexión a la base de datos.
 	 */
 	public GestionPago(GestionProducto gestionProducto, GestionPedido gestionPedido, Connection conn) {
-
+		// Constructor sin implementación específica
 	}
 
 	/**
 	 * Método para seleccionar el método de pago.
 	 * 
 	 * @param cliente El cliente que realiza el pago.
-	 * @param sc      El objeto Scanner para leer la entrada del usuario.
 	 */
-	public void metodoDePago(Cliente cliente, Scanner sc) {
+	public void metodoDePago(Cliente cliente) {
 		boolean aux = true;
 		while (aux) {
 			System.out.println("Opciones a pagar:\n");
 			System.out.println("1. Pago con tarjeta");
 			System.out.println("2. Atras");
-			int opcion = sc.nextInt();
+			int opcion = Leer.datoInt();
 			switch (opcion) {
 			case 1:
-				pagarConTarjeta(cliente, sc);
+				pagarConTarjeta(cliente);
 				aux = false;
 				break;
 			case 2:
@@ -57,16 +57,13 @@ public class GestionPago {
 	 * Método para realizar el pago con tarjeta.
 	 * 
 	 * @param cliente El cliente que realiza el pago.
-	 * @param sc      El objeto Scanner para leer la entrada del usuario.
 	 */
-	public void pagarConTarjeta(Cliente cliente, Scanner sc) throws NoSuchElementException, NumberFormatException {
+	public void pagarConTarjeta(Cliente cliente) throws NoSuchElementException, NumberFormatException {
 		boolean tarjetaValida = false;
 		while (!tarjetaValida) {
 			try {
-				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
-				System.out.println("Introduzca su tarjeta con los espacios correspondientes: \nEj 3444 666666 55555");
-				String tipo = sc.nextLine(); // Ejemplo: 3444 666666 55555
-				tipo = tipo.replace(" ", "");
+				System.out.println("Introduzca su tarjeta con los espacios correspondientes: \nEj: 3444 666666 55555");
+				String tipo = Leer.datoString().replace(" ", ""); // Ejemplo: 3444 666666 55555
 				int longitud = tipo.length();
 				if (longitud == 15 || longitud == 16) {
 					if (tipo.startsWith("3") && longitud == 15) {
@@ -86,7 +83,7 @@ public class GestionPago {
 				}
 			} catch (Exception e) {
 				System.out.println("Ha ocurrido un error con la entrada de la tarjeta. Por favor, inténtelo de nuevo.");
-				sc.nextLine(); // Limpiar el buffer del scanner después de una excepción
+				Leer.limpiarBuffer(); // Limpiar el buffer después de una excepción
 			}
 		}
 	}

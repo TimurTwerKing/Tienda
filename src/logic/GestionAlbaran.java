@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import modelo.Albaran;
+import util.Leer;
 
 /**
  * Clase para gestionar los albaranes.
@@ -53,7 +54,13 @@ public class GestionAlbaran {
 	 * @param idProveedor La ID del proveedor.
 	 * @param fecha       La fecha de entrega del albarán.
 	 */
-	public void crearAlbaran(int idProveedor, String fecha) {
+	public void crearAlbaran() {
+		System.out.println("Ingrese el ID del proveedor: \n1. Cine\n2. Videojuego\n3. Música");
+		int idProveedor = Leer.datoInt();
+
+		System.out.println("Ingrese la fecha de entrega (YYYY-MM-DD):");
+		String fecha = Leer.datoFechaString();
+
 		String sql = "INSERT INTO Albaran (id_proveedor, fecha_entrega) VALUES (?, ?)";
 		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, idProveedor);
